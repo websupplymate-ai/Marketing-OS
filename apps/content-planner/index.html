@@ -1,0 +1,2421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SupplyMate CIA-1 V2</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#07090f;color:#e2e8f0;font-family:system-ui,sans-serif;font-size:14px;}
+.nav{background:#0a0d16;border-bottom:1px solid #1a2035;padding:0 16px;position:sticky;top:0;z-index:100;}
+.nav-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;}
+.logo{background:linear-gradient(135deg,#5b5fef,#a855f7);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:900;color:#fff;margin-right:10px;white-space:nowrap;}
+.nt{font-size:13px;font-weight:700;color:#f1f5f9;}
+.ns{font-size:9px;color:#4a5568;}
+.tabs{display:flex;margin-left:12px;flex:1;overflow-x:auto;}
+.tab{background:none;border:none;border-bottom:3px solid transparent;color:#64748b;padding:13px 9px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.tab.on{border-bottom-color:#5b5fef;color:#f1f5f9;}
+.tab:hover{color:#94a3b8;}
+.nr{margin-left:auto;font-size:11px;color:#22c55e;font-weight:700;white-space:nowrap;padding-left:10px;}
+.main{max-width:1320px;margin:0 auto;padding:14px 16px;}
+.pg{display:none;}.pg.on{display:block;}
+.card{background:#0d1117;border:1px solid #1a2035;border-radius:9px;padding:13px 16px;margin-bottom:11px;}
+.h2{font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:3px;}
+.sub{font-size:10px;color:#4a5568;margin-bottom:10px;}
+.lbl{font-size:9px;font-weight:700;color:#4a5568;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;}
+.btn{background:#1a2035;color:#94a3b8;border:none;border-radius:6px;padding:6px 11px;cursor:pointer;font-size:11px;font-weight:600;}
+.btn:hover{background:#222d45;}
+.btnp{background:linear-gradient(135deg,#5b5fef,#7c3aed);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;}
+.btnp:disabled{background:#1a2035;color:#4a5568;cursor:not-allowed;}
+.btns{background:#14532d;color:#4ade80;border:none;border-radius:6px;padding:6px 11px;font-size:11px;font-weight:600;cursor:pointer;}
+.btnd{background:#450a0a;color:#f87171;border:none;border-radius:6px;padding:6px 11px;font-size:11px;font-weight:600;cursor:pointer;}
+.btnh{background:#2d1b4e;color:#c084fc;border:none;border-radius:6px;padding:5px 9px;font-size:10px;font-weight:600;cursor:pointer;}
+.inp{background:#07090f;border:1px solid #2d3748;border-radius:6px;padding:6px 9px;color:#f1f5f9;font-size:11px;outline:none;width:100%;}
+.inp:focus{border-color:#5b5fef;}
+.sel{background:#07090f;border:1px solid #1a2035;border-radius:6px;padding:6px 9px;color:#e2e8f0;font-size:11px;outline:none;cursor:pointer;}
+.row{display:flex;gap:7px;flex-wrap:wrap;align-items:flex-start;margin-bottom:7px;}
+.ac{align-items:center;}
+.f1{flex:1;min-width:0;}
+.col{display:flex;flex-direction:column;gap:4px;}
+.srow{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px;}
+.sbox{background:#0d1117;border:1px solid #1a2035;border-radius:7px;padding:8px 11px;flex:1;min-width:68px;}
+.sn{font-size:16px;font-weight:800;color:#f1f5f9;}
+.sl{font-size:9px;color:#4a5568;margin-top:1px;}
+.tw{overflow-x:auto;border-radius:7px;border:1px solid #1a2035;}
+table{width:100%;border-collapse:collapse;font-size:10px;}
+th{background:#0a0d16;color:#64748b;font-size:8px;font-weight:700;text-transform:uppercase;padding:7px 8px;text-align:left;border-bottom:1px solid #1a2035;white-space:nowrap;position:sticky;top:0;}
+td{padding:5px 8px;border-bottom:1px solid #0a0d16;vertical-align:middle;}
+tr:hover td{background:#0d1420;}
+.ci{background:#0a0d16;border:1px solid #334155;border-radius:3px;padding:3px 5px;color:#f1f5f9;font-size:9px;outline:none;width:100%;}
+.ci:focus{border-color:#5b5fef;}
+.fb{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:11px;}
+.pw{height:5px;background:#1a2035;border-radius:4px;overflow:hidden;display:none;margin-bottom:4px;}
+.pf{height:100%;background:linear-gradient(90deg,#5b5fef,#a855f7);transition:width 0.3s;width:0%;}
+.pst{font-size:10px;color:#818cf8;min-height:14px;margin-bottom:7px;display:none;font-family:monospace;}
+.oi{background:#0d1117;border:1px solid #1a2035;border-radius:8px;padding:9px 11px;display:flex;gap:8px;align-items:center;margin-bottom:5px;text-decoration:none;color:inherit;}
+.oi:hover{border-color:#5b5fef;}
+.rk{width:20px;height:20px;border-radius:4px;background:#1a2035;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#64748b;flex-shrink:0;}
+.rk.g{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;}
+.rk.s{background:linear-gradient(135deg,#94a3b8,#64748b);color:#fff;}
+.rk.b{background:linear-gradient(135deg,#b45309,#92400e);color:#fff;}
+.th{width:68px;height:38px;border-radius:4px;object-fit:cover;flex-shrink:0;background:#1a2035;}
+.tph{width:68px;height:38px;border-radius:4px;background:#1a2035;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#4a5568;}
+.oin{flex:1;min-width:0;}
+.ott{font-size:11px;font-weight:600;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
+.otg{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
+.otg span{font-size:9px;padding:1px 5px;border-radius:3px;background:#1a2035;color:#94a3b8;}
+.ost{text-align:right;flex-shrink:0;min-width:88px;}
+.ov{font-size:13px;font-weight:800;color:#f1f5f9;margin-bottom:2px;}
+.cb{display:inline-block;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:800;color:#fff;white-space:nowrap;}
+.oav{font-size:9px;color:#4a5568;margin-top:1px;}
+.ptabs{display:flex;gap:2px;border-bottom:1px solid #1a2035;margin-bottom:11px;flex-wrap:wrap;}
+.ptab{background:none;border:none;border-bottom:2px solid transparent;color:#64748b;padding:7px 11px;font-size:11px;font-weight:600;cursor:pointer;}
+.ptab.on{border-bottom-color:#5b5fef;color:#f1f5f9;}
+.acc{background:#0d1117;border:1px solid #1a2035;border-radius:8px;overflow:hidden;margin-bottom:6px;}
+.ach{padding:9px 11px;cursor:pointer;display:flex;align-items:center;gap:7px;}
+.ach:hover{background:#111622;}
+.acb{border-top:1px solid #1a2035;padding:7px 11px;display:none;}
+.sv{display:flex;gap:7px;align-items:center;padding:6px 8px;border-radius:5px;background:#07090f;border:1px solid #1a2035;margin-bottom:5px;text-decoration:none;color:inherit;}
+.sv:hover{border-color:#5b5fef;}
+.eb{background:#07090f;border:1px solid #1a2035;border-radius:6px;padding:9px;font-size:9px;color:#64748b;font-family:monospace;max-height:150px;overflow-y:auto;white-space:pre;margin-top:6px;}
+.vc{background:#111827;border:2px solid #5b5fef;border-radius:9px;padding:13px;margin-top:9px;}
+.cc{background:#0d1117;border:1px solid #1a2035;border-radius:8px;padding:9px;position:relative;}
+.cc.done{border-color:#14532d;}.cc.err{border-color:#450a0a;}.cc.sel{border-color:#5b5fef;}
+.cc-chk{position:absolute;top:7px;right:7px;width:14px;height:14px;cursor:pointer;accent-color:#5b5fef;}
+.ccn{font-size:11px;font-weight:700;color:#f1f5f9;margin-bottom:2px;padding-right:20px;}
+.ccs{font-size:9px;color:#4a5568;margin-bottom:4px;}
+.ccb{width:100%;border:none;border-radius:4px;padding:5px 0;font-size:10px;font-weight:600;cursor:pointer;margin-top:4px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;}
+.ctf{background:#1e3a5f;color:#60a5fa;}.ctfl{background:#1a2e1a;color:#4ade80;}
+.cta{background:#2d1b4e;color:#c084fc;}.ctv{background:#3b2400;color:#fb923c;}
+.ctr{background:#1a2535;color:#94a3b8;}.ctx{background:#1a2035;color:#64748b;}
+.ctb{display:inline-block;font-size:8px;padding:2px 5px;border-radius:6px;font-weight:700;}
+.rb-h{background:#14532d;color:#4ade80;}.rb-m{background:#3b2800;color:#fb923c;}
+.rb-l{background:#3b2000;color:#f59e0b;}.rb-o{background:#450a0a;color:#f87171;}
+.rb{display:inline-block;font-size:8px;padding:2px 4px;border-radius:3px;font-weight:700;}
+.fb-badge{background:#2d1b4e;color:#c084fc;font-size:8px;padding:1px 4px;border-radius:3px;font-weight:700;}
+.mspanel{background:#07090f;border:1px solid #1a2035;border-radius:7px;padding:11px;margin-bottom:9px;display:none;}
+.mspanel.on{display:block;}
+.mscols{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:11px;}
+.msi{display:flex;align-items:center;gap:6px;font-size:10px;color:#94a3b8;cursor:pointer;padding:2px 0;}
+.msi:hover{color:#f1f5f9;}
+.msi input{accent-color:#5b5fef;width:12px;height:12px;cursor:pointer;flex-shrink:0;}
+.import-drop{background:#07090f;border:2px dashed #1a2035;border-radius:7px;padding:16px;text-align:center;cursor:pointer;margin-bottom:9px;}
+.import-drop:hover{border-color:#5b5fef;}
+#toast{position:fixed;bottom:18px;right:18px;background:#22c55e;color:#fff;padding:9px 14px;border-radius:7px;font-size:11px;font-weight:600;display:none;z-index:9999;}
+.hookcard{background:#0d1117;border:1px solid #1a2035;border-radius:8px;padding:10px 12px;margin-bottom:6px;}
+.hookcard:hover{border-color:#5b5fef33;}
+.hooktxt{font-size:12px;color:#f1f5f9;line-height:1.4;margin-bottom:5px;}
+.hookmeta{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.cat-pill{font-size:8px;padding:2px 6px;border-radius:8px;font-weight:700;}
+.scriptbox{background:#07090f;border:1px solid #1a2035;border-radius:8px;padding:12px;margin-top:8px;}
+.scriptsec{margin-bottom:10px;}
+.scriptsec .lbl{color:#818cf8;}
+.scripttxt{font-size:12px;color:#e2e8f0;line-height:1.6;white-space:pre-wrap;}
+.badge-ct{display:inline-block;background:#5b5fef;color:#fff;border-radius:8px;font-size:8px;padding:0 5px;font-weight:700;margin-left:3px;}
+.simora-fmt{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.simora-opt{background:#0d1117;border:1px solid #1a2035;border-radius:6px;padding:8px 10px;cursor:pointer;flex:1;min-width:140px;}
+.simora-opt:hover{border-color:#5b5fef;}
+.simora-opt.sel{border-color:#5b5fef;background:#5b5fef11;}
+.simora-opt .ti{font-size:10px;font-weight:700;color:#f1f5f9;margin-bottom:2px;}
+.simora-opt .td{font-size:9px;color:#64748b;}
+.broll-item{background:#0d1117;border:1px solid #1a2035;border-radius:6px;padding:7px 9px;margin-bottom:4px;font-size:10px;color:#94a3b8;display:flex;gap:6px;align-items:center;}
+.cluster-card{background:#0d1117;border:1px solid #1a2035;border-radius:8px;padding:11px;margin-bottom:7px;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:#07090f;}
+::-webkit-scrollbar-thumb{background:#1a2035;border-radius:3px;}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-inner">
+  <div class="logo">CIA-1</div>
+  <div><div class="nt">SupplyMate Intelligence V2</div><div class="ns">Content + Hook + Script Engine</div></div>
+  <div class="tabs">
+    <button class="tab on" onclick="go('db')">Database</button>
+    <button class="tab" onclick="go('imp')">Import</button>
+    <button class="tab" onclick="go('add')">Add Creator</button>
+    <button class="tab" onclick="go('out')">Outlier Finder</button>
+    <button class="tab" onclick="go('res')">Results</button>
+    <button class="tab" onclick="go('scr')">Scripts + Hooks</button>
+    <button class="tab" onclick="go('exp')">Export</button>
+    <button class="tab" onclick="go('set')">Settings</button>
+  </div>
+  <div class="nr" id="NC">Loading…</div>
+</div>
+</nav>
+<div class="main">
+
+
+<!-- DATABASE -->
+<div class="pg on" id="pg-db">
+  <div class="srow" id="dbSR"></div>
+  <div class="card" style="padding:10px 14px;margin-bottom:8px">
+    <div class="fb" style="margin-bottom:0">
+      <input class="inp" id="dbQ" placeholder="Search name, niche, URL…" style="max-width:220px" oninput="rDB()">
+      <select class="sel" id="dbPl" onchange="rDB()"><option value="">All platforms</option><option value="yt">Has YouTube</option><option value="ig">Has Instagram</option><option value="li">Has LinkedIn</option></select>
+      <select class="sel" id="dbLg" onchange="rDB()"><option value="">All languages</option><option value="English">English</option><option value="Hindi">Hindi</option><option value="Hinglish">Hinglish</option></select>
+      <select class="sel" id="dbTi" onchange="rDB()"><option value="">All tiers</option><option value="Tier 1">Tier 1</option><option value="Tier 2">Tier 2</option><option value="Tier 3">Tier 3</option></select>
+      <button class="btn" onclick="cDB()">Clear</button>
+      <span style="margin-left:auto;font-size:11px;color:#4a5568" id="dbC"></span>
+    </div>
+  </div>
+  <div class="tw"><table><thead><tr>
+    <th>#</th><th>Name</th><th>YouTube URL</th><th>YT Fol</th><th>Instagram URL</th><th>IG Fol</th><th>Facebook URL</th><th>FB Fol</th><th>LinkedIn URL</th><th>LI Fol</th><th>Niche</th><th>Sub-niche</th><th>Max Fol</th><th>Dominant</th><th>Avg Views</th><th>Tier</th><th>Type</th><th>Lang</th><th>Notes</th><th></th>
+  </tr></thead><tbody id="dbB"></tbody></table></div>
+</div>
+
+<!-- IMPORT -->
+<div class="pg" id="pg-imp">
+  <div class="card">
+    <div class="h2">📥 Import Database</div>
+    <div class="sub">Upload CSV/Excel or paste from Google Sheets. Only Name + Primary Focus required.</div>
+    <div style="background:#07090f;border:1px solid #1a2035;border-radius:6px;padding:10px;margin-bottom:12px;font-size:10px;color:#64748b;font-family:monospace;overflow-x:auto;white-space:nowrap">
+      Channel Name* | Primary Focus* | YouTube URL | YT Followers | Instagram URL | Insta Followers | Facebook URL | FB Followers | LinkedIn URL | LinkedIn Followers | Sub-niche | Priority Tier | Content Type | Language | Notes
+    </div>
+    <div class="lbl">Method 1 — File Upload</div>
+    <div class="import-drop" id="dz" onclick="document.getElementById('fi').click()" ondragover="ev.preventDefault();this.style.borderColor='#5b5fef'" ondragleave="this.style.borderColor='#1a2035'" ondrop="doDrop(event)">
+      <div style="font-size:24px;margin-bottom:6px">📁</div>
+      <div style="color:#94a3b8;font-weight:600;font-size:12px">Drop CSV or Excel file here, or click to browse</div>
+    </div>
+    <input type="file" id="fi" accept=".csv,.xlsx,.xls" style="display:none" onchange="doFile(this.files[0])">
+    <div class="lbl" style="margin-top:12px">Method 2 — Paste from Google Sheets</div>
+    <textarea class="inp" id="pa" rows="5" placeholder="Select all in Google Sheet (Ctrl+A), copy (Ctrl+C), paste here…" style="font-family:monospace;font-size:11px;resize:vertical" oninput="doPaste()"></textarea>
+    <div id="impPrev" style="display:none;margin-top:12px">
+      <div class="row ac" style="margin-bottom:8px">
+        <div style="font-size:13px;font-weight:700;color:#f1f5f9" id="impSum"></div>
+        <div style="margin-left:auto;display:flex;gap:7px">
+          <select class="sel" id="impMode"><option value="skip">Skip duplicates</option><option value="over">Overwrite duplicates</option></select>
+          <button class="btns" onclick="doImport()">✓ Import</button>
+          <button class="btnd" onclick="cancelImp()">✕ Cancel</button>
+        </div>
+      </div>
+      <div style="max-height:260px;overflow-y:auto;border-radius:7px;border:1px solid #1a2035">
+        <table style="width:100%;border-collapse:collapse;font-size:11px">
+          <thead><tr><th style="background:#0a0d16;color:#64748b;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase">Status</th><th style="background:#0a0d16;color:#64748b;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase">Name</th><th style="background:#0a0d16;color:#64748b;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase">Focus</th><th style="background:#0a0d16;color:#64748b;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase">YouTube</th><th style="background:#0a0d16;color:#64748b;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase">Tier</th></tr></thead>
+          <tbody id="impB"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CREATOR -->
+<div class="pg" id="pg-add">
+  <div class="card">
+    <div class="h2">➕ Add New Creator</div>
+    <div class="sub">Paste the YouTube URL for best results — uses Direct URL mode which saves ~60% API quota.</div>
+    <div class="row">
+      <div class="col f1"><div class="lbl">Creator Name *</div><input class="inp" id="acN" placeholder="e.g. Rahul Malodia"></div>
+      <div class="col f1"><div class="lbl">Niche *</div><input class="inp" id="acNi" placeholder="e.g. MSME Coaches"></div>
+      <div class="col f1"><div class="lbl">Sub-niche</div><input class="inp" id="acSn" placeholder="e.g. Banya Business"></div>
+    </div>
+    <div class="row">
+      <div class="col f1"><div class="lbl">YouTube URL ← paste exact URL here</div><input class="inp" id="acY" placeholder="https://youtube.com/@handle"></div>
+      <div class="col f1"><div class="lbl">Instagram URL</div><input class="inp" id="acI" placeholder="https://instagram.com/handle"></div>
+      <div class="col f1"><div class="lbl">LinkedIn URL</div><input class="inp" id="acL" placeholder="https://linkedin.com/in/handle"></div>
+    </div>
+    <div class="row">
+      <div class="col" style="width:130px"><div class="lbl">Tier</div><select class="sel inp" id="acT"><option value="Tier 1">Tier 1</option><option value="Tier 2" selected>Tier 2</option><option value="Tier 3">Tier 3</option></select></div>
+      <div class="col" style="width:160px"><div class="lbl">Content Type</div><select class="sel inp" id="acCT"><option value="Founder">🎤 Founder</option><option value="Faceless">🎬 Faceless</option><option value="AI Avatar">🤖 AI Avatar</option><option value="Voiceover">🎙️ Voiceover</option><option value="Repurposed">📱 Repurposed</option></select></div>
+      <div class="col" style="width:120px"><div class="lbl">Language</div><select class="sel inp" id="acLg"><option value="English">English</option><option value="Hindi">Hindi</option><option value="Hinglish">Hinglish</option></select></div>
+      <div class="col f1"><div class="lbl">Notes</div><input class="inp" id="acNo" placeholder="Why this creator matters…"></div>
+    </div>
+    <div class="row ac">
+      <button class="btnp" id="acBtn" onclick="doSearch()">🔍 Search &amp; Verify on YouTube</button>
+      <span style="font-size:11px;color:#4a5568" id="acSt">Set your YouTube API key in Settings first</span>
+    </div>
+  </div>
+  <div id="vcSec" style="display:none">
+    <div class="vc" id="vcCard"></div>
+    <div class="row" style="margin-top:8px">
+      <button class="btns" onclick="doConfirm()">✓ Confirm &amp; Add</button>
+      <button class="btnd" onclick="doReject()">✕ Wrong Creator</button>
+    </div>
+  </div>
+</div>
+
+<!-- OUTLIER FINDER -->
+<div class="pg" id="pg-out">
+  <!-- Settings -->
+  <div class="card">
+    <div class="h2">⚙️ Analysis Settings</div>
+    <div class="row" style="gap:12px;flex-wrap:wrap">
+      <div class="col"><div class="lbl">Platform</div><select class="sel" id="oPl" onchange="onPl()"><option value="yt">▶ YouTube</option><option value="ig">◆ Instagram (soon)</option><option value="li">in LinkedIn (soon)</option></select></div>
+      <div class="col"><div class="lbl">Videos per creator</div><select class="sel" id="oVc"><option value="10">Last 10</option><option value="25">Last 25</option><option value="50">Last 50</option><option value="100">Last 100</option><option value="150" selected>Last 150</option><option value="999">All</option></select></div>
+      <div class="col"><div class="lbl">Video Format</div><select class="sel" id="oFmt"><option value="all">All videos</option><option value="long">Long form only</option><option value="shorts">Shorts only</option></select></div>
+      <div class="col"><div class="lbl">Date From</div><input class="inp sel" type="date" id="oDf" style="width:140px"></div>
+      <div class="col"><div class="lbl">Date To</div><input class="inp sel" type="date" id="oDt" style="width:140px"></div>
+      <div class="col"><div class="lbl">Min views</div><select class="sel" id="oMv"><option value="0">No min</option><option value="10000">10K+</option><option value="50000">50K+</option><option value="100000" selected>100K+</option><option value="500000">500K+</option><option value="1000000">1M+</option></select></div>
+      <div class="col"><div class="lbl">Outlier threshold (custom)</div><input class="inp sel" type="number" id="oOt" value="2" min="0.1" step="0.1" style="width:90px" placeholder="e.g. 1.5"></div>
+    </div>
+    <div id="plWarn" style="display:none;margin-top:8px;padding:8px;background:#1a0e00;border:1px solid #3b2200;border-radius:6px;font-size:11px;color:#fb923c"></div>
+  </div>
+  <!-- API + controls -->
+  <div class="card" style="padding:10px 14px">
+    <div class="row ac" style="margin-bottom:0">
+      <span style="font-size:11px;color:#64748b">YouTube API:</span>
+      <span id="apiSt" style="font-size:10px;padding:2px 7px;border-radius:8px;background:#1a2035;color:#4a5568;font-weight:700;margin-left:4px">Not set</span>
+      <button class="btn" style="padding:3px 8px;font-size:10px;margin-left:4px" onclick="go('set')">⚙️ Settings</button>
+      <span style="font-size:11px;color:#4a5568;margin-left:10px">💡 Direct URL mode — ~60% less quota</span>
+    </div>
+  </div>
+  <!-- Action row -->
+  <div class="row ac" style="margin-bottom:12px;flex-wrap:wrap;gap:6px">
+    <button class="btnp" id="selBtn" onclick="doSel()" disabled style="display:none">▶ Analyze Selected (<span id="selC">0</span>)</button>
+    <button class="btnp" id="allBtn" onclick="doAll()" disabled>▶ Analyze All YouTube</button>
+    <button class="btnd" id="stopBtn" onclick="doStop()" style="display:none">⏹ Stop</button>
+    <button class="btn" onclick="selTier('Tier 1')">⭐ Tier 1 Only</button>
+    <button class="btn" onclick="selTier('Tier 2')">★ Tier 2 Only</button>
+    <button class="btn" onclick="selAll()">☑ Select All</button>
+    <button class="btn" onclick="deselAll()">☐ Deselect All</button>
+    <span style="font-size:11px;color:#64748b" id="oSt">Set your YouTube API key in Settings to begin</span>
+  </div>
+  <div class="pst" id="pSt"></div>
+  <div class="pw" id="pW"><div class="pf" id="pF"></div></div>
+  <!-- Legend -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+    <span style="font-size:10px;color:#64748b;font-weight:600">Tiers:</span>
+    <span style="font-size:10px;color:#94a3b8;display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;border-radius:50%;background:#dc2626;display:inline-block"></span>🔴 Mega 10×+</span>
+    <span style="font-size:10px;color:#94a3b8;display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;border-radius:50%;background:#ea580c;display:inline-block"></span>🟠 Major 5–10×</span>
+    <span style="font-size:10px;color:#94a3b8;display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;border-radius:50%;background:#ca8a04;display:inline-block"></span>🟡 Solid 2–5×</span>
+    <span style="font-size:10px;color:#94a3b8;display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;border-radius:50%;background:#15803d;display:inline-block"></span>🟢 Above Avg 1.5–2×</span>
+  </div>
+  <!-- Stats -->
+  <div class="srow" id="oSR" style="display:none">
+    <div class="sbox"><div class="sn" id="stV">0</div><div class="sl">Videos</div></div>
+    <div class="sbox"><div class="sn" id="stMe" style="color:#dc2626">0</div><div class="sl">🔴 Mega</div></div>
+    <div class="sbox"><div class="sn" id="stMa" style="color:#ea580c">0</div><div class="sl">🟠 Major</div></div>
+    <div class="sbox"><div class="sn" id="stSo" style="color:#ca8a04">0</div><div class="sl">🟡 Solid</div></div>
+    <div class="sbox"><div class="sn" id="stAb" style="color:#15803d">0</div><div class="sl">🟢 Above</div></div>
+    <div class="sbox"><div class="sn" id="stDo">0</div><div class="sl">Creators done</div></div>
+    <div class="sbox"><div class="sn" id="stFl" style="color:#fb923c">0</div><div class="sl">⚠ Flagged</div></div>
+  </div>
+  <!-- Result tabs -->
+  <div class="ptabs" id="oTabs" style="display:none">
+    <button class="ptab on" id="ot-all" onclick="oTab('all')">🔥 All Videos <span id="otcA">(0)</span></button>
+    <button class="ptab" id="ot-cr" onclick="oTab('cr')">📊 By Creator <span id="otcC">(0)</span></button>
+    <button class="ptab" id="ot-fl" onclick="oTab('fl')">⚠ Flagged <span id="otcF">(0)</span></button>
+  </div>
+  <!-- Result filters -->
+  <div id="oFB" style="display:none">
+    <div class="fb" style="margin-bottom:6px">
+      <select class="sel" id="fSort" onchange="rOut()"><option value="mult">Highest multiplier</option><option value="views">Highest views</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="rel">Highest relevance</option></select>
+      <input class="sel" id="fTitle" placeholder="Search title…" oninput="rOut()" style="width:160px">
+      <input class="sel" id="fCr" placeholder="Search creator…" oninput="rOut()" style="width:140px">
+      <button class="btn" id="mfBtn" onclick="toggleMF()">▼ More Filters</button>
+      <button class="btn" style="color:#f87171" onclick="clearF()">✕ Clear</button>
+      <span style="margin-left:auto;font-size:11px;color:#4a5568" id="fCnt"></span>
+    </div>
+    <!-- More filters panel -->
+    <div class="mspanel" id="mfPanel">
+      <div class="mscols">
+        <div class="mscol"><div class="lbl">Category</div><div id="fCat"></div></div>
+        <div class="mscol"><div class="lbl">Language</div><div id="fLang"></div></div>
+        <div class="mscol"><div class="lbl">Content Type</div><div id="fCT"></div></div>
+        <div class="mscol"><div class="lbl">Priority Tier</div><div id="fTier"></div></div>
+        <div class="mscol"><div class="lbl">Niche</div><div id="fNiche" style="max-height:120px;overflow-y:auto"></div></div>
+        <div class="mscol"><div class="lbl">Relevance</div><div id="fRel"></div></div>
+        <div class="mscol"><div class="lbl">Format</div><div id="fFmt"></div></div>
+        <div class="mscol">
+          <div class="lbl">Min Views</div>
+          <select class="sel" id="fMv" onchange="rOut()" style="width:100%;margin-bottom:8px"><option value="0">Any</option><option value="10000">10K+</option><option value="50000">50K+</option><option value="100000">100K+</option><option value="500000">500K+</option><option value="1000000">1M+</option></select>
+          <div class="lbl">Published After</div>
+          <input class="inp" type="date" id="fDf" onchange="rOut()" style="font-size:11px;padding:5px 7px;margin-bottom:8px">
+          <div class="lbl">Published Before</div>
+          <input class="inp" type="date" id="fDt2" onchange="rOut()" style="font-size:11px;padding:5px 7px">
+        </div>
+        <div class="mscol">
+          <div class="lbl">Multiplier Range</div>
+          <div style="display:flex;gap:5px;margin-bottom:8px">
+            <input class="inp" type="number" id="fMultMin" placeholder="Min ×" min="1" step="0.5" onchange="rOut()" style="font-size:11px;padding:5px 7px">
+            <input class="inp" type="number" id="fMultMax" placeholder="Max ×" min="1" step="0.5" onchange="rOut()" style="font-size:11px;padding:5px 7px">
+          </div>
+          <div class="lbl">Max Views</div>
+          <select class="sel" id="fMvMax" onchange="rOut()" style="width:100%;margin-bottom:8px"><option value="0">No max</option><option value="100000">Under 100K</option><option value="500000">Under 500K</option><option value="1000000">Under 1M</option><option value="5000000">Under 5M</option></select>
+          <div class="lbl">Min Channel Avg Views</div>
+          <select class="sel" id="fAvgMin" onchange="rOut()" style="width:100%"><option value="0">Any avg</option><option value="10000">Avg 10K+</option><option value="50000">Avg 50K+</option><option value="100000">Avg 100K+</option><option value="500000">Avg 500K+</option></select>
+        </div>
+        <div class="mscol">
+          <div class="lbl">Custom Keyword (title/creator/niche)</div>
+          <input class="inp" id="fKw" placeholder="e.g. supply chain" oninput="rOut()" style="font-size:11px;padding:5px 7px;margin-bottom:8px">
+          <div class="lbl">Exclude Keywords (comma separated)</div>
+          <input class="inp" id="fExKw" placeholder="e.g. shorts, cooking" oninput="rOut()" style="font-size:11px;padding:5px 7px;margin-bottom:8px">
+          <div class="lbl">Min Relevance Score (0–100)</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="range" id="fRelSlider" min="0" max="100" value="0" oninput="document.getElementById('fRelVal').textContent=this.value;rOut()" style="flex:1;accent-color:#5b5fef">
+            <span id="fRelVal" style="font-size:11px;color:#818cf8;min-width:25px">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Panels -->
+  <div id="op-all">
+    <div id="oEmp" style="background:#0d1117;border:1px dashed #1a2035;border-radius:8px;padding:36px;text-align:center;color:#4a5568">
+      <div style="font-size:24px;margin-bottom:6px">🎯</div>
+      <div style="font-size:13px;font-weight:600;color:#64748b;margin-bottom:3px" id="oEmpT">No results yet</div>
+      <div style="font-size:11px" id="oEmpM">Configure settings above, select creators, and click Analyze.</div>
+    </div>
+    <div id="oList"></div>
+  </div>
+  <div id="op-cr" style="display:none"><div id="oAcc"></div></div>
+  <div id="op-fl" style="display:none">
+    <div style="font-size:11px;color:#fb923c;padding:8px;background:#1a0e00;border-radius:6px;border:1px solid #3b2200;margin-bottom:8px">⚠ These creators may be wrong matches. Go to Database tab and fix their YouTube URL.</div>
+    <div id="oFlagL"></div>
+  </div>
+  <!-- Quick Analysis Panel -->
+  <div class="card" id="qaPanel" style="margin-top:18px;border-color:#5b5fef22">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div><div class="h2" style="margin-bottom:0">⚡ Quick Analysis — Single Creator</div><div style="font-size:11px;color:#4a5568;margin-top:2px">Pick one creator, analyze, see results instantly. Saved to Results tab automatically.</div></div>
+      <button class="btn" id="qaClearBtn" onclick="qaClear()" style="display:none;color:#f87171">✕ Clear Results</button>
+    </div>
+    <div class="row ac" style="margin-bottom:10px">
+      <div class="f1" style="position:relative">
+        <input class="inp" id="qaSearch" placeholder="Type creator name to search…" oninput="qaFilter()" autocomplete="off" style="padding-right:30px">
+        <div id="qaDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#0d1117;border:1px solid #5b5fef;border-radius:0 0 7px 7px;z-index:50;max-height:200px;overflow-y:auto"></div>
+      </div>
+      <button class="btnp" id="qaRunBtn" onclick="qaRun()" disabled style="white-space:nowrap">▶ Analyze</button>
+      <span style="font-size:11px;color:#64748b" id="qaSt">Search and select a creator above</span>
+    </div>
+    <!-- Quick result display -->
+    <div id="qaResult" style="display:none"></div>
+    <!-- Quick result filters -->
+    <div id="qaFB" style="display:none" class="fb" style="margin-top:8px">
+      <select class="sel" id="qaSort" onchange="qaRender()"><option value="mult">Highest multiplier</option><option value="views">Highest views</option><option value="newest">Newest first</option><option value="rel">Highest relevance</option></select>
+      <input class="sel" id="qaFTitle" placeholder="Search title…" oninput="qaRender()" style="width:150px">
+      <select class="sel" id="qaFCat" onchange="qaRender()"><option value="">All categories</option><option value="mega">🔴 Mega</option><option value="major">🟠 Major</option><option value="solid">🟡 Solid</option><option value="above">🟢 Above</option></select>
+      <select class="sel" id="qaFmt" onchange="qaRender()"><option value="">All formats</option><option value="shorts">⚡ Shorts only</option><option value="long">🎬 Long only</option></select>
+      <select class="sel" id="qaFRel" onchange="qaRender()"><option value="">All relevance</option><option value="high">🟢 High</option><option value="medium">🟡 Medium</option><option value="low">🟠 Low</option><option value="offtopic">🔴 Off-topic</option></select>
+      <span style="margin-left:auto;font-size:11px;color:#4a5568" id="qaFCnt"></span>
+    </div>
+    <div id="qaList"></div>
+  </div>
+
+  <!-- Creator grid -->
+  <div style="margin-top:14px">
+    <div class="fb" style="margin-bottom:7px;flex-wrap:wrap;gap:6px">
+      <span style="font-size:11px;color:#64748b;font-weight:600" id="oGL">YouTube creators</span>
+      <!-- Task 3: Pre-analysis grid filters -->
+      <input class="sel" id="oGQ" placeholder="Search name…" oninput="rGrid()" style="width:140px">
+      <select class="sel" id="oGNiche" onchange="rGrid()"><option value="">All niches</option></select>
+      <select class="sel" id="oGTier" onchange="rGrid()"><option value="">All tiers</option><option value="Tier 1">⭐ Tier 1</option><option value="Tier 2">★ Tier 2</option><option value="Tier 3">☆ Tier 3</option></select>
+      <select class="sel" id="oGCT" onchange="rGrid()"><option value="">All types</option><option value="Founder">🎤 Founder</option><option value="Faceless">🎬 Faceless</option></select>
+      <select class="sel" id="oGLang" onchange="rGrid()"><option value="">All languages</option><option value="English">English</option><option value="Hindi">Hindi</option><option value="Hinglish">Hinglish</option></select>
+      <select class="sel" id="oGPlat" onchange="rGrid()"><option value="">Any platform</option><option value="yt">Has YouTube</option></select>
+      <button class="btn" onclick="cGridF()" style="font-size:11px">Clear</button>
+      <span style="margin-left:auto;font-size:11px;color:#4a5568" id="oGCnt"></span>
+    </div>
+    <div class="grid" id="oGrid"></div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="pg" id="pg-res">
+  <div class="srow" id="rSR"></div>
+  <div class="ptabs" id="resTabs">
+    <button class="ptab on" onclick="resTab('all')">All Results</button>
+    <button class="ptab" onclick="resTab('recent')">Recent Results</button>
+    <button class="ptab" onclick="resTab('creators')">By Creator</button>
+  </div>
+
+  <!-- ALL RESULTS -->
+  <div id="resp-all">
+    <div class="card" style="padding:10px 14px;margin-bottom:8px">
+      <div class="fb" style="margin-bottom:0">
+        <select class="sel" id="rSort" onchange="rRes()"><option value="mult">Highest multiplier</option><option value="views">Highest views</option><option value="newest">Newest first</option><option value="rel">Highest relevance</option><option value="scanned">Most recently scanned</option></select>
+        <input class="sel" id="rTQ" placeholder="Search title…" oninput="rRes()" style="width:160px">
+        <input class="sel" id="rCQ" placeholder="Search creator…" oninput="rRes()" style="width:140px">
+        <button class="btn" onclick="copyResExcel('all')">📋 Copy to Excel</button>
+        <button class="btnd" style="margin-left:auto;font-size:11px;padding:5px 10px" onclick="clearAll()">🗑 Clear All Results</button>
+      </div>
+    </div>
+    <div id="rList"></div>
+  </div>
+
+  <!-- RECENT RESULTS -->
+  <div id="resp-recent" style="display:none">
+    <div class="card" style="padding:10px 14px;margin-bottom:8px">
+      <div class="fb" style="margin-bottom:0">
+        <div class="col"><div class="lbl">Show last</div>
+          <select class="sel" id="recentN" onchange="rRecent()">
+            <option value="10">10 results</option>
+            <option value="25" selected>25 results</option>
+            <option value="50">50 results</option>
+            <option value="100">100 results</option>
+            <option value="all">All results</option>
+          </select>
+        </div>
+        <div class="col"><div class="lbl">Or from date</div><input class="inp sel" type="date" id="recentFrom" onchange="rRecent()" style="width:140px"></div>
+        <div class="col"><div class="lbl">To date</div><input class="inp sel" type="date" id="recentTo" onchange="rRecent()" style="width:140px"></div>
+        <button class="btn" onclick="document.getElementById('recentFrom').value='';document.getElementById('recentTo').value='';rRecent()" style="align-self:flex-end">Clear dates</button>
+        <button class="btn" onclick="copyResExcel('recent')" style="align-self:flex-end">📋 Copy to Excel</button>
+        <span style="margin-left:auto;font-size:10px;color:#4a5568;align-self:flex-end" id="recentCnt"></span>
+      </div>
+    </div>
+    <div id="recentList"></div>
+  </div>
+
+  <!-- BY CREATOR -->
+  <div id="resp-creators" style="display:none">
+    <div class="card" style="margin-bottom:10px">
+      <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:10px">Saved Creator Results</div>
+      <div class="grid" id="rCards"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT -->
+<div class="pg" id="pg-exp">
+  <div class="card">
+    <div class="h2">📤 Export to Google Sheet</div>
+    <div class="sub">Click Copy → open your Google Sheet → click row 3 → Cmd+V (Mac) or Ctrl+V (Windows)</div>
+    <div class="row ac" style="margin-bottom:8px">
+      <select class="sel" id="expF" onchange="rExp()"><option value="">All creators</option><option value="sheet">Original sheet only</option><option value="added">Added by me only</option><option value="Tier 1">Tier 1 only</option><option value="Tier 2">Tier 2 only</option></select>
+      <button class="btnp" onclick="copyExp()">📋 Copy to Clipboard</button>
+      <span style="font-size:11px;color:#4a5568" id="expC"></span>
+    </div>
+    <div class="lbl">Columns: Channel Name · YouTube URL · YT Followers · Instagram URL · Insta Followers · Facebook URL · FB Followers · LinkedIn URL · LinkedIn Followers · Niche · Sub-niche · Max Followers · Dominant Social · Avg Views · Priority Tier · Notes</div>
+    <div class="eb" id="expPrev"></div>
+  </div>
+  <div class="card" id="oExpCard" style="display:none">
+    <div class="h2">🔥 Export Outlier Videos</div>
+    <div class="row ac" style="margin-bottom:7px"><button class="btnp" onclick="copyOExp()">📋 Copy Outlier Videos</button><span style="font-size:11px;color:#4a5568" id="oExpC"></span></div>
+    <div class="eb" id="oExpPrev"></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="pg" id="pg-set">
+  <div class="card">
+    <div class="h2">🔑 API Keys</div>
+    <div class="sub">Keys stored locally in your browser. Never sent anywhere else.</div>
+    <!-- YouTube -->
+    <div style="background:#07090f;border:1px solid #1a2035;border-radius:7px;padding:12px;margin-bottom:10px">
+      <div class="row ac" style="margin-bottom:6px">
+        <div style="font-size:13px;font-weight:700;color:#f1f5f9">▶ YouTube Data API v3</div>
+        <span id="ytBadge" style="font-size:10px;padding:2px 7px;border-radius:8px;background:#1a2035;color:#4a5568;font-weight:700;margin-left:7px">Not set</span>
+      </div>
+      <div style="font-size:11px;color:#4a5568;margin-bottom:8px">Get free key: <a href="https://console.cloud.google.com" target="_blank" style="color:#818cf8">console.cloud.google.com</a> → Create Project → Enable YouTube Data API v3 → Credentials → Create API Key. Free quota: 10,000 units/day. Resets midnight PT.</div>
+      <div class="row ac">
+        <input class="inp f1" id="ytInp" type="password" placeholder="AIza…" style="max-width:380px">
+        <button class="btn" onclick="tv('ytInp')">Show</button>
+        <button class="btns" onclick="saveK('yt')">Save</button>
+        <button class="btnd" onclick="clearK('yt')">Clear</button>
+      </div>
+    </div>
+    <!-- Meta -->
+    <div style="background:#07090f;border:1px solid #1a2035;border-radius:7px;padding:12px;margin-bottom:10px">
+      <div class="row ac" style="margin-bottom:6px">
+        <div style="font-size:13px;font-weight:700;color:#f1f5f9">📘 Meta / Facebook Graph API</div>
+        <span style="font-size:10px;padding:2px 7px;border-radius:8px;background:#1a2035;color:#64748b;font-weight:700;margin-left:7px">Coming soon</span>
+      </div>
+      <div style="font-size:11px;color:#4a5568;margin-bottom:8px">Will enable Instagram and Facebook post engagement analysis. Get at: <a href="https://developers.facebook.com" target="_blank" style="color:#818cf8">developers.facebook.com</a> → Create App → Graph API → Page Access Token.</div>
+      <div class="row ac"><input class="inp f1" id="metaInp" type="password" placeholder="Meta Page Access Token…" style="max-width:380px"><button class="btn" onclick="tv('metaInp')">Show</button><button class="btns" onclick="saveK('meta')">Save</button><button class="btnd" onclick="clearK('meta')">Clear</button></div>
+    </div>
+    <!-- LinkedIn -->
+    <div style="background:#07090f;border:1px solid #1a2035;border-radius:7px;padding:12px">
+      <div class="row ac" style="margin-bottom:6px">
+        <div style="font-size:13px;font-weight:700;color:#f1f5f9">in LinkedIn API</div>
+        <span style="font-size:10px;padding:2px 7px;border-radius:8px;background:#1a2035;color:#64748b;font-weight:700;margin-left:7px">Coming soon</span>
+      </div>
+      <div style="font-size:11px;color:#4a5568;margin-bottom:8px">LinkedIn API is very restricted. Only company page follower counts accessible without special partner approval. Get at: <a href="https://developer.linkedin.com" target="_blank" style="color:#818cf8">developer.linkedin.com</a></div>
+      <div class="row ac"><input class="inp f1" id="liInp" type="password" placeholder="LinkedIn Access Token…" style="max-width:380px"><button class="btn" onclick="tv('liInp')">Show</button><button class="btns" onclick="saveK('liapi')">Save</button><button class="btnd" onclick="clearK('liapi')">Clear</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="h2">🔑 Groq API (free)</div>
+    <div class="sub">Powers hook extraction, script generation, and content ideas. Free tier: 14,400 requests/day.</div>
+    <div style="font-size:10px;color:#4a5568;margin-bottom:8px">Get free key: <a href="https://console.groq.com" target="_blank" style="color:#818cf8">console.groq.com</a> → API Keys → Create Key</div>
+    <div class="row ac">
+      <input class="inp f1" id="groqInp" type="password" placeholder="gsk_…" style="max-width:380px">
+      <button class="btn" onclick="tv('groqInp')">Show</button>
+      <button class="btns" onclick="saveK('groq')">Save</button>
+      <button class="btnd" onclick="clearK('groq')">Clear</button>
+      <span id="groqBadge" style="font-size:9px;padding:2px 7px;border-radius:8px;background:#1a2035;color:#4a5568;font-weight:700">Not set</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="h2">🔑 Google API</div>
+    <div class="sub">For Google Trends and extended YouTube quota — functionality activates in V3.</div>
+    <div class="row ac">
+      <input class="inp f1" id="googleInp" type="password" placeholder="AIza…" style="max-width:380px">
+      <button class="btn" onclick="tv('googleInp')">Show</button>
+      <button class="btns" onclick="saveK('google')">Save</button>
+      <button class="btnd" onclick="clearK('google')">Clear</button>
+      <span id="googleBadge" style="font-size:9px;padding:2px 7px;border-radius:8px;background:#1a2035;color:#4a5568;font-weight:700">Not set</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="h2">🎙️ Voice Profile</div>
+    <div class="sub">Groq uses this as your tone reference for every script. Edit anytime — all future scripts update.</div>
+    <textarea class="inp" id="voiceProfile" rows="6" style="resize:vertical;font-size:11px;line-height:1.5"></textarea>
+    <button class="btns" style="margin-top:7px" onclick="saveVoiceProfile()">✓ Save Voice Profile</button>
+    <span style="font-size:10px;color:#4a5568;margin-left:7px" id="vpSt"></span>
+  </div>
+  <div class="card">
+    <div class="h2">🎬 Simora Defaults</div>
+    <div class="sub">Pre-fills the Script Generator with your preferred Simora settings.</div>
+    <div class="row">
+      <div class="col"><div class="lbl">Default Format</div><select class="sel inp" id="simoraDefFmt"><option value="talking">Talking + B-roll</option><option value="split">Split Screen</option><option value="pip">PiP</option></select></div>
+      <div class="col"><div class="lbl">Default Character</div><select class="sel inp" id="simoraDefChar"><option value="founder">Founder voice (Sparsh)</option><option value="neutral">Neutral narrator</option><option value="female">Female voice</option></select></div>
+    </div>
+    <button class="btns" onclick="saveSimoraDefaults()">✓ Save Defaults</button>
+  </div>
+  <div class="card">
+    <div class="h2">📋 Google Sheet Format Guide</div>
+    <div class="sub">Copy these column headers, paste as row 1 in your Google Sheet, fill data below, then paste back here.</div>
+    <div class="row ac" style="margin-bottom:5px"><span style="font-size:11px;color:#f1f5f9;flex:1">Hooks import format</span><button class="btn" onclick="copyHeaderRow('hooks')">📋 Copy headers</button></div>
+    <div class="row ac" style="margin-bottom:5px"><span style="font-size:11px;color:#f1f5f9;flex:1">Content Ideas format</span><button class="btn" onclick="copyHeaderRow('ideas')">📋 Copy headers</button></div>
+    <div class="row ac"><span style="font-size:11px;color:#f1f5f9;flex:1">Scripts export format</span><button class="btn" onclick="copyHeaderRow('scripts')">📋 Copy headers</button></div>
+  </div>
+  <div class="card" style="border-color:#450a0a">
+    <div class="h2" style="color:#f87171">⚠ Danger Zone</div>
+    <div class="row ac">
+      <div><div style="font-size:12px;color:#f1f5f9;font-weight:600">Reset to original 248 creators</div><div style="font-size:11px;color:#4a5568">Removes all added/imported creators. Analysis results are not affected.</div></div>
+      <button class="btnd" style="margin-left:auto" onclick="resetDB()">Reset Database</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- SCRIPTS + HOOKS -->
+<div class="pg" id="pg-scr">
+  <div class="ptabs" id="scrTabs">
+    <button class="ptab on" onclick="scrTab('lib')">Hook Library</button>
+    <button class="ptab" onclick="scrTab('gen')">Script Generator</button>
+    <button class="ptab" onclick="scrTab('my')">My Scripts <span id="myScrCnt"></span></button>
+    <button class="ptab" onclick="scrTab('clu')">Topic Clusters</button>
+    <button class="ptab" onclick="scrTab('idea')">Content Ideas</button>
+  </div>
+
+  <!-- HOOK LIBRARY -->
+  <div id="scrp-lib">
+    <div class="card">
+      <div class="h2">Hook Library</div>
+      <div class="sub">200+ pre-built hooks for SupplyMate. Import more from Google Sheet, file, or add manually.</div>
+      <div class="fb" style="margin-bottom:8px">
+        <input class="inp" id="hkQ" placeholder="Search hooks…" oninput="rHooks()" style="max-width:200px">
+        <select class="sel" id="hkCat" onchange="rHooks()"><option value="">All categories</option></select>
+        <select class="sel" id="hkLang" onchange="rHooks()"><option value="">All languages</option><option value="English">English</option><option value="Hinglish">Hinglish</option></select>
+        <button class="btn" onclick="hkFavOnly=!hkFavOnly;rHooks();" id="hkFavBtn">☆ Favourites only</button>
+        <button class="btn" onclick="toggleHkAdd()">+ Add Hook</button>
+        <span style="margin-left:auto;font-size:10px;color:#4a5568" id="hkCnt"></span>
+      </div>
+      <div id="hkAddForm" style="display:none;background:#07090f;border:1px solid #1a2035;border-radius:7px;padding:10px;margin-bottom:9px">
+        <div class="row">
+          <textarea class="inp f1" id="hkAddTxt" placeholder="Type the hook text…" rows="2" style="resize:vertical"></textarea>
+        </div>
+        <div class="row ac">
+          <select class="sel" id="hkAddCat"></select>
+          <select class="sel" id="hkAddLang"><option value="English">English</option><option value="Hinglish">Hinglish</option></select>
+          <button class="btns" onclick="addHookManual()">✓ Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="h2">Import Hooks</div>
+      <div class="sub">Paste from Google Sheet (tab-separated: Hook Text, Category, Language, Source, Notes) or upload CSV/Excel.</div>
+      <textarea class="inp" id="hkPaste" rows="4" placeholder="Paste rows from Google Sheet here…" style="font-family:monospace;font-size:10px;resize:vertical" oninput="doHkPaste()"></textarea>
+      <div class="row ac" style="margin-top:7px">
+        <div class="import-drop" style="flex:1;padding:10px;margin-bottom:0" onclick="document.getElementById('hkFile').click()">
+          <div style="font-size:10px;color:#94a3b8">📁 Or click to upload CSV/Excel</div>
+        </div>
+        <input type="file" id="hkFile" accept=".csv,.xlsx,.xls" style="display:none" onchange="doHkFile(this.files[0])">
+      </div>
+      <div id="hkImpPrev" style="display:none;margin-top:9px">
+        <div class="row ac"><span style="font-size:11px;color:#f1f5f9;font-weight:700" id="hkImpSum"></span><button class="btns" onclick="confirmHkImport()" style="margin-left:auto">✓ Import All</button><button class="btnd" onclick="cancelHkImport()">✕ Cancel</button></div>
+      </div>
+    </div>
+    <div id="hkList"></div>
+  </div>
+
+  <!-- SCRIPT GENERATOR -->
+  <div id="scrp-gen" style="display:none">
+    <div class="card">
+      <div class="h2">Script Generator</div>
+      <div class="sub">Generate a SupplyMate-voice script from an outlier, a topic, or a pasted transcript.</div>
+      <div class="row">
+        <div class="col f1"><div class="lbl">Topic / Idea</div><input class="inp" id="sgTopic" placeholder="e.g. How a hospital saved 3L on uniform procurement"></div>
+        <div class="col" style="width:170px"><div class="lbl">Content Format</div><select class="sel inp" id="sgFormat">
+          <option value="AI Storytelling">AI Storytelling</option>
+          <option value="Case Study">Case Study</option>
+          <option value="Myth Debunking">Myth Debunking</option>
+          <option value="Founder POV">Founder POV / Explainer</option>
+          <option value="Visual Storytelling">Visual Storytelling</option>
+          <option value="Product Explainer">Product Explainer</option>
+          <option value="Bollywood Uniform">Bollywood Uniform</option>
+          <option value="Uniform Tips">Uniform Tips</option>
+          <option value="Aesthetic BTS">Aesthetic BTS</option>
+          <option value="Raw BTS">Raw BTS</option>
+          <option value="Testimonial">Testimonial</option>
+          <option value="Direct Ad">Direct Ad</option>
+        </select></div>
+        <div class="col" style="width:90px"><div class="lbl">Length</div><select class="sel inp" id="sgLen"><option value="30">30s</option><option value="60" selected>60s</option><option value="90">90s</option></select></div>
+      </div>
+      <div class="lbl" style="margin-top:4px">Simora Format</div>
+      <div class="simora-fmt" id="simoraFmtSel">
+        <div class="simora-opt sel" data-fmt="talking" onclick="selSimoraFmt('talking')"><div class="ti">Talking + B-roll</div><div class="td">Creator/avatar speaks, B-roll cuts between</div></div>
+        <div class="simora-opt" data-fmt="split" onclick="selSimoraFmt('split')"><div class="ti">Split Screen</div><div class="td">Creator one side, product/data other side</div></div>
+        <div class="simora-opt" data-fmt="pip" onclick="selSimoraFmt('pip')"><div class="ti">PiP</div><div class="td">Video full screen, avatar in small circle</div></div>
+      </div>
+      <div class="row ac" style="margin-top:9px">
+        <button class="btnp" id="sgRunBtn" onclick="sgRun()">▶ Generate Script</button>
+        <button class="btn" onclick="document.getElementById('sgTranscript').style.display=document.getElementById('sgTranscript').style.display==='none'?'block':'none'">📋 Paste from Transcript instead</button>
+        <span style="font-size:10px;color:#64748b" id="sgSt">Set your Groq API key in Settings to begin</span>
+      </div>
+      <div id="sgTranscript" style="display:none;margin-top:8px">
+        <div class="lbl">Paste audio transcript or long text — system extracts individual stories</div>
+        <textarea class="inp" id="sgTranscriptTxt" rows="5" placeholder="Paste your transcribed audio content here…" style="resize:vertical"></textarea>
+        <button class="btn" style="margin-top:6px" onclick="extractFromTranscript()">Extract Stories</button>
+      </div>
+    </div>
+    <div id="sgResult"></div>
+  </div>
+
+  <!-- MY SCRIPTS -->
+  <div id="scrp-my" style="display:none">
+    <div class="card" style="padding:9px 13px">
+      <div class="fb" style="margin-bottom:0">
+        <select class="sel" id="myScrFmt" onchange="rMyScripts()"><option value="">All formats</option></select>
+        <select class="sel" id="myScrSimora" onchange="rMyScripts()"><option value="">All Simora formats</option><option value="talking">Talking + B-roll</option><option value="split">Split Screen</option><option value="pip">PiP</option></select>
+        <button class="btn" onclick="copyAllScripts()">📋 Copy All as TSV</button>
+        <button class="btnd" onclick="clearAllScripts()" style="margin-left:auto">🗑 Clear All</button>
+      </div>
+    </div>
+    <div id="myScriptsList"></div>
+  </div>
+
+  <!-- TOPIC CLUSTERS -->
+  <div id="scrp-clu" style="display:none">
+    <div class="card">
+      <div class="h2">Topic Clusters</div>
+      <div class="sub">Your saved outlier videos grouped automatically into content themes.</div>
+      <button class="btnp" onclick="runClustering()">↻ Re-cluster from saved results</button>
+    </div>
+    <div id="clusterList"></div>
+  </div>
+
+  <!-- CONTENT IDEAS -->
+  <div id="scrp-idea" style="display:none">
+    <div class="card">
+      <div class="h2">Content Ideas</div>
+      <div class="sub">AI-suggested topics from your outlier patterns, plus your own pasted ideas.</div>
+      <div class="row ac">
+        <button class="btnp" onclick="genIdeas()">✨ Generate Ideas from Outliers</button>
+        <button class="btn" onclick="toggleIdeaAdd()">+ Add Idea Manually</button>
+      </div>
+      <div id="ideaAddForm" style="display:none;background:#07090f;border:1px solid #1a2035;border-radius:7px;padding:10px;margin-top:9px">
+        <input class="inp" id="ideaAddTitle" placeholder="Idea title…" style="margin-bottom:6px">
+        <textarea class="inp" id="ideaAddPaste" rows="3" placeholder="Or paste rows from Google Sheet: Title, Format, Hook Type, Why It Works, Priority" style="font-family:monospace;font-size:10px;resize:vertical;margin-bottom:6px"></textarea>
+        <button class="btns" onclick="addIdeaManual()">✓ Add</button>
+      </div>
+    </div>
+    <div id="ideaList"></div>
+  </div>
+</div>
+</div><!-- /main -->
+<div id="toast"></div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script>
+
+// ═══════════════════════════════════════════════════
+// SEED DATA — 248 creators
+// ═══════════════════════════════════════════════════
+const SEED=[
+{name:"Adam Erhart",niche:"Marketing",sub:"Marketing Strategy",yt:"https://www.youtube.com/@AdamErhart",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Marketing strategy and digital marketing educator"},
+{name:"Aevy TV",niche:"Business Case Studies",sub:"Brand Stories",yt:"https://www.youtube.com/@AevyTV",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Business and brand case studies"},
+{name:"Afaqs!",niche:"Marketing",sub:"Advertising \u0026 Media",yt:"https://www.youtube.com/@afaqs",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India advertising and marketing news"},
+{name:"Akshat Shrivastava",niche:"Finance \u0026 Economics",sub:"Macro Investing",yt:"https://www.youtube.com/@AkshatZayn",ytf:"2.1M",ig:"https://www.instagram.com/akshat_shrivastava",igf:"",fb:"",fbf:"",li:"https://www.linkedin.com/in/akshatshrivastavainsead",lif:"",tier:"Tier 1",ct:"Founder",lang:"English",notes:"WisdomHatch founder macro investing"},
+{name:"Alex Hormozi",niche:"Business \u0026 Finance",sub:"Business Growth",yt:"https://www.youtube.com/@AlexHormozi",ytf:"5.1M",ig:"https://www.instagram.com/hormozi",igf:"5.2M",fb:"",fbf:"",li:"https://www.linkedin.com/in/alex-hormozi",lif:"",tier:"Tier 1",ct:"Founder",lang:"English",notes:"Acquisition.com founder business growth"},
+{name:"Ali Abdaal",niche:"Finance",sub:"Productivity \u0026 Finance",yt:"https://www.youtube.com/@aliabdaal",ytf:"5.5M",ig:"https://www.instagram.com/aliabdaal",igf:"1M",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Founder",lang:"English",notes:"Productivity and finance creator"},
+{name:"Anant Ladha",niche:"Sales \u0026 Business",sub:"Investing",yt:"https://www.youtube.com/@InvestAajForKal",ytf:"",ig:"https://www.instagram.com/invest_aaj_for_kal",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"Hindi",notes:"Invest Aaj For Kal Hindi business"},
+{name:"Ankur Warikoo",niche:"Business \u0026 Productivity",sub:"Personal Finance Career",yt:"https://www.youtube.com/@warikoo",ytf:"6.6M",ig:"https://www.instagram.com/ankurwarikoo",igf:"5.1M",fb:"",fbf:"",li:"https://www.linkedin.com/in/warikoo",lif:"4.2M",tier:"Tier 1",ct:"Founder",lang:"English",notes:"India top personal finance and productivity creator"},
+{name:"Asian Boss",niche:"Finance",sub:"Asian Business Stories",yt:"https://www.youtube.com/@AsianBoss",ytf:"4.2M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Asian business and finance stories"},
+{name:"Asianometry",niche:"Business \u0026 Entrepreneurship",sub:"Asian Manufacturing Semiconductors",yt:"https://www.youtube.com/@Asianometry",ytf:"558K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Deep dives into Asian manufacturing and tech"},
+{name:"Asset Yogi",niche:"Finance",sub:"Personal Finance Real Estate",yt:"https://www.youtube.com/@AssetYogi",ytf:"5.2M",ig:"https://www.instagram.com/assetyogi",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"Hindi",notes:"5.2M YT personal finance real estate Hindi"},
+{name:"Aswath Damodaran",niche:"Finance",sub:"Valuation Investing",yt:"https://www.youtube.com/@AswathDamodaran",ytf:"399K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"NYU professor valuation and investing"},
+{name:"Backstage with Millionaires",niche:"Finance",sub:"Wealth Building",yt:"https://www.youtube.com/@BackstageWithMillionaires",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Wealth building and millionaire interviews"},
+{name:"Bada Business",niche:"Business \u0026 Finance",sub:"MSME Coaching",yt:"https://www.youtube.com/@BadaBusiness",ytf:"7.9M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Founder",lang:"Hindi",notes:"Dr Vivek Bindra MSME coaching 7.9M YT"},
+{name:"BeerBiceps Business",niche:"Finance",sub:"Business Interviews",yt:"https://www.youtube.com/@BeerBicepsBusiness",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Founder",lang:"English",notes:"Ranveer Allahbadia business-focused channel"},
+{name:"Ben Felix",niche:"Business Stories",sub:"Evidence Based Investing",yt:"https://www.youtube.com/@BenFelixCSI",ytf:"511K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Evidence based investing and finance"},
+{name:"Big Company",niche:"Business",sub:"Founder Journeys",yt:"https://www.youtube.com/@BigCompany",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Founder journey documentaries"},
+{name:"Bloomberg Originals",niche:"Business Education",sub:"Business Documentaries",yt:"https://www.youtube.com/@BloombergOriginals",ytf:"3.2M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"Bloomberg long-form business documentaries"},
+{name:"Bloomberg Technology",niche:"Business",sub:"Tech Business",yt:"https://www.youtube.com/@BloombergTechnology",ytf:"1.2M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Bloomberg tech business news"},
+{name:"Book Insight Hindi",niche:"Finance",sub:"Book Summaries Hindi",yt:"https://www.youtube.com/@BookInsightHindi",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"Hindi book summaries finance business"},
+{name:"Bookify Hindi",niche:"Business Case Studies",sub:"Book Summaries",yt:"https://www.youtube.com/@BookifyHindi",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"Hindi business book summaries"},
+{name:"Books in Shorts Hindi",niche:"Business",sub:"Brand Stories",yt:"https://www.youtube.com/@BooksInShortsHindi",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"Hindi brand story book summaries"},
+{name:"Brand Saga",niche:"Business",sub:"Brand Stories",yt:"https://www.youtube.com/@BrandSaga",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Indian brand stories and case studies"},
+{name:"Business Basics",niche:"Business",sub:"Tech Companies",yt:"https://www.youtube.com/@BusinessBasics",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Tech company explainers"},
+{name:"Business Blaze",niche:"Business",sub:"Book Summaries",yt:"https://www.youtube.com/@BusinessBlaze",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Business book summaries"},
+{name:"Business Casual",niche:"Business",sub:"Business Documentaries",yt:"https://www.youtube.com/@BusinessCasual",ytf:"1.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"High quality animated business documentaries"},
+{name:"Business Insider India",niche:"Business",sub:"Business News India",yt:"https://www.youtube.com/@BusinessInsiderIndia",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Business Insider India news and explainers"},
+{name:"Business Standard",niche:"Business",sub:"Brand Stories",yt:"https://www.youtube.com/@BusinessStandard",ytf:"1.7M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India business news and brand stories"},
+{name:"Business Today",niche:"Business",sub:"Business Explainers",yt:"https://www.youtube.com/@BusinessToday",ytf:"2.4M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India business news and explainers"},
+{name:"BuzzInContent",niche:"Marketing",sub:"Content Marketing",yt:"https://www.youtube.com/@BuzzInContent",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Content marketing industry news India"},
+{name:"CA Rachana Ranade",niche:"Finance",sub:"Stock Market Financial Literacy",yt:"https://www.youtube.com/@CARachanaRanade",ytf:"5.3M",ig:"https://www.instagram.com/ca_rachanaranade",igf:"1M",fb:"",fbf:"",li:"https://www.linkedin.com/in/carachanaranade",lif:"480K",tier:"Tier 1",ct:"Founder",lang:"English",notes:"5.3M YT India top finance educator"},
+{name:"Capitalisn't",niche:"Business",sub:"Company Stories",yt:"https://www.youtube.com/@Capitalisnt",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Chicago Booth podcast on capitalism"},
+{name:"CaspianReport",niche:"Business",sub:"Geopolitics Business",yt:"https://www.youtube.com/@CaspianReport",ytf:"1.8M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Geopolitics and business news"},
+{name:"Cheddar",niche:"Business",sub:"Business News",yt:"https://www.youtube.com/@Cheddar",ytf:"1.5M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Business and tech news channel"},
+{name:"China Update",niche:"Business",sub:"China Economy",yt:"https://www.youtube.com/@ChinaUpdate",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"China economy and business updates"},
+{name:"CNBC International",niche:"Finance",sub:"Global Markets",yt:"https://www.youtube.com/@CNBCi",ytf:"1.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"CNBC international markets and finance"},
+{name:"CNBC Make It",niche:"Business \u0026 Finance",sub:"Personal Finance Career",yt:"https://www.youtube.com/@CNBCMakeIt",ytf:"1.4M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"CNBC personal finance and career stories"},
+{name:"CNBC TV18 Explainers",niche:"Business \u0026 Economics",sub:"India Business",yt:"https://www.youtube.com/@CNBCTv18Explainers",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"CNBC TV18 India business explainers"},
+{name:"CNBC TV18 India",niche:"Finance",sub:"India Markets",yt:"https://www.youtube.com/@CNBCtv18India",ytf:"4.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"CNBC TV18 India markets and geoeconomics"},
+{name:"Codie Sanchez",niche:"Business",sub:"Contrarian Business",yt:"https://www.youtube.com/@CodieSanchez",ytf:"1.2M",ig:"https://www.instagram.com/codiesancheztx",igf:"1M",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Contrarian thinking business and startups"},
+{name:"ColdFusion",niche:"Business",sub:"Business Tech Stories",yt:"https://www.youtube.com/@ColdFusion",ytf:"5M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"5M YT tech and business story documentaries"},
+{name:"Company Man",niche:"Business",sub:"Company Case Studies",yt:"https://www.youtube.com/@CompanyMan",ytf:"1.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Company history and analysis"},
+{name:"Compounding Quality",niche:"Business",sub:"Quality Investing",yt:"https://www.youtube.com/@CompoundingQuality",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Quality company analysis and investing"},
+{name:"Dan Koe",niche:"Business",sub:"Creator Business",yt:"https://www.youtube.com/@DanKoe",ytf:"700K",ig:"https://www.instagram.com/thedankoe",igf:"560K",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Creator economy and solo business"},
+{name:"Digital Indian",niche:"Business",sub:"India Business News",yt:"https://www.youtube.com/@DigitalIndian",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"India digital business news Hindi"},
+{name:"Dr Vivek Bindra",niche:"Business",sub:"MSME Business Coaching",yt:"https://www.youtube.com/@DrVivekBindra",ytf:"22.3M",ig:"https://www.instagram.com/drvivekbindra",igf:"7.1M",fb:"https://www.facebook.com/drvivekbindra",fbf:"9.8M",li:"https://www.linkedin.com/in/drvivekbindra",lif:"1.1M",tier:"Tier 1",ct:"Founder",lang:"Hindi",notes:"22.3M YT India largest Hindi business coaching"},
+{name:"Economic Times Startup",niche:"Business",sub:"India Startups",yt:"https://www.youtube.com/@EconomicTimesStartup",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"ET startup ecosystem news"},
+{name:"Economics Explained",niche:"Business",sub:"Economics Explainers",yt:"https://www.youtube.com/@EconomicsExplained",ytf:"4.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"4.1M YT economics explainers and case studies"},
+{name:"Entrackr",niche:"Business",sub:"India Startup News",yt:"https://www.youtube.com/@Entrackr",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India startup ecosystem news and data"},
+{name:"ET Now",niche:"Business",sub:"India Business TV",yt:"https://www.youtube.com/@ETNow",ytf:"6.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"ET Now India business TV channel"},
+{name:"ET Now Swadesh (Explainers)",niche:"Business",sub:"Hindi Business Explainers",yt:"https://www.youtube.com/@ETNowSwadesh",ytf:"3.2M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"Hindi",notes:"ET Now Swadesh Hindi business explainers"},
+{name:"Faking News",niche:"Business",sub:"Satire Current Affairs",yt:"https://www.youtube.com/@FakingNews",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hinglish",notes:"Satire current affairs India"},
+{name:"Fern",niche:"Business",sub:"Business Motivation",yt:"https://www.youtube.com/@FernTV",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Business motivation and stories"},
+{name:"Financial Times",niche:"Business",sub:"Global Business News",yt:"https://www.youtube.com/@FinancialTimes",ytf:"1.4M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"FT global business and startup news"},
+{name:"FinnovationZ",niche:"Finance",sub:"Investing Mutual Funds",yt:"https://www.youtube.com/@FinnovationZ",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"Hindi",notes:"Investing and mutual funds Hindi"},
+{name:"Finology",niche:"Finance",sub:"Global Economy",yt:"https://www.youtube.com/@finologyticker",ytf:"1.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"Hindi",notes:"Global economy and finance Hindi"},
+{name:"Finshots",niche:"Business",sub:"India Startup News",yt:"https://www.youtube.com/@Finshots",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India startup and business news shorts"},
+{name:"Fortune",niche:"Business",sub:"India Startup Ecosystem",yt:"https://www.youtube.com/@FortuneMagazine",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Fortune magazine business content"},
+{name:"Fortune Brainstorm",niche:"Business",sub:"Business Conferences",yt:"https://www.youtube.com/@FortuneBrainstorm",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Fortune Brainstorm conference content"},
+{name:"Founder Thesis",niche:"Business",sub:"India Founder Stories",yt:"https://www.youtube.com/@FounderThesis",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"India founder interviews and stories"},
+{name:"Freethink",niche:"Business",sub:"Business Innovation",yt:"https://www.youtube.com/@Freethink",ytf:"1.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Business innovation and future stories"},
+{name:"Freethink Business",niche:"Business",sub:"Business Documentaries",yt:"https://www.youtube.com/@FreethinkBusiness",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Freethink business-focused documentaries"},
+{name:"FreightWaves",niche:"Business",sub:"Logistics Supply Chain",yt:"https://www.youtube.com/@FreightWaves",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Freight logistics and supply chain business"},
+{name:"Full Disclosure",niche:"Finance",sub:"Finance Business Insights",yt:"https://www.youtube.com/@FullDisclosureYT",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Finance and business insights deep dives"},
+{name:"Gary Vaynerchuk",niche:"Business \u0026 Finance",sub:"Entrepreneurship Marketing",yt:"https://www.youtube.com/@GaryVee",ytf:"4.4M",ig:"https://www.instagram.com/garyvee",igf:"10.3M",fb:"",fbf:"",li:"https://www.linkedin.com/in/garyvaynerchuk",lif:"",tier:"Tier 1",ct:"Founder",lang:"English",notes:"VaynerMedia founder entrepreneurship marketing"},
+{name:"GetsetflyFACT",niche:"Business",sub:"Business Facts India",yt:"https://www.youtube.com/@GetsetflyFACT",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"India business facts Hindi"},
+{name:"GIGL",niche:"Business",sub:"Indian Business Finance",yt:"https://www.youtube.com/@GIGLapp",ytf:"3.2M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"Hindi",notes:"India book summaries business finance Hindi 3.2M YT"},
+{name:"Grant Cardone",niche:"Business",sub:"Sales Business Growth",yt:"https://www.youtube.com/@GrantCardone",ytf:"2.2M",ig:"https://www.instagram.com/grantcardone",igf:"3.1M",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Sales and business growth trainer"},
+{name:"Groww Originals",niche:"Finance",sub:"Corporate Leadership",yt:"https://www.youtube.com/@GrowwOriginals",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Groww finance and corporate leadership content"},
+{name:"Half as Interesting",niche:"Business",sub:"Business Documentaries",yt:"https://www.youtube.com/@halfasinteresting",ytf:"4.3M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Entertaining business and logistics stories"},
+{name:"Harvard Business Review",niche:"Business",sub:"Business Innovation",yt:"https://www.youtube.com/@HarvardBusinessReview",ytf:"692K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"HBR business innovation and management"},
+{name:"Hochelaga",niche:"Business",sub:"Business History",yt:"https://www.youtube.com/@Hochelaga",ytf:"493K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Business and economic history documentaries"},
+{name:"How Money Works",niche:"Business",sub:"Finance Explainers",yt:"https://www.youtube.com/@HowMoneyWorks",ytf:"3.6M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"3.6M YT finance and economics explainers"},
+{name:"HubSpot",niche:"Marketing",sub:"B2B Marketing Sales",yt:"https://www.youtube.com/@HubSpot",ytf:"490K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"HubSpot marketing sales business case studies"},
+{name:"Inc42",niche:"Marketing",sub:"India Startup Marketing",yt:"https://www.youtube.com/@Inc42",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India startup ecosystem marketing news"},
+{name:"Indian Silicon Valley",niche:"Business",sub:"India Startup Stories",yt:"https://www.youtube.com/@IndianSiliconValley",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India startup documentary stories"},
+{name:"Indian Startup Stories",niche:"Business",sub:"Book Summaries",yt:"https://www.youtube.com/@IndianStartupStories",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"India startup stories Hindi"},
+{name:"Insider Business",niche:"Business",sub:"Business Explainers",yt:"https://www.youtube.com/@InsiderBusiness",ytf:"3.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Business Insider business explainers"},
+{name:"Investor Center",niche:"Business",sub:"Startup Investing",yt:"https://www.youtube.com/@InvestorCenter",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Startup investing and VC stories"},
+{name:"Ishan Sharma",niche:"Business",sub:"Business Logistics Productivity",yt:"https://www.youtube.com/@IshanSharma7390",ytf:"1.1M",ig:"https://www.instagram.com/ishansharmaa",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"Hinglish",notes:"India business logistics and productivity"},
+{name:"Jeremy Miner",niche:"Business",sub:"Sales Business",yt:"https://www.youtube.com/@JeremyMiner",ytf:"459K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"NEPQ sales methodology and business"},
+{name:"Johnny Harris",niche:"Business",sub:"Historical Business Geopolitics",yt:"https://www.youtube.com/@johnnyharris",ytf:"6.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Founder",lang:"English",notes:"6.1M YT historical business and geopolitics"},
+{name:"Josh Talks",niche:"Finance",sub:"India Entrepreneurship",yt:"https://www.youtube.com/@JoshTalks",ytf:"6.7M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"Hinglish",notes:"6.7M YT India entrepreneurship and motivation"},
+{name:"Josh Talks Business",niche:"Marketing",sub:"India Business Marketing",yt:"https://www.youtube.com/@JoshTalksBusiness",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"Hinglish",notes:"Josh Talks business and marketing"},
+{name:"Karostartup",niche:"Business",sub:"India Startup News",yt:"https://www.youtube.com/@Karostartup",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"India startup news Hindi"},
+{name:"Labour Law Advisor",niche:"Finance",sub:"Tax Compliance Labour Law",yt:"https://www.youtube.com/@LabourLawAdvisor",ytf:"5.2M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"Hindi",notes:"5.2M YT India top compliance and labour law"},
+{name:"Learn to Invest",niche:"Finance",sub:"Investing Startup Ecosystem",yt:"https://www.youtube.com/@LearntoInvest",ytf:"950K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Investing and startup ecosystem education"},
+{name:"Logically Answered",niche:"Business",sub:"Startup Stories",yt:"https://www.youtube.com/@LogicallyAnswered",ytf:"1.3M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Logical startup and business story explainers"},
+{name:"Logistics Insider",niche:"Business",sub:"Logistics Supply Chain",yt:"https://www.youtube.com/@LogisticsInsider",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Logistics and supply chain documentaries"},
+{name:"MagnatesMedia",niche:"Business",sub:"Business Documentaries",yt:"https://www.youtube.com/@MagnatesMedia",ytf:"3.6M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"3.6M YT business empire documentaries"},
+{name:"Marketing Moves",niche:"Marketing",sub:"Creator Economy Marketing",yt:"https://www.youtube.com/@MarketingMoves",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Creator economy and marketing moves"},
+{name:"MarketPower",niche:"Business",sub:"Sales Marketing",yt:"https://www.youtube.com/@MarketPower",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Sales and marketing power strategies"},
+{name:"MBA Bullshit",niche:"Business",sub:"Business Explainers",yt:"https://www.youtube.com/@MBABullshit",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Anti-MBA business explainers"},
+{name:"Medianama",niche:"Business",sub:"India Tech Policy",yt:"https://www.youtube.com/@Medianama",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India tech business and policy news"},
+{name:"MensXP Business",niche:"Business",sub:"Business Motivation India",yt:"https://www.youtube.com/@MensXPBusiness",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"India business motivation content Hindi"},
+{name:"Mint",niche:"Finance",sub:"India Business Journalism",yt:"https://www.youtube.com/@MintBusinessNews",ytf:"1.3M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Mint India business news and entrepreneur stories"},
+{name:"Mint Explains",niche:"Business",sub:"Business Explainers",yt:"https://www.youtube.com/@MintExplains",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Mint India business explainers"},
+{name:"Modern MBA",niche:"Business \u0026 Finance",sub:"Business Case Studies",yt:"https://www.youtube.com/@ModernMBA",ytf:"890K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Modern business case studies and strategy"},
+{name:"Modern Wisdom Clips (business episodes)",niche:"Business",sub:"Business Economy Taxation",yt:"https://www.youtube.com/@ModernWisdomClips",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Modern Wisdom business economy clips"},
+{name:"Money \u0026 Macro",niche:"Finance",sub:"Macro Economics",yt:"https://www.youtube.com/@MoneyMacro",ytf:"1.2M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Macro economics and business investing"},
+{name:"MoneyWeek",niche:"Finance",sub:"Business Investing UK",yt:"https://www.youtube.com/@MoneyWeek",ytf:"1.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"MoneyWeek UK business investing explainers"},
+{name:"Neil Patel",niche:"Marketing",sub:"SEO Digital Marketing",yt:"https://www.youtube.com/@neilpatel",ytf:"1.2M",ig:"https://www.instagram.com/neilpatel",igf:"",fb:"",fbf:"",li:"https://www.linkedin.com/in/neilkpatel",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Global SEO and digital marketing authority"},
+{name:"Neo",niche:"Business",sub:"Business Case Studies",yt:"https://www.youtube.com/@NeoChannel",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"Hindi business case studies"},
+{name:"New Money",niche:"Business",sub:"Business Documentaries",yt:"https://www.youtube.com/@NewMoneyYT",ytf:"1.8M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"1.8M YT deep business documentaries"},
+{name:"Nitish Rajput",niche:"Marketing",sub:"India Business Analysis",yt:"https://www.youtube.com/@NitishRajput",ytf:"4.4M",ig:"https://www.instagram.com/nitishrajput",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Founder",lang:"Hindi",notes:"4.4M YT India business analysis Hindi"},
+{name:"Noah Kagan",niche:"Business \u0026 Finance",sub:"Business Growth Marketing",yt:"https://www.youtube.com/@NoahKagan",ytf:"1.1M",ig:"https://www.instagram.com/noahkagan",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"AppSumo founder business growth and marketing"},
+{name:"Patrick Boyle",niche:"Finance",sub:"Finance Education",yt:"https://www.youtube.com/@PBoyle",ytf:"1.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Finance education explained clearly"},
+{name:"Patrick Dang",niche:"Business",sub:"Tech Sales B2B",yt:"https://www.youtube.com/@PatrickDang",ytf:"277K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Tech sales and B2B business"},
+{name:"Plainly Difficult",niche:"Business",sub:"Business Disasters",yt:"https://www.youtube.com/@PlainlyDifficult",ytf:"1.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Business and industrial disaster documentaries"},
+{name:"Polymatter",niche:"Business",sub:"Business Geopolitics",yt:"https://www.youtube.com/@Polymatter",ytf:"2.5M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"2.5M YT business and geopolitics explainers"},
+{name:"PowerTrain",niche:"Business",sub:"Business News India",yt:"https://www.youtube.com/@PowerTrainYT",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"India business news explained Hindi"},
+{name:"Prakhar Ke Pravachan Clips (animated/business episodes)",niche:"Business",sub:"Business Strategy",yt:"https://www.youtube.com/@PrakharKePravachan",ytf:"8.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"Hindi",notes:"8.1M YT animated Hindi business strategy"},
+{name:"Pranjal Kamra",niche:"Finance",sub:"Company Strategy Investing",yt:"https://www.youtube.com/@PranjalKamra",ytf:"4M",ig:"https://www.instagram.com/pranjalkamra",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Founder",lang:"Hindi",notes:"Finology CEO 4M YT Hindi investing"},
+{name:"Quartz",niche:"Business",sub:"Business Ideas",yt:"https://www.youtube.com/@QuartzMedia",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Quartz business ideas and explainers"},
+{name:"Raj Shamani",niche:"Finance",sub:"Business Podcast Macro",yt:"https://www.youtube.com/@rajshamani",ytf:"16.6M",ig:"https://www.instagram.com/rajshamani",igf:"2.8M",fb:"",fbf:"",li:"https://www.linkedin.com/in/raj-shamani",lif:"440K",tier:"Tier 1",ct:"Founder",lang:"English",notes:"16.6M YT India fastest growing business channel"},
+{name:"Rareliquid",niche:"Business \u0026 Finance",sub:"Business Economy",yt:"https://www.youtube.com/@rareliquid",ytf:"576K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Business and economy explainers"},
+{name:"Readers Books Club",niche:"Marketing",sub:"Book Summaries Marketing",yt:"https://www.youtube.com/@ReadersBooksClub",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"Hindi book summaries marketing business"},
+{name:"RealLifeLore",niche:"Business",sub:"Business Geography",yt:"https://www.youtube.com/@RealLifeLore",ytf:"8.4M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"8.4M YT business geography and logistics"},
+{name:"Sandeep Maheshwari",niche:"Finance",sub:"Motivation Business",yt:"https://www.youtube.com/@SandeepSeminars",ytf:"28.5M",ig:"https://www.instagram.com/sandeepseminarsofficial",igf:"5M",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Founder",lang:"Hindi",notes:"28.5M YT India most subscribed Hindi motivational creator"},
+{name:"Sasha Yanshin",niche:"Business",sub:"Business Explainers",yt:"https://www.youtube.com/@SashaYanshin",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Founder",lang:"English",notes:"Business explainers and entrepreneurship"},
+{name:"Seth Godin",niche:"Business",sub:"Marketing Business Philosophy",yt:"https://www.youtube.com/@ThisIsSethsBlog",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Marketing and business philosophy"},
+{name:"Sharan Hegde",niche:"Finance",sub:"Personal Finance Investing",yt:"https://www.youtube.com/@FinancewithSharan",ytf:"3.4M",ig:"https://www.instagram.com/financewithsharan",igf:"2.5M",fb:"",fbf:"",li:"https://www.linkedin.com/in/sharanhegde95",lif:"315K",tier:"Tier 1",ct:"Founder",lang:"English",notes:"Finance with Sharan 3.4M YT Forbes 30 Under 30"},
+{name:"Simon Squibb",niche:"Business",sub:"Entrepreneurship Sales",yt:"https://www.youtube.com/@SimonSquibb",ytf:"2.3M",ig:"https://www.instagram.com/simonsquibb",igf:"1.8M",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Entrepreneurship and giving business purpose"},
+{name:"Slidebean",niche:"Business",sub:"Startup Case Studies",yt:"https://www.youtube.com/@Slidebean",ytf:"1.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Startup pitch decks and business case studies"},
+{name:"Slidebean Español",niche:"Business",sub:"Global Business Spanish",yt:"https://www.youtube.com/@SlidebeanEspanol",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Slidebean Spanish language business content"},
+{name:"Soch by Mohak Mangal",niche:"Finance",sub:"India Companies Markets",yt:"https://www.youtube.com/@SochByMohakMangal",ytf:"4.4M",ig:"https://www.instagram.com/mohak.mangal",igf:"242K",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"4.4M YT data-driven India business economy"},
+{name:"Social Samosa",niche:"Marketing",sub:"Social Media Marketing India",yt:"https://www.youtube.com/@SocialSamosa",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India social media and marketing news"},
+{name:"Stanford Graduate School of Business",niche:"Finance",sub:"Business Education",yt:"https://www.youtube.com/@StanfordGSB",ytf:"1.2M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Stanford GSB business education lectures"},
+{name:"Startup By DOC",niche:"Business",sub:"India Startup Explainers",yt:"https://www.youtube.com/@StartupByDOC",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"India startup explainers Hindi"},
+{name:"Startup India",niche:"Business",sub:"India Startup Ecosystem",yt:"https://www.youtube.com/@StartupIndiaOfficial",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Government of India startup initiative channel"},
+{name:"Startup Pedia",niche:"Business",sub:"India Startup Stories",yt:"https://www.youtube.com/@StartupPedia",ytf:"3.1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"Hindi",notes:"3.1M YT India startup stories Hindi"},
+{name:"Startup Spotlight India",niche:"Finance",sub:"Company Valuation Finance",yt:"https://www.youtube.com/@StartupSpotlightIndia",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India startup valuation and finance analysis"},
+{name:"Startup Stories",niche:"Business",sub:"Book Summaries",yt:"https://www.youtube.com/@StartupStoriesIndia",ytf:"2.4M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"Hindi",notes:"2.4M YT India startup stories Hindi"},
+{name:"Storyboard18",niche:"Marketing",sub:"Advertising Geopolitics",yt:"https://www.youtube.com/@Storyboard18",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India advertising brand and geopolitics news"},
+{name:"The BarberShop with Shantanu",niche:"Business",sub:"India Founder Interviews",yt:"https://www.youtube.com/@TheBarberShopWithShantanu",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Long-form India founder interviews NOTE: playlist may be private"},
+{name:"The CapTable",niche:"Business",sub:"India Startup VC",yt:"https://www.youtube.com/@TheCapTable",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India startup and VC ecosystem"},
+{name:"The Economist",niche:"Finance",sub:"Global Business Analysis",yt:"https://www.youtube.com/@TheEconomist",ytf:"6.3M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"6.3M YT global business and economics"},
+{name:"The Fauxy",niche:"Marketing",sub:"Satire Marketing India",yt:"https://www.youtube.com/@TheFauxy",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"India business satire and marketing"},
+{name:"The Financial Diet",niche:"Finance",sub:"Personal Finance Lifestyle",yt:"https://www.youtube.com/@thefinancialdiet",ytf:"1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Personal finance and lifestyle finance"},
+{name:"The Hustle Daily",niche:"Business",sub:"Entrepreneurship News",yt:"https://www.youtube.com/@TheHustleDaily",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Entrepreneurship and startup news"},
+{name:"The Indian Dream",niche:"Business",sub:"India Startup Stories",yt:"https://www.youtube.com/@TheIndianDream",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"Hindi",notes:"India startup stories Hindi"},
+{name:"The Ken",niche:"Business",sub:"India Startup Journalism",yt:"https://www.youtube.com/@TheKenMedia",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India startup journalism pitch decks"},
+{name:"The Market Exit",niche:"Business",sub:"Startup Case Studies",yt:"https://www.youtube.com/@TheMarketExit",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Startup exit and case study analysis"},
+{name:"The Morning Context",niche:"Finance",sub:"India Business Journalism",yt:"https://www.youtube.com/@TheMorningContext",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India business and economics journalism"},
+{name:"The Plain Bagel",niche:"Finance",sub:"Finance Explainers",yt:"https://www.youtube.com/@ThePlainBagel",ytf:"1M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Clear and plain finance explainers"},
+{name:"The Plain English Finance",niche:"Finance",sub:"Finance Economy Documentaries",yt:"https://www.youtube.com/@PlainEnglish",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Plain English finance and economy documentaries"},
+{name:"The Present Past",niche:"Marketing",sub:"Business History Marketing",yt:"https://www.youtube.com/@ThePresentPast",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Business history and marketing past to present"},
+{name:"The Rational Investor",niche:"Finance",sub:"Investing Business Education",yt:"https://www.youtube.com/@TheRationalInvestor",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Rational investing and business education"},
+{name:"The Rest Of Us",niche:"Business",sub:"Startup Stories",yt:"https://www.youtube.com/@TheRestOfUs",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Startup and entrepreneur stories"},
+{name:"The Satya Show",niche:"Business",sub:"India Startup Founder Interviews",yt:"https://www.youtube.com/@TheSatyaShow",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"India startup founder interview show"},
+{name:"The Simple Sum",niche:"Finance",sub:"Personal Finance Stories",yt:"https://www.youtube.com/@TheSimpleSum",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Simple personal finance stories"},
+{name:"The Swedish Investor",niche:"Finance",sub:"Investing Book Summaries",yt:"https://www.youtube.com/@TheSwedishInvestor",ytf:"943K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Investing book summaries and startup case studies"},
+{name:"Think School",niche:"Business",sub:"Business Case Studies Strategy",yt:"https://www.youtube.com/@thinkschool",ytf:"4.7M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"4.7M YT business case studies very high viral rate"},
+{name:"TLDR Business",niche:"Business",sub:"Business News Explainers",yt:"https://www.youtube.com/@TLDRBusiness",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"TLDR business news and founder journeys"},
+{name:"TLDR EU",niche:"Business",sub:"Europe Business Media",yt:"https://www.youtube.com/@TLDREU",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Europe business and media news"},
+{name:"TLDR News Global",niche:"Business",sub:"Global Business Advertising",yt:"https://www.youtube.com/@TLDRNewsGlobal",ytf:"1.2M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"TLDR global business and advertising news"},
+{name:"TLDR UK",niche:"Business",sub:"UK Business News",yt:"https://www.youtube.com/@TLDRUK",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"UK business news and founder conversations"},
+{name:"Trakin Tech English",niche:"Business",sub:"India VC Startups Tech",yt:"https://www.youtube.com/@trakintechenglish",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"India VC startup and tech business English"},
+{name:"Unraveled",niche:"Finance",sub:"Economics Explainers",yt:"https://www.youtube.com/@UnraveledYT",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Economics and finance unraveled explainers"},
+{name:"Value Investors Archive",niche:"Finance",sub:"Value Investing",yt:"https://www.youtube.com/@ValueInvestorsArchive",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Value investing archive interviews"},
+{name:"Victor Antonio",niche:"Business",sub:"Sales Consumer Psychology",yt:"https://www.youtube.com/@VictorAntonio",ytf:"453K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Founder",lang:"English",notes:"Sales and consumer psychology education"},
+{name:"Visual Venture",niche:"Business",sub:"Startup Tech Business",yt:"https://www.youtube.com/@VisualVenture",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Visual startup and tech business stories"},
+{name:"VisualPolitik EN",niche:"Business",sub:"Geopolitics Business",yt:"https://www.youtube.com/@VisualPolitikEN",ytf:"2.6M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"2.6M YT geopolitics and business stories"},
+{name:"Vox Business",niche:"Business",sub:"Business Journalism",yt:"https://www.youtube.com/@VoxBusiness",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Vox business journalism explainers"},
+{name:"Wall Street Journal",niche:"Finance",sub:"Global Business Journalism",yt:"https://www.youtube.com/@wsj",ytf:"4.5M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"4.5M YT WSJ global business journalism"},
+{name:"Wall Street Millennial",niche:"Finance",sub:"Company Analysis Finance",yt:"https://www.youtube.com/@WallStreetMillennial",ytf:"951K",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Company analysis and finance"},
+{name:"Warikoo",niche:"Business",sub:"Business Journalism India",yt:"https://www.youtube.com/@warikoo",ytf:"6.6M",ig:"https://www.instagram.com/ankurwarikoo",igf:"5.1M",fb:"",fbf:"",li:"https://www.linkedin.com/in/warikoo",lif:"4.2M",tier:"Tier 1",ct:"Founder",lang:"English",notes:"6.6M YT same channel as Ankur Warikoo"},
+{name:"Wealthy Expat",niche:"Finance",sub:"Expat Finance Investing",yt:"https://www.youtube.com/@WealthyExpat",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Founder",lang:"English",notes:"Expat finance and investing"},
+{name:"Weird History Food",niche:"Business",sub:"Business History Food",yt:"https://www.youtube.com/@WeirdHistoryFood",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 3",ct:"Faceless",lang:"English",notes:"Food business history explainers"},
+{name:"Wendover Productions",niche:"Business",sub:"Logistics Business History",yt:"https://www.youtube.com/@Wendover",ytf:"4.7M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"4.7M YT logistics and business history"},
+{name:"Y Combinator",niche:"Finance",sub:"Startup VC Investing",yt:"https://www.youtube.com/@ycombinator",ytf:"1.2M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"YC startup investing and macro content"},
+{name:"Yahoo Finance",niche:"Finance",sub:"Business Economic Documentaries",yt:"https://www.youtube.com/@YahooFinance",ytf:"1.5M",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"Yahoo Finance business and economic documentaries"},
+{name:"YourStory",niche:"Marketing",sub:"India Startup Stories",yt:"https://www.youtube.com/@YourStoryMedia",ytf:"1.1M",ig:"",igf:"",fb:"",fbf:"",li:"https://www.linkedin.com/in/shradhasharma",lif:"2.1M",tier:"Tier 2",ct:"Faceless",lang:"English",notes:"YourStory India startup stories and journalism"},
+{name:"Zerodha Varsity",niche:"Finance",sub:"Stock Market Education",yt:"https://www.youtube.com/@ZerodhaVarsity",ytf:"",ig:"",igf:"",fb:"",fbf:"",li:"",lif:"",tier:"Tier 1",ct:"Faceless",lang:"English",notes:"Zerodha official stock market education"},
+];
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let DB = JSON.parse(localStorage.getItem('sm_db_v2') || 'null');
+if (!DB) { DB = SEED.map((c,i) => ({...c, id:'s'+i, src:'sheet'})); saveDB(); }
+
+let OR={}, OE={}, OF={}, busy=new Set(), running=false, stop=false, GC=null;
+let sel=new Set(), pv=null, impRows=[];
+
+// Load saved results
+try { const s=JSON.parse(localStorage.getItem('sm_v2_res')||'{}'); Object.keys(s).forEach(k=>{if(!OR[k])OR[k]=s[k];}); } catch(e){}
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+function saveDB(){ localStorage.setItem('sm_db_v2', JSON.stringify(DB)); uNav(); }
+function saveRes(){ try{ localStorage.setItem('sm_v2_res', JSON.stringify(OR)); }catch(e){toast('Storage full — clear old results','#f59e0b');} }
+function uNav(){ document.getElementById('NC').textContent = '✓ '+DB.length+' creators'; }
+function toast(m,c='#22c55e'){ const t=document.getElementById('toast'); t.textContent=m; t.style.background=c; t.style.display='block'; setTimeout(()=>t.style.display='none',2800); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmt(n){ if(!n||isNaN(n))return'—'; if(n>=1e9)return(n/1e9).toFixed(1)+'B'; if(n>=1e6)return(n/1e6).toFixed(1)+'M'; if(n>=1e3)return(n/1e3).toFixed(0)+'K'; return String(n); }
+function parseFol(s){ if(!s)return 0; const m=String(s).replace(/,/g,'').match(/([\d.]+)\s*([KMBkmb]?)/); if(!m)return 0; let n=parseFloat(m[1]); const u=m[2].toUpperCase(); if(u==='K')n*=1e3; if(u==='M')n*=1e6; if(u==='B')n*=1e9; return Math.round(n); }
+function maxFol(c){ return Math.max(parseFol(c.ytf),parseFol(c.igf),parseFol(c.fbf),parseFol(c.lif))||0; }
+function domPlat(c){ const v=[{p:'YouTube',n:parseFol(c.ytf)},{p:'Instagram',n:parseFol(c.igf)},{p:'Facebook',n:parseFol(c.fbf)},{p:'LinkedIn',n:parseFol(c.lif)}].sort((a,b)=>b.n-a.n); return v[0].n>0?v[0].p:c.yt?'YouTube':c.ig?'Instagram':c.li?'LinkedIn':''; }
+function ctC(ct){ return{Founder:'ctf',Faceless:'ctfl','AI Avatar':'cta',Voiceover:'ctv',Repurposed:'ctr'}[ct]||'ctx'; }
+function ctL(ct){ return{Founder:'🎤 Founder',Faceless:'🎬 Faceless','AI Avatar':'🤖 AI Avatar',Voiceover:'🎙️ Voiceover',Repurposed:'📱 Repurposed'}[ct]||ct||'—'; }
+function catOf(m){ if(m>=10)return{id:'mega',l:'🔴 Mega',c:'#dc2626'}; if(m>=5)return{id:'major',l:'🟠 Major',c:'#ea580c'}; if(m>=2)return{id:'solid',l:'🟡 Solid',c:'#ca8a04'}; if(m>=1.5)return{id:'above',l:'🟢 Above',c:'#15803d'}; return{id:'normal',l:'⚪ Normal',c:'#334155'}; }
+function tcol(t){ return t==='Tier 1'?'#22c55e':t==='Tier 2'?'#f59e0b':'#94a3b8'; }
+function getK(){ return localStorage.getItem('sm_v2_ytkey')||''; }
+function getGroqK(){ return localStorage.getItem('sm_v2_groqkey')||''; }
+function getGoogleK(){ return localStorage.getItem('sm_v2_googlekey')||''; }
+function isShort(title,dur){ return dur<62||(title||'').toLowerCase().includes('#short'); }
+function setSt(m){ const e=document.getElementById('oSt'); if(e)e.textContent=m; const p=document.getElementById('pSt'); if(p&&running){p.style.display='block';p.textContent=m;} }
+
+// ═══════════════════════════════════════════════════
+// RELEVANCE SCORING
+// ═══════════════════════════════════════════════════
+const REL=[
+  {w:40,k:['case study','business story','how built','rise and fall','brand story','how company','business model','success story','how startup','brand war','empire','rise of','fall of','became billion','how brand']},
+  {w:35,k:['msme','supply chain','procurement','manufacturing','export','import','b2b','factory','vendor','supplier','wholesale','logistics','raw material','sourcing','distribution']},
+  {w:30,k:['explained','business concept','marketing strategy','economics of','business of','deep dive','breakdown','how industry','inside story','untold story','hidden story','secret behind']},
+  {w:20,k:['entrepreneur','founder','startup','built company','scaled','growth story','revenue model','business idea']},
+  {w:15,k:['interesting facts','did you know','business facts','infotainment','documentary']},
+  {w:5,k:['money','finance','business','company','brand','market','india','growth']},
+  {w:-20,k:['skincare','skin care','beauty','fashion','cooking','recipe','travel','cricket','fitness','gaming','vlog','lifestyle','glow','makeup','workout','haircare','dating','bollywood','movie review','song','music','dance']},
+  {w:-10,k:['personal loan','credit card','emi','insurance','sip','stock tips','trading tips','options trading']},
+];
+function scoreRel(title,niche){
+  const t=(title||'').toLowerCase(), n=(niche||'').toLowerCase();
+  let s=0;
+  if(n.includes('msme')||n.includes('manufacturing')||n.includes('export'))s+=20;
+  if(n.includes('marketing')||n.includes('branding'))s+=10;
+  if(n.includes('startup')||n.includes('founder'))s+=10;
+  REL.forEach(r=>r.k.forEach(k=>{if(t.includes(k)||n.includes(k))s+=r.w;}));
+  return Math.max(0,Math.min(100,s));
+}
+function relB(s){ if(s>=70)return{id:'high',l:'🟢 High '+s,cls:'rb-h rb'}; if(s>=40)return{id:'medium',l:'🟡 Med '+s,cls:'rb-m rb'}; if(s>=15)return{id:'low',l:'🟠 Low '+s,cls:'rb-l rb'}; return{id:'offtopic',l:'🔴 Off '+s,cls:'rb-o rb'}; }
+
+// ═══════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════
+// RESULTS — Recent sub-tab, By Creator, Excel copy
+// ═══════════════════════════════════════════════════
+function resTab(name){
+  ['all','recent','creators'].forEach(n=>{
+    const p=document.getElementById('resp-'+n);
+    if(p)p.style.display=n===name?'block':'none';
+  });
+  document.querySelectorAll('#resTabs .ptab').forEach((t,i)=>{
+    const names=['all','recent','creators'];
+    t.classList.toggle('on',names[i]===name);
+  });
+  if(name==='recent')rRecent();
+  if(name==='creators')rRes();
+  if(name==='all')rRes();
+}
+
+function rRecent(){
+  const all=getAllV();
+  const nSel=document.getElementById('recentN').value;
+  const from=document.getElementById('recentFrom').value;
+  const to=document.getElementById('recentTo').value;
+  // Sort by scan time (savedAt) descending — most recent first
+  let sorted=[...all].sort((a,b)=>(b.savedAt||'').localeCompare(a.savedAt||''));
+  if(from||to){
+    sorted=sorted.filter(v=>{
+      const d=(v.savedAt||'').slice(0,10);
+      if(from&&d<from)return false;
+      if(to&&d>to)return false;
+      return true;
+    });
+  } else if(nSel!=='all'){
+    sorted=sorted.slice(0,parseInt(nSel));
+  }
+  document.getElementById('recentCnt').textContent=sorted.length+' videos shown';
+  document.getElementById('recentList').innerHTML=sorted.length?sorted.map((v,i)=>{
+    const c=catOf(v.mult),m=v.mult>=10?Math.round(v.mult):v.mult.toFixed(1);
+    const rb2=relB(v.rel||scoreRel(v.title,v.creator&&v.creator.niche||''));
+    const scDate=v.savedAt?new Date(v.savedAt).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+    return '<a class="oi" href="https://youtube.com/watch?v='+v.id+'" target="_blank">'+
+      '<div class="rk">'+(i+1)+'</div>'+
+      (v.thumbnail?'<img class="th" src="'+esc(v.thumbnail)+'" alt="" onerror="this.style.display=\'none\'">':'<div class="tph">▶</div>')+
+      '<div class="oin"><div class="ott">'+esc(v.title)+'</div>'+
+      '<div class="otg"><span>'+esc(v.channelName||v.creator&&v.creator.name)+'</span>'+
+      (scDate?'<span style="background:#1a2035;padding:1px 5px;border-radius:3px;font-size:8px">📅 '+scDate+'</span>':'')+
+      '</div></div>'+
+      '<div class="ost"><div class="ov">'+fmt(v.views)+'</div><span class="cb" style="background:'+c.c+'">'+m+'× '+c.l+'</span></div>'+
+      '</a>';
+  }).join(''):'<div style="color:#4a5568;font-size:11px;padding:14px">No results in this range yet.</div>';
+}
+
+function copyResExcel(which){
+  const all=getAllV();
+  let rows=all;
+  if(which==='recent'){
+    const nSel=document.getElementById('recentN').value;
+    const from=document.getElementById('recentFrom').value;
+    const to=document.getElementById('recentTo').value;
+    rows=[...all].sort((a,b)=>(b.savedAt||'').localeCompare(a.savedAt||''));
+    if(from||to){rows=rows.filter(v=>{const d=(v.savedAt||'').slice(0,10);if(from&&d<from)return false;if(to&&d>to)return false;return true;});}
+    else if(nSel!=='all'){rows=rows.slice(0,parseInt(nSel));}
+  }
+  const h=['Creator','Channel','Title','Views','Multiplier','Avg Views','Published','YouTube URL','Niche','Scanned At'].join('\t');
+  const tsv=[h,...rows.map(v=>[v.creator&&v.creator.name,v.channelName||'',v.title,v.views,v.mult+'×',v.avgViews,v.publishedAt||'','https://youtube.com/watch?v='+v.id,v.creator&&v.creator.niche||'',v.savedAt||''].join('\t'))].join('\n');
+  navigator.clipboard.writeText(tsv);
+  toast('✓ '+rows.length+' rows copied — paste into Excel or Sheets');
+}
+
+function go(name){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg-'+name).classList.add('on');
+  document.querySelector('.tab[onclick="go(\''+name+'\')"]').classList.add('on');
+  if(name==='db')rDB();
+  if(name==='out')rGrid();
+  if(name==='res')rRes();
+  if(name==='exp')rExp();
+  if(name==='set')uSet();
+  if(name==='scr'){populateHookCats();rHooks();rMyScripts();rIdeas();}
+}
+
+// ═══════════════════════════════════════════════════
+// DATABASE
+// ═══════════════════════════════════════════════════
+function rDB(){
+  const q=(document.getElementById('dbQ').value||'').toLowerCase();
+  const pl=document.getElementById('dbPl').value;
+  const lg=document.getElementById('dbLg').value;
+  const ti=document.getElementById('dbTi').value;
+  const f=DB.filter(c=>{
+    if(q&&!c.name.toLowerCase().includes(q)&&!(c.niche||'').toLowerCase().includes(q)&&!(c.yt||'').includes(q))return false;
+    if(pl==='yt'&&!c.yt)return false;
+    if(pl==='ig'&&!c.ig)return false;
+    if(pl==='li'&&!c.li)return false;
+    if(lg&&c.lang!==lg)return false;
+    if(ti&&c.tier!==ti)return false;
+    return true;
+  });
+  document.getElementById('dbC').textContent=f.length+' of '+DB.length;
+  const yt=DB.filter(c=>c.yt).length, ig=DB.filter(c=>c.ig).length, li=DB.filter(c=>c.li).length;
+  document.getElementById('dbSR').innerHTML=
+    '<div class="sbox"><div class="sn">'+DB.length+'</div><div class="sl">Total</div></div>'+
+    '<div class="sbox"><div class="sn" style="color:#f87171">'+yt+'</div><div class="sl">YouTube</div></div>'+
+    '<div class="sbox"><div class="sn" style="color:#f472b6">'+ig+'</div><div class="sl">Instagram</div></div>'+
+    '<div class="sbox"><div class="sn" style="color:#60a5fa">'+li+'</div><div class="sl">LinkedIn</div></div>'+
+    '<div class="sbox"><div class="sn" style="color:#a855f7">'+DB.filter(c=>c.src!=='sheet').length+'</div><div class="sl">Added/Imported</div></div>';
+  document.getElementById('dbB').innerHTML=f.map((c,i)=>{
+    const id=c.id;
+    function ci(field,val,w){ return '<input class="ci" value="'+esc(val)+'" onchange="ef(\''+id+'\',\''+field+'\',this.value)" style="min-width:'+w+'px">'; }
+    function cis(field,val,opts,w){ return '<select class="ci" onchange="ef(\''+id+'\',\''+field+'\',this.value)" style="width:'+w+'px">'+opts.map(o=>'<option'+(val===o?' selected':'')+'>'+o+'</option>').join('')+'</select>'; }
+    return '<tr><td style="color:#4a5568">'+( i+1)+'</td>'+
+      '<td>'+ci('name',c.name,130)+'</td>'+
+      '<td>'+ci('yt',c.yt||'',170)+'</td>'+
+      '<td>'+ci('ytf',c.ytf||'',60)+'</td>'+
+      '<td>'+ci('ig',c.ig||'',170)+'</td>'+
+      '<td>'+ci('igf',c.igf||'',60)+'</td>'+
+      '<td>'+ci('fb',c.fb||'',150)+'</td>'+
+      '<td>'+ci('fbf',c.fbf||'',60)+'</td>'+
+      '<td>'+ci('li',c.li||'',190)+'</td>'+
+      '<td>'+ci('lif',c.lif||'',60)+'</td>'+
+      '<td>'+ci('niche',c.niche||'',120)+'</td>'+
+      '<td>'+ci('sub',c.sub||'',110)+'</td>'+
+      '<td style="color:#64748b;white-space:nowrap">'+fmt(maxFol(c))+'</td>'+
+      '<td style="color:#64748b;white-space:nowrap">'+esc(domPlat(c))+'</td>'+
+      '<td>'+ci('avgViews',c.avgViews||'',75)+'</td>'+
+      '<td>'+cis('tier',c.tier,['Tier 1','Tier 2','Tier 3'],75)+'</td>'+
+      '<td>'+cis('ct',c.ct,['Founder','Faceless','AI Avatar','Voiceover','Repurposed'],95)+'</td>'+
+      '<td>'+cis('lang',c.lang,['English','Hindi','Hinglish'],85)+'</td>'+
+      '<td>'+ci('notes',c.notes||'',170)+'</td>'+
+      '<td>'+(c.src!=='sheet'?'<button class="btnd" style="padding:2px 7px;font-size:10px" onclick="rmC(\''+id+'\')">✕</button>':'')+'</td></tr>';
+  }).join('');
+}
+function ef(id,f,v){ const c=DB.find(x=>x.id===id); if(c){c[f]=v;saveDB();} }
+function rmC(id){ if(!confirm('Remove?'))return; DB=DB.filter(c=>c.id!==id); saveDB(); rDB(); toast('Removed','#f59e0b'); }
+function cDB(){ ['dbQ','dbPl','dbLg','dbTi'].forEach(i=>document.getElementById(i).value=''); rDB(); }
+function resetDB(){ if(!confirm('Reset database to original creators?'))return; DB=SEED.map((c,i)=>({...c,id:'s'+i,src:'sheet'})); saveDB(); rDB(); toast('Reset done','#f59e0b'); }
+
+// ═══════════════════════════════════════════════════
+// IMPORT
+// ═══════════════════════════════════════════════════
+const COLS=['name','niche','yt','ytf','ig','igf','fb','fbf','li','lif','sub','tier','ct','lang','notes'];
+function parseImpRows(rows){
+  const first=rows[0]||[];
+  const start=(first[0]||'').toLowerCase().match(/name|channel|creator/)?1:0;
+  const existing=new Set(DB.map(c=>c.name.toLowerCase().trim()));
+  return rows.slice(start).filter(r=>r&&r[0]&&String(r[0]).trim()).map(r=>{
+    const c={id:'i'+Date.now()+Math.random(),src:'imported'};
+    COLS.forEach((f,i)=>{c[f]=String(r[i]||'').trim();});
+    if(!['Tier 1','Tier 2','Tier 3'].includes(c.tier))c.tier='Tier 2';
+    if(!['Founder','Faceless','AI Avatar','Voiceover','Repurposed'].includes(c.ct))c.ct='Founder';
+    if(!c.lang)c.lang='English';
+    c.dup=existing.has(c.name.toLowerCase().trim());
+    return c;
+  }).filter(c=>c.name);
+}
+function showImpPrev(rows){
+  impRows=rows;
+  const nw=rows.filter(r=>!r.dup).length, dp=rows.filter(r=>r.dup).length;
+  document.getElementById('impSum').textContent=rows.length+' creators — '+nw+' new, '+dp+' duplicates';
+  document.getElementById('impB').innerHTML=rows.map(r=>'<tr><td style="padding:4px 7px"><span style="font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;background:'+(r.dup?'#3b2200;color:#fb923c':'#14532d;color:#4ade80')+'">'+(r.dup?'DUP':'NEW')+'</span></td><td style="padding:4px 7px;color:#f1f5f9;font-weight:600">'+esc(r.name)+'</td><td style="padding:4px 7px;color:#64748b">'+esc(r.niche)+'</td><td style="padding:4px 7px;color:#64748b">'+esc(r.yt)+'</td><td style="padding:4px 7px;color:'+tcol(r.tier)+'">'+esc(r.tier)+'</td></tr>').join('');
+  document.getElementById('impPrev').style.display='block';
+}
+function doPaste(){ const t=document.getElementById('pa').value.trim(); if(!t)return; const rows=t.split('\n').map(l=>l.split('\t')); const p=parseImpRows(rows); if(p.length)showImpPrev(p); }
+function doFile(file){ if(!file)return; const ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='csv'){ const r=new FileReader(); r.onload=e=>{const rows=e.target.result.split('\n').map(l=>l.split(',').map(c=>c.replace(/^"|"$/g,'').trim())); showImpPrev(parseImpRows(rows));}; r.readAsText(file); }
+  else if(ext==='xlsx'||ext==='xls'){ const r=new FileReader(); r.onload=e=>{ try{const wb=XLSX.read(e.target.result,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}); showImpPrev(parseImpRows(rows));}catch(err){toast('Could not read file: '+err.message,'#dc2626');}}; r.readAsArrayBuffer(file); }
+  else{toast('Please upload .csv, .xlsx, or .xls','#dc2626');}
+}
+function doDrop(e){ e.preventDefault(); document.getElementById('dz').style.borderColor='#1a2035'; doFile(e.dataTransfer.files[0]); }
+function doImport(){ const mode=document.getElementById('impMode').value; let a=0,s=0,ow=0;
+  impRows.forEach(r=>{ const {dup,...c}=r; if(dup){if(mode==='over'){const idx=DB.findIndex(d=>d.name.toLowerCase()===c.name.toLowerCase()); if(idx>=0){DB[idx]={...DB[idx],...c,id:DB[idx].id,src:'imported'};ow++;}}else{s++;}}else{DB.push(c);a++;}});
+  saveDB(); document.getElementById('impPrev').style.display='none'; document.getElementById('pa').value=''; impRows=[];
+  toast('Imported: '+a+' new, '+ow+' overwritten, '+s+' skipped'); rDB();
+}
+function cancelImp(){ document.getElementById('impPrev').style.display='none'; impRows=[]; }
+
+// ═══════════════════════════════════════════════════
+// ADD CREATOR
+// ═══════════════════════════════════════════════════
+async function doSearch(){
+  const name=document.getElementById('acN').value.trim();
+  const ytUrl=document.getElementById('acY').value.trim();
+  const key=getK();
+  if(!name){toast('Enter a creator name first','#dc2626');return;}
+  if(!key){toast('Set your YouTube API key in Settings first','#f59e0b');return;}
+  document.getElementById('acSt').textContent='⟳ Searching…';
+  document.getElementById('acBtn').disabled=true;
+  try{
+    const BASE='https://www.googleapis.com/youtube/v3';
+    const handleM=ytUrl.match(/@([\w.-]+)/);
+    const channelM=ytUrl.match(/channel\/([\w-]+)/);
+    let channelId=null;
+    if(channelM){ channelId=channelM[1]; }
+    else if(handleM){
+      const r=await ytF(BASE+'/channels?part=id&forHandle='+encodeURIComponent(handleM[1])+'&key='+key);
+      if(r.items&&r.items.length)channelId=r.items[0].id;
+    }
+    if(!channelId){
+      const q=handleM?handleM[0]:name;
+      const s=await ytF(BASE+'/search?part=snippet&type=channel&q='+encodeURIComponent(q)+'&maxResults=3&key='+key);
+      if(!s.items||!s.items.length)throw new Error('No channel found');
+      channelId=s.items[0].snippet.channelId;
+    }
+    const ch=await ytF(BASE+'/channels?part=statistics,snippet&id='+channelId+'&key='+key);
+    const d=ch.items&&ch.items[0];
+    if(!d)throw new Error('Could not fetch channel details');
+    const subs=parseInt(d.statistics&&d.statistics.subscriberCount||'0');
+    const vids=parseInt(d.statistics&&d.statistics.videoCount||'0');
+    const views=parseInt(d.statistics&&d.statistics.viewCount||'0');
+    const cUrl=d.snippet.customUrl||'';
+    const thumb=d.snippet.thumbnails&&d.snippet.thumbnails.medium&&d.snippet.thumbnails.medium.url||'';
+    const desc=(d.snippet.description||'').slice(0,100);
+    pv={name,ytUrl:'https://www.youtube.com/'+(cUrl||'channel/'+channelId),ytf:fmt(subs),
+      ig:document.getElementById('acI').value.trim(),li:document.getElementById('acL').value.trim(),
+      niche:document.getElementById('acNi').value.trim(),sub:document.getElementById('acSn').value.trim(),
+      tier:document.getElementById('acT').value,ct:document.getElementById('acCT').value,
+      lang:document.getElementById('acLg').value,notes:document.getElementById('acNo').value.trim()||fmt(subs)+' subscribers'};
+    document.getElementById('vcSec').style.display='block';
+    document.getElementById('vcCard').innerHTML=
+      '<div style="font-size:11px;color:#f59e0b;margin-bottom:10px;font-weight:700">⚠ Verify this is the correct creator</div>'+
+      '<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">'+
+      (thumb?'<img style="width:50px;height:50px;border-radius:50%;object-fit:cover" src="'+esc(thumb)+'" alt="">':'<div style="width:50px;height:50px;border-radius:50%;background:#1a2035;display:flex;align-items:center;justify-content:center;font-size:18px">▶</div>')+
+      '<div><div style="font-size:14px;font-weight:700;color:#f1f5f9">'+esc(d.snippet.title)+'</div><div style="font-size:11px;color:#64748b">'+esc(cUrl)+'</div><div style="font-size:11px;color:#4a5568;margin-top:2px">'+esc(desc)+'…</div></div></div>'+
+      '<div class="vcs"><div class="vcst"><div class="vcn">'+fmt(subs)+'</div><div class="vcl">Subscribers</div></div><div class="vcst"><div class="vcn">'+fmt(vids)+'</div><div class="vcl">Videos</div></div><div class="vcst"><div class="vcn">'+fmt(views)+'</div><div class="vcl">Total views</div></div></div>'+
+      '<div style="font-size:11px;color:#64748b">URL: <strong style="color:#f1f5f9">'+esc(pv.ytUrl)+'</strong></div>'+
+      (pv.ig?'<div style="font-size:11px;color:#64748b;margin-top:3px">Instagram: <strong style="color:#f1f5f9">'+esc(pv.ig)+'</strong></div>':'')+
+      (pv.li?'<div style="font-size:11px;color:#64748b;margin-top:3px">LinkedIn: <strong style="color:#f1f5f9">'+esc(pv.li)+'</strong></div>':'');
+    document.getElementById('acSt').textContent='✓ Found — verify above';
+  }catch(e){ document.getElementById('acSt').textContent='⚠ '+e.message; toast('Error: '+e.message,'#dc2626'); }
+  document.getElementById('acBtn').disabled=false;
+}
+function doConfirm(){
+  if(!pv)return;
+  DB.push({id:'a'+Date.now(),src:'added',name:pv.name,niche:pv.niche,sub:pv.sub,yt:pv.ytUrl,ytf:pv.ytf,ig:pv.ig,igf:'',fb:'',fbf:'',li:pv.li,lif:'',tier:pv.tier,ct:pv.ct,lang:pv.lang,notes:pv.notes,avgViews:''});
+  saveDB(); document.getElementById('vcSec').style.display='none';
+  ['acN','acY','acI','acL','acNi','acSn','acNo'].forEach(id=>document.getElementById(id).value='');
+  pv=null; toast('✓ '+DB[DB.length-1].name+' added');
+}
+function doReject(){ document.getElementById('vcSec').style.display='none'; pv=null; document.getElementById('acSt').textContent='Rejected — try a more specific YouTube URL'; }
+
+// ═══════════════════════════════════════════════════
+// YOUTUBE API
+// ═══════════════════════════════════════════════════
+async function ytF(url){
+  const ctrl=new AbortController(); GC=ctrl;
+  const timer=setTimeout(()=>ctrl.abort(),20000);
+  try{
+    const r=await fetch(url,{signal:ctrl.signal});
+    clearTimeout(timer);
+    const d=await r.json();
+    if(d.error){
+      if(d.error.code===403||(d.error.message||'').toLowerCase().includes('quota'))throw new Error('YouTube quota exceeded for today. Resets at midnight Pacific Time.');
+      throw new Error(d.error.message||'YouTube API error '+d.error.code);
+    }
+    return d;
+  }catch(e){
+    clearTimeout(timer);
+    if(e.name==='AbortError')throw new Error('Request timed out or stopped');
+    throw e;
+  }
+}
+
+async function resolveCID(c){
+  const key=getK(), BASE='https://www.googleapis.com/youtube/v3';
+  const url=c.yt||'';
+  const hM=url.match(/@([\w.-]+)/);
+  const chM=url.match(/channel\/([\w-]+)/);
+  if(chM)return chM[1];
+  if(hM){
+    try{ const r=await ytF(BASE+'/channels?part=id&forHandle='+encodeURIComponent(hM[1])+'&key='+key); if(r.items&&r.items.length)return r.items[0].id; }catch(e){}
+  }
+  const q=hM?hM[0]:c.name;
+  const s=await ytF(BASE+'/search?part=snippet&type=channel&q='+encodeURIComponent(q)+'&maxResults=3&key='+key);
+  if(!s.items||!s.items.length)throw new Error('Channel not found on YouTube');
+  if(hM){for(const it of s.items){const cu=(it.snippet.customUrl||'').toLowerCase().replace('@',''); if(cu===hM[1].toLowerCase())return it.snippet.channelId;}}
+  return s.items[0].snippet.channelId;
+}
+
+async function analyzeC(creator){
+  const key=getK(), BASE='https://www.googleapis.com/youtube/v3';
+  const maxV=parseInt(document.getElementById('oVc').value)||150;
+  const df=document.getElementById('oDf').value;
+  const dt=document.getElementById('oDt').value;
+  const minV=parseInt(document.getElementById('oMv').value)||0;
+  const oMin=parseFloat(document.getElementById('oOt').value)||2;
+  const fmt_filter=document.getElementById('oFmt').value;
+
+  setSt('🔍 Finding channel: '+creator.name+'…');
+  const channelId=await resolveCID(creator);
+
+  setSt('📋 Loading channel info…');
+  const ch=await ytF(BASE+'/channels?part=contentDetails,snippet,statistics&id='+channelId+'&key='+key);
+  if(!ch.items||!ch.items.length)throw new Error('Channel not found');
+  const ci=ch.items[0];
+  const channelName=ci.snippet.title;
+  const subs=parseInt(ci.statistics&&ci.statistics.subscriberCount||'0');
+  const uploadsId=ci.contentDetails.relatedPlaylists.uploads;
+  const nameSim=channelName.toLowerCase().includes(creator.name.toLowerCase().split(' ')[0])||creator.name.toLowerCase().includes(channelName.toLowerCase().split(' ')[0]);
+  const flagged=!nameSim&&subs<50000;
+
+  setSt('📋 '+channelName+' ('+fmt(subs)+' subs) — fetching video list…');
+  const pages=Math.min(Math.ceil(maxV/50),6);
+  let videoIds=[], pageToken='';
+  for(let p=0;p<pages;p++){
+    if(stop)throw new Error('Stopped by user');
+    setSt('📋 '+channelName+' — page '+(p+1)+'/'+pages+' ('+videoIds.length+' videos)…');
+    const pl=await ytF(BASE+'/playlistItems?part=contentDetails&playlistId='+uploadsId+'&maxResults=50'+(pageToken?'&pageToken='+pageToken:'')+'&key='+key);
+    videoIds.push(...(pl.items||[]).map(i=>i.contentDetails.videoId));
+    pageToken=pl.nextPageToken||'';
+    if(!pageToken||videoIds.length>=maxV)break;
+  }
+  videoIds=videoIds.slice(0,maxV);
+  if(!videoIds.length)throw new Error('No videos found');
+
+  let videos=[];
+  const batches=Math.ceil(videoIds.length/50);
+  for(let i=0;i<videoIds.length;i+=50){
+    if(stop)throw new Error('Stopped by user');
+    const bn=Math.floor(i/50)+1;
+    setSt('📊 '+channelName+' — stats batch '+bn+'/'+batches+' ('+Math.min(i+50,videoIds.length)+'/'+videoIds.length+' videos)…');
+    const chunk=videoIds.slice(i,i+50).join(',');
+    const vd=await ytF(BASE+'/videos?part=statistics,snippet,contentDetails&id='+chunk+'&key='+key);
+    for(const v of vd.items||[]){
+      const views=parseInt(v.statistics&&v.statistics.viewCount||'0');
+      const pub=(v.snippet.publishedAt||'').slice(0,10);
+      const dur=parseDur(v.contentDetails&&v.contentDetails.duration||'');
+      if(views<=0)continue;
+      if(df&&pub<df)continue;
+      if(dt&&pub>dt)continue;
+      const short=isShort(v.snippet.title,dur);
+      if(fmt_filter==='long'&&short)continue;
+      if(fmt_filter==='shorts'&&!short)continue;
+      videos.push({id:v.id,title:v.snippet.title,publishedAt:pub,thumbnail:v.snippet.thumbnails&&v.snippet.thumbnails.medium&&v.snippet.thumbnails.medium.url||'',views,dur,short});
+    }
+  }
+  if(!videos.length)throw new Error('No videos match your filters (date range / format / views)');
+
+  const avgViews=Math.round(videos.reduce((s,v)=>s+v.views,0)/videos.length);
+  const sorted=[...videos].sort((a,b)=>b.views-a.views);
+  const topVideos=sorted.slice(0,30).map(v=>({...v,mult:parseFloat((v.views/avgViews).toFixed(2))})).filter(v=>v.mult>=oMin&&v.views>=minV);
+  const cats={mega:0,major:0,solid:0,above:0};
+  topVideos.forEach(v=>{const c=catOf(v.mult);if(c.id!=='normal')cats[c.id]=(cats[c.id]||0)+1;});
+  return{channelName,subs,avgViews,totalAnalyzed:videos.length,topVideos,cats,creator,flagged,savedAt:new Date().toISOString(),scanRange:(df&&dt?df+' → '+dt:df?'After '+df:dt?'Before '+dt:'All time')};
+}
+
+function parseDur(d){
+  if(!d)return 0;
+  const m=d.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if(!m)return 0;
+  return (parseInt(m[1]||0)*3600)+(parseInt(m[2]||0)*60)+parseInt(m[3]||0);
+}
+
+async function analyzeOne(creator){
+  const id=creator.id, key=getK();
+  if(!key){toast('Set YouTube API key in Settings','#dc2626');return;}
+  busy.add(id); delete OE[id]; delete OF[id]; rGrid();
+  try{
+    const r=await analyzeC(creator);
+    OR[id]=r; if(r.flagged)OF[id]=r;
+    saveRes();
+  }catch(e){
+    OE[id]=e.message;
+    if(!e.message.includes('Stopped'))toast('Error: '+e.message,'#dc2626');
+  }finally{
+    busy.delete(id); rGrid(); rOut(); uStats();
+  }
+}
+
+function uBtns(){
+  const key=getK(), pl=document.getElementById('oPl').value;
+  const isYT=pl==='yt';
+  document.getElementById('allBtn').disabled=!key||running||!isYT;
+  const hs=sel.size>0;
+  document.getElementById('selBtn').disabled=!key||running||!hs||!isYT;
+  document.getElementById('selBtn').style.display=hs&&isYT?'inline-flex':'none';
+  const stopB=document.getElementById('stopBtn');
+  stopB.style.display=running?'inline-flex':'none';
+}
+
+async function doSel(){
+  const toRun=[...sel].map(id=>DB.find(c=>c.id===id)).filter(c=>c&&c.yt);
+  if(!toRun.length){toast('Select YouTube creators first','#f59e0b');return;}
+  stop=false; running=true; uBtns();
+  const pw=document.getElementById('pW'), pf=document.getElementById('pF'), ps=document.getElementById('pSt');
+  pw.style.display='block'; ps.style.display='block'; pf.style.width='2%';
+  for(let i=0;i<toRun.length;i++){
+    if(stop)break;
+    pf.style.width=Math.round((i/toRun.length)*100)+'%';
+    await analyzeOne(toRun[i]);
+    await new Promise(r=>setTimeout(r,300));
+  }
+  doneFn();
+}
+
+async function doAll(){
+  const ytC=DB.filter(c=>c.yt);
+  stop=false; running=true; uBtns();
+  const pw=document.getElementById('pW'), pf=document.getElementById('pF'), ps=document.getElementById('pSt');
+  pw.style.display='block'; ps.style.display='block'; pf.style.width='2%';
+  for(let i=0;i<ytC.length;i++){
+    if(stop)break;
+    pf.style.width=Math.round((i/ytC.length)*100)+'%';
+    await analyzeOne(ytC[i]);
+    await new Promise(r=>setTimeout(r,300));
+  }
+  doneFn();
+}
+
+function doneFn(){
+  document.getElementById('pF').style.width='100%';
+  const s=stop;
+  stop=false; running=false; uBtns();
+  setSt(s?'⏹ Stopped — '+Object.keys(OR).length+' creators saved':'✓ Done! '+Object.keys(OR).length+' creators analyzed');
+  document.getElementById('pSt').style.display='block';
+  setTimeout(()=>{document.getElementById('pW').style.display='none';},2000);
+  rExp();
+}
+
+function doStop(){
+  stop=true; if(GC)GC.abort();
+  document.getElementById('stopBtn').disabled=true;
+  setSt('⏹ Stopping…');
+  running=false; uBtns();
+  saveRes(); toast('Stopped — results saved','#f59e0b');
+}
+
+function selTier(t){ deselAll(); DB.filter(c=>c.yt&&c.tier===t).forEach(c=>sel.add(c.id)); document.getElementById('selC').textContent=sel.size; uBtns(); rGrid(); toast(sel.size+' '+t+' YouTube creators selected'); }
+function selAll(){ DB.filter(c=>c.yt).forEach(c=>sel.add(c.id)); document.getElementById('selC').textContent=sel.size; uBtns(); rGrid(); }
+function deselAll(){ sel.clear(); document.getElementById('selC').textContent=0; uBtns(); rGrid(); }
+function toggleSel(id){ if(sel.has(id))sel.delete(id);else sel.add(id); document.getElementById('selC').textContent=sel.size; uBtns(); rGrid(); }
+
+function onPl(){
+  const p=document.getElementById('oPl').value, w=document.getElementById('plWarn');
+  if(p!=='yt'){w.style.display='block';w.textContent='⚠ '+{ig:'Instagram analysis requires Meta API key — coming soon.',li:'LinkedIn API is very restricted — coming soon.'}[p];}
+  else w.style.display='none';
+  uBtns();
+}
+
+function uStats(){
+  const all=getAllV();
+  document.getElementById('oSR').style.display=all.length?'flex':'none';
+  document.getElementById('stV').textContent=all.length;
+  document.getElementById('stMe').textContent=all.filter(v=>catOf(v.mult).id==='mega').length;
+  document.getElementById('stMa').textContent=all.filter(v=>catOf(v.mult).id==='major').length;
+  document.getElementById('stSo').textContent=all.filter(v=>catOf(v.mult).id==='solid').length;
+  document.getElementById('stAb').textContent=all.filter(v=>catOf(v.mult).id==='above').length;
+  document.getElementById('stDo').textContent=Object.keys(OR).length;
+  document.getElementById('stFl').textContent=Object.keys(OF).length;
+}
+
+function getAllV(){
+  return Object.values(OR).flatMap(r=>(r.topVideos||[]).map(v=>({...v,creator:r.creator,avgViews:r.avgViews,channelName:r.channelName,savedAt:r.savedAt,rel:scoreRel(v.title,r.creator&&r.creator.niche||'')})));
+}
+
+// ═══════════════════════════════════════════════════
+// MULTI-SELECT FILTER HELPERS
+// ═══════════════════════════════════════════════════
+function mkMS(containerId,opts,onchg){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  el.innerHTML=opts.map(o=>'<label class="msi"><input type="checkbox" value="'+esc(o.v||o)+'" onchange="'+onchg+'"><span>'+esc(o.l||o)+'</span></label>').join('');
+}
+function getMS(containerId){ const el=document.getElementById(containerId); if(!el)return[]; return [...el.querySelectorAll('input:checked')].map(c=>c.value); }
+function toggleMF(){ const p=document.getElementById('mfPanel'), b=document.getElementById('mfBtn'); const on=p.classList.contains('on'); p.classList.toggle('on'); b.textContent=on?'▼ More Filters':'▲ Less Filters'; if(!on)populateNiches(); }
+function populateNiches(){ const niches=[...new Set(Object.values(OR).map(r=>r.creator&&r.creator.niche).filter(Boolean))].sort(); mkMS('fNiche',niches,'rOut()'); }
+function clearF(){
+  ['fCat','fLang','fCT','fTier','fNiche','fRel','fFmt'].forEach(id=>{const el=document.getElementById(id);if(el)el.querySelectorAll('input').forEach(c=>c.checked=false);});
+  ['fSort','fMv','fMvMax','fAvgMin'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  ['fTitle','fCr','fDf','fDt2','fMultMin','fMultMax','fKw','fExKw'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const rs=document.getElementById('fRelSlider');if(rs){rs.value=0;document.getElementById('fRelVal').textContent='0';}
+  rOut();
+}
+
+// ═══════════════════════════════════════════════════
+// OUTLIER RENDER
+// ═══════════════════════════════════════════════════
+function oTab(name){
+  ['all','cr','fl'].forEach(n=>{document.getElementById('op-'+n).style.display=n===name?'block':'none';document.getElementById('ot-'+n).classList.toggle('on',n===name);});
+}
+
+function rOut(){
+  const rl=Object.values(OR);
+  if(!rl.length)return;
+  document.getElementById('oTabs').style.display='flex';
+  document.getElementById('oFB').style.display='block';
+
+  // Populate static filter options once
+  const fCat=document.getElementById('fCat');
+  if(fCat&&!fCat.dataset.populated){
+    mkMS('fCat',[{v:'mega',l:'🔴 Mega 10×+'},{v:'major',l:'🟠 Major 5–10×'},{v:'solid',l:'🟡 Solid 2–5×'},{v:'above',l:'🟢 Above Avg'}],'rOut()');
+    mkMS('fLang',['English','Hindi','Hinglish'],'rOut()');
+    mkMS('fCT',[{v:'Founder',l:'🎤 Founder'},{v:'Faceless',l:'🎬 Faceless'},{v:'AI Avatar',l:'🤖 AI Avatar'},{v:'Voiceover',l:'🎙️ Voiceover'},{v:'Repurposed',l:'📱 Repurposed'}],'rOut()');
+    mkMS('fTier',[{v:'Tier 1',l:'⭐ Tier 1'},{v:'Tier 2',l:'★ Tier 2'},{v:'Tier 3',l:'☆ Tier 3'}],'rOut()');
+    mkMS('fRel',[{v:'high',l:'🟢 High (70–100)'},{v:'medium',l:'🟡 Medium (40–69)'},{v:'low',l:'🟠 Low (15–39)'},{v:'offtopic',l:'🔴 Off-topic (0–14)'}],'rOut()');
+    mkMS('fFmt',[{v:'shorts',l:'⚡ Shorts'},{v:'long',l:'🎬 Long form'}],'rOut()');
+    fCat.dataset.populated='1';
+  }
+
+  const cats=getMS('fCat'), langs=getMS('fLang'), cts=getMS('fCT'), tiers=getMS('fTier'), niches=getMS('fNiche'), rels=getMS('fRel'), fmts=getMS('fFmt');
+  const tQ=(document.getElementById('fTitle')&&document.getElementById('fTitle').value||'').toLowerCase();
+  const cQ=(document.getElementById('fCr')&&document.getElementById('fCr').value||'').toLowerCase();
+  const minV2=parseInt(document.getElementById('fMv')&&document.getElementById('fMv').value||'0')||0;
+  const dfF=document.getElementById('fDf')&&document.getElementById('fDf').value||'';
+  const sortBy=document.getElementById('fSort')&&document.getElementById('fSort').value||'mult';
+
+  // Task 4 extended filter values
+  const multMin=parseFloat(document.getElementById('fMultMin')&&document.getElementById('fMultMin').value||'0')||0;
+  const multMax=parseFloat(document.getElementById('fMultMax')&&document.getElementById('fMultMax').value||'0')||0;
+  const mvMax=parseInt(document.getElementById('fMvMax')&&document.getElementById('fMvMax').value||'0')||0;
+  const avgMin=parseInt(document.getElementById('fAvgMin')&&document.getElementById('fAvgMin').value||'0')||0;
+  const kw=(document.getElementById('fKw')&&document.getElementById('fKw').value||'').toLowerCase().trim();
+  const exKw=(document.getElementById('fExKw')&&document.getElementById('fExKw').value||'').toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
+  const relSlider=parseInt(document.getElementById('fRelSlider')&&document.getElementById('fRelSlider').value||'0')||0;
+  const dtF2=document.getElementById('fDt2')&&document.getElementById('fDt2').value||'';
+
+  let f=getAllV().filter(v=>{
+    if(cats.length&&!cats.includes(catOf(v.mult).id))return false;
+    if(langs.length&&!langs.includes(v.creator&&v.creator.lang||''))return false;
+    if(cts.length&&!cts.includes(v.creator&&v.creator.ct||''))return false;
+    if(tiers.length&&!tiers.includes(v.creator&&v.creator.tier||''))return false;
+    if(niches.length&&!niches.includes(v.creator&&v.creator.niche||''))return false;
+    if(rels.length&&!rels.includes(relB(v.rel).id))return false;
+    if(fmts.length){if(fmts.includes('shorts')&&!fmts.includes('long')&&!v.short)return false; if(fmts.includes('long')&&!fmts.includes('shorts')&&v.short)return false;}
+    if(tQ&&!(v.title||'').toLowerCase().includes(tQ))return false;
+    if(cQ&&!(v.channelName||v.creator&&v.creator.name||'').toLowerCase().includes(cQ))return false;
+    if(v.views<minV2)return false;
+    if(dfF&&v.publishedAt&&v.publishedAt<dfF)return false;
+    // Task 4 custom filters
+    if(multMin>0&&v.mult<multMin)return false;
+    if(multMax>0&&v.mult>multMax)return false;
+    if(mvMax>0&&v.views>mvMax)return false;
+    if(avgMin>0&&(v.avgViews||0)<avgMin)return false;
+    if(dtF2&&v.publishedAt&&v.publishedAt>dtF2)return false;
+    if(kw){const combined=((v.title||'')+(v.channelName||'')+(v.creator&&v.creator.niche||'')).toLowerCase(); if(!combined.includes(kw))return false;}
+    if(exKw.length){const t=(v.title||'').toLowerCase(); if(exKw.some(k=>k&&t.includes(k)))return false;}
+    if(relSlider>0&&(v.rel||0)<relSlider)return false;
+    return true;
+  });
+
+  if(sortBy==='views')f.sort((a,b)=>b.views-a.views);
+  else if(sortBy==='newest')f.sort((a,b)=>(b.publishedAt||'').localeCompare(a.publishedAt||''));
+  else if(sortBy==='oldest')f.sort((a,b)=>(a.publishedAt||'').localeCompare(b.publishedAt||''));
+  else if(sortBy==='rel')f.sort((a,b)=>b.rel-a.rel);
+  else f.sort((a,b)=>b.mult-a.mult);
+
+  const totalAll=getAllV().length;
+  document.getElementById('otcA').textContent='('+f.length+')';
+  document.getElementById('otcC').textContent='('+rl.length+')';
+  document.getElementById('otcF').textContent='('+Object.keys(OF).length+')';
+  document.getElementById('fCnt').textContent=f.length+' videos';
+
+  const empEl=document.getElementById('oEmp');
+  const listEl=document.getElementById('oList');
+  if(f.length){
+    empEl.style.display='none';
+    listEl.innerHTML=f.map((v,i)=>{
+      const c=catOf(v.mult), m=v.mult>=10?Math.round(v.mult):v.mult.toFixed(1);
+      const rk=i===0?'rk g':i===1?'rk s':i===2?'rk b':'rk';
+      const rb2=relB(v.rel);
+      return '<a class="oi" href="https://youtube.com/watch?v='+v.id+'" target="_blank">'+
+        '<div class="'+rk+'">'+( i+1)+'</div>'+
+        (v.thumbnail?'<img class="th" src="'+esc(v.thumbnail)+'" alt="" onerror="this.style.display=\'none\'">':'<div class="tph">▶</div>')+
+        '<div class="oin"><div class="ott">'+esc(v.title)+'</div>'+
+        '<div class="otg"><span>'+esc(v.channelName||v.creator&&v.creator.name)+'</span><span style="color:#64748b">'+esc(v.creator&&v.creator.niche||'')+'</span>'+
+        '<span class="ctb '+ctC(v.creator&&v.creator.ct)+'">'+ctL(v.creator&&v.creator.ct)+'</span>'+
+        '<span style="color:#64748b">'+esc(v.creator&&v.creator.lang||'')+'</span>'+
+        (v.publishedAt?'<span style="color:#334155">'+v.publishedAt+'</span>':'')+
+        (v.short?'<span class="fb-badge">⚡ Short</span>':'')+
+        '</div></div>'+
+        '<div class="ost"><div class="ov">'+fmt(v.views)+'</div><span class="cb" style="background:'+c.c+'">'+m+'× '+c.l+'</span><div class="oav">avg '+fmt(v.avgViews)+'</div><span class="'+rb2.cls+'">'+rb2.l+'</span></div>'+
+        '</a>'+
+        '<div class="row" style="margin:-3px 0 6px 0;gap:5px"><button class="btnh" onclick="event.stopPropagation();sendOutlierToScript('+JSON.stringify(v.title)+')">📝 Generate Script</button><button class="btnh" onclick="event.stopPropagation();analyseHookVerts('+JSON.stringify(v.title)+',this)">🔍 Analyse Hook</button></div>';
+    }).join('');
+  } else {
+    empEl.style.display='block';
+    if(totalAll>0){
+      document.getElementById('oEmpT').textContent='Results filtered out';
+      document.getElementById('oEmpM').innerHTML=totalAll+' videos found but hidden by filters.<br>Try: <strong>Clear filters</strong> or lower <strong>Min Views</strong> to No minimum';
+    } else {
+      document.getElementById('oEmpT').textContent='No results yet';
+      document.getElementById('oEmpM').textContent='Configure settings, select creators, and click Analyze.';
+    }
+    listEl.innerHTML='';
+  }
+
+  // By Creator accordion
+  document.getElementById('oAcc').innerHTML=rl.map(r=>{
+    const safe=r.creator.id.replace(/[^a-z0-9]/gi,'_');
+    const cats2=r.cats||{};
+    return '<div class="acc"><div class="acc-h" onclick="var b=document.getElementById(\'ab'+safe+'\'),a=document.getElementById(\'aa'+safe+'\');var o=b.style.display===\'block\';b.style.display=o?\'none\':\'block\';a.textContent=o?\'▼\':\'▲\'">'+
+      '<div style="flex:1"><div style="font-weight:700;color:#f1f5f9;font-size:12px">'+esc(r.channelName||r.creator.name)+'</div>'+
+      '<div style="font-size:10px;color:#4a5568;margin-top:1px">'+r.totalAnalyzed+' analyzed · avg '+fmt(r.avgViews)+' · '+
+      (cats2.mega?'<span style="color:#dc2626">'+cats2.mega+'🔴</span> ':'')+
+      (cats2.major?'<span style="color:#ea580c">'+cats2.major+'🟠</span> ':'')+
+      (cats2.solid?'<span style="color:#ca8a04">'+cats2.solid+'🟡</span> ':'')+
+      (cats2.above?'<span style="color:#15803d">'+cats2.above+'🟢</span>':'')+
+      (r.flagged?'<span class="rb rb-o">⚠ Verify</span>':'')+
+      '</div></div>'+
+      '<span class="ctb '+ctC(r.creator.ct)+'" style="font-size:9px">'+ctL(r.creator.ct)+'</span>'+
+      '<span style="color:'+tcol(r.creator.tier)+';font-size:10px;padding:1px 5px;background:#0d1117;border-radius:3px">'+r.creator.tier+'</span>'+
+      '<span id="aa'+safe+'" style="color:#4a5568;font-size:10px">▼</span>'+
+      '</div><div class="acb" id="ab'+safe+'">'+
+      (!(r.topVideos&&r.topVideos.length)?'<div style="color:#4a5568;font-size:11px;padding:6px">No outliers above threshold. Try lowering Min Views or threshold.</div>':
+      (r.topVideos||[]).map((v,i)=>{
+        const c=catOf(v.mult), m=v.mult>=10?Math.round(v.mult):v.mult.toFixed(1);
+        return '<a class="sv" href="https://youtube.com/watch?v='+v.id+'" target="_blank">'+
+          '<span style="font-size:10px;color:#334155;width:14px">'+( i+1)+'</span>'+
+          (v.thumbnail?'<img src="'+esc(v.thumbnail)+'" style="width:52px;height:30px;border-radius:3px;object-fit:cover;flex-shrink:0" alt="" onerror="this.style.display=\'none\'">':'')+
+          '<div style="flex:1;min-width:0"><div style="font-size:11px;color:#f1f5f9;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(v.title)+'</div>'+
+          (v.publishedAt?'<div style="font-size:9px;color:#334155">'+v.publishedAt+(v.short?' · ⚡ Short':'')+'</div>':'')+
+          '</div><div style="text-align:right;flex-shrink:0;min-width:85px"><div style="font-size:11px;font-weight:700;color:#f1f5f9">'+fmt(v.views)+'</div><span class="cb" style="background:'+c.c+';font-size:9px">'+m+'× '+c.l+'</span></div></a>';
+      }).join(''))+
+      '</div></div>';
+  }).join('');
+
+  // Flagged
+  document.getElementById('oFlagL').innerHTML=Object.values(OF).map(r=>'<div style="background:#0d1117;border:1px solid #ca8a04;border-radius:7px;padding:10px;margin-bottom:7px"><div style="font-weight:700;color:#fb923c;margin-bottom:3px">⚠ '+esc(r.channelName)+'</div><div style="font-size:11px;color:#64748b">Expected: <strong style="color:#f1f5f9">'+esc(r.creator.name)+'</strong> · Found: <strong style="color:#fb923c">'+esc(r.channelName)+'</strong> · '+fmt(r.subs)+' subs</div><div style="font-size:11px;color:#4a5568;margin-top:4px">Fix: Go to Database tab → update YouTube URL for '+esc(r.creator.name)+'</div></div>').join('');
+
+  if(document.getElementById('pg-exp').classList.contains('on'))rExp();
+}
+
+function rGrid(){
+  const key=getK(), q=(document.getElementById('oGQ')&&document.getElementById('oGQ').value||'').toLowerCase();
+  populateGridNiches();
+  const gNiche=document.getElementById('oGNiche')&&document.getElementById('oGNiche').value||'';
+  const gTier=document.getElementById('oGTier')&&document.getElementById('oGTier').value||'';
+  const gCT=document.getElementById('oGCT')&&document.getElementById('oGCT').value||'';
+  const gLang=document.getElementById('oGLang')&&document.getElementById('oGLang').value||'';
+  const gPlat=document.getElementById('oGPlat')&&document.getElementById('oGPlat').value||'';
+  const ytC=DB.filter(c=>{
+    if(gPlat==='yt'&&!c.yt)return false;
+    if(!gPlat&&!c.yt)return false; // default: only show YouTube creators in grid
+    if(q&&!c.name.toLowerCase().includes(q))return false;
+    if(gNiche&&c.niche!==gNiche)return false;
+    if(gTier&&c.tier!==gTier)return false;
+    if(gCT&&c.ct!==gCT)return false;
+    if(gLang&&c.lang!==gLang)return false;
+    return true;
+  });
+  document.getElementById('oGCnt').textContent=ytC.length+' shown';
+  document.getElementById('oGL').textContent=DB.filter(c=>c.yt).length+' YouTube creators — select to analyze';
+  document.getElementById('oGrid').innerHTML=ytC.map(c=>{
+    const done=!!OR[c.id], err=OE[c.id], isBusy=busy.has(c.id), r=OR[c.id], isSel=sel.has(c.id), flag=!!OF[c.id];
+    const cats2=r&&r.cats||{};
+    const bg=isBusy?'#1a2035':done?'#14532d':key?'#1a2d4a':'#0d1117';
+    const tc=isBusy?'#64748b':done?'#4ade80':key?'#60a5fa':'#2d3748';
+    return '<div class="cc '+(done?'done':'')+(err&&!done?' err':'')+(isSel?' sel':'')+'">'+'<input type="checkbox" class="cc-chk" '+(isSel?'checked':'')+' onclick="toggleSel(\''+c.id+'\')" title="Select for batch analysis">'+
+      '<div class="ccn">'+esc(c.name)+'</div>'+
+      '<div class="ccs">'+esc(c.niche||'')+' · <span style="color:'+tcol(c.tier)+'">'+c.tier+'</span></div>'+
+      '<div style="font-size:9px;color:#334155;margin-bottom:4px">'+esc(c.yt&&c.yt.match&&c.yt.match(/@[\w.-]+/)&&c.yt.match(/@[\w.-]+/)[0]||c.yt||'')+'</div>'+
+      '<span class="ctb '+ctC(c.ct)+'">'+ctL(c.ct)+'</span>'+
+      (flag?'<div style="font-size:9px;color:#fb923c;margin-top:3px">⚠ Verify creator</div>':'')+
+      (err?'<div style="font-size:9px;color:#f87171;margin-top:3px">⚠ '+esc(err)+'</div>':'')+
+      (done&&!err?'<div style="font-size:9px;color:#4ade80;margin-top:3px">✓ '+(cats2.mega||0)+'🔴'+(cats2.major||0)+'🟠'+(cats2.solid||0)+'🟡 avg '+fmt(r.avgViews)+'</div>':'')+
+      '<button class="ccb" style="background:'+bg+';color:'+tc+'" onclick="analyzeOne(DB.find(function(c){return c.id===\''+c.id+'\'}))" '+((!key||isBusy||running)?'disabled':'')+'>'+(isBusy?'⟳ Analyzing…':done?'↻ Re-run':'▶ Analyze')+'</button>'+
+      '</div>';
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// RESULTS TAB
+// ═══════════════════════════════════════════════════
+function rRes(){
+  const rl=Object.values(OR);
+  const all=getAllV();
+  document.getElementById('rSR').innerHTML=
+    '<div class="sbox"><div class="sn">'+rl.length+'</div><div class="sl">Creators saved</div></div>'+
+    '<div class="sbox"><div class="sn">'+all.length+'</div><div class="sl">Total outliers</div></div>'+
+    '<div class="sbox"><div class="sn" style="color:#dc2626">'+all.filter(v=>catOf(v.mult).id==='mega').length+'</div><div class="sl">🔴 Mega</div></div>'+
+    '<div class="sbox"><div class="sn" style="color:#22c55e">'+all.filter(v=>relB(v.rel).id==='high').length+'</div><div class="sl">🟢 High Rel</div></div>';
+
+  if(!rl.length){
+    document.getElementById('rCards').innerHTML='<div style="color:#4a5568;font-size:12px;grid-column:1/-1">No saved results yet. Run analysis in Outlier Finder tab first.</div>';
+    document.getElementById('rList').innerHTML='';
+    return;
+  }
+
+  document.getElementById('rCards').innerHTML=rl.map(r=>{
+    const cats2=r.cats||{}, scanned=r.savedAt?new Date(r.savedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'Unknown';
+    return '<div class="cc '+(r.flagged?'err':'done')+'">'+
+      '<div class="ccn">'+esc(r.channelName||r.creator&&r.creator.name)+'</div>'+
+      '<div class="ccs">'+esc(r.creator&&r.creator.niche||'')+' · <span style="color:'+tcol(r.creator&&r.creator.tier)+'">'+esc(r.creator&&r.creator.tier||'')+'</span></div>'+
+      '<div style="font-size:10px;color:#4a5568;margin-bottom:5px">📅 '+scanned+'<br>🗓 '+esc(r.scanRange||'All time')+'<br>📹 '+r.totalAnalyzed+' analyzed · avg '+fmt(r.avgViews)+'</div>'+
+      '<div style="font-size:11px;margin-bottom:6px">'+
+      (cats2.mega?'<span style="color:#dc2626">'+cats2.mega+'🔴 </span>':'')+
+      (cats2.major?'<span style="color:#ea580c">'+cats2.major+'🟠 </span>':'')+
+      (cats2.solid?'<span style="color:#ca8a04">'+cats2.solid+'🟡 </span>':'')+
+      (cats2.above?'<span style="color:#15803d">'+cats2.above+'🟢</span>':'')+
+      (!cats2.mega&&!cats2.major&&!cats2.solid&&!cats2.above?'<span style="color:#334155">No outliers</span>':'')+
+      '</div>'+
+      '<div style="display:flex;gap:5px">'+
+      '<button class="ccb" style="background:#1a2d4a;color:#60a5fa;flex:1" onclick="go(\'out\')">↺ Re-scan</button>'+
+      '<button class="ccb" style="background:#450a0a;color:#f87171;width:32px" onclick="clrOne(\''+r.creator.id+'\')" title="Clear">🗑</button>'+
+      '</div></div>';
+  }).join('');
+
+  const tQ=(document.getElementById('rTQ')&&document.getElementById('rTQ').value||'').toLowerCase();
+  const cQ=(document.getElementById('rCQ')&&document.getElementById('rCQ').value||'').toLowerCase();
+  const sortBy=document.getElementById('rSort')&&document.getElementById('rSort').value||'mult';
+  let f=all.filter(v=>{
+    if(tQ&&!(v.title||'').toLowerCase().includes(tQ))return false;
+    if(cQ&&!(v.channelName||v.creator&&v.creator.name||'').toLowerCase().includes(cQ))return false;
+    return true;
+  });
+  if(sortBy==='views')f.sort((a,b)=>b.views-a.views);
+  else if(sortBy==='newest')f.sort((a,b)=>(b.publishedAt||'').localeCompare(a.publishedAt||''));
+  else if(sortBy==='rel')f.sort((a,b)=>b.rel-a.rel);
+  else if(sortBy==='scanned')f.sort((a,b)=>(b.savedAt||'').localeCompare(a.savedAt||''));
+  else f.sort((a,b)=>b.mult-a.mult);
+
+  document.getElementById('rList').innerHTML=f.length?f.map((v,i)=>{
+    const c=catOf(v.mult), m=v.mult>=10?Math.round(v.mult):v.mult.toFixed(1);
+    const rk=i===0?'rk g':i===1?'rk s':i===2?'rk b':'rk';
+    const rb2=relB(v.rel);
+    const scDate=v.savedAt?new Date(v.savedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
+    return '<a class="oi" href="https://youtube.com/watch?v='+v.id+'" target="_blank">'+
+      '<div class="'+rk+'">'+( i+1)+'</div>'+
+      (v.thumbnail?'<img class="th" src="'+esc(v.thumbnail)+'" alt="" onerror="this.style.display=\'none\'">':'<div class="tph">▶</div>')+
+      '<div class="oin"><div class="ott">'+esc(v.title)+'</div>'+
+      '<div class="otg"><span>'+esc(v.channelName||v.creator&&v.creator.name)+'</span><span style="color:#64748b">'+esc(v.creator&&v.creator.niche||'')+'</span>'+
+      '<span class="ctb '+ctC(v.creator&&v.creator.ct)+'">'+ctL(v.creator&&v.creator.ct)+'</span>'+
+      (v.publishedAt?'<span style="color:#334155">'+v.publishedAt+'</span>':'')+
+      (v.short?'<span class="fb-badge">⚡ Short</span>':'')+
+      (scDate?'<span style="color:#4a5568;background:#1a2035;padding:1px 5px;border-radius:3px;font-size:9px">📅 '+scDate+'</span>':'')+
+      '</div></div>'+
+      '<div class="ost"><div class="ov">'+fmt(v.views)+'</div><span class="cb" style="background:'+c.c+'">'+m+'× '+c.l+'</span><div class="oav">avg '+fmt(v.avgViews)+'</div><span class="'+rb2.cls+'">'+rb2.l+'</span></div>'+
+      '</a>';
+  }).join(''):'<div style="color:#4a5568;font-size:12px;padding:16px">No videos match your search.</div>';
+}
+
+function clrOne(id){ if(!confirm('Clear results for this creator?'))return; delete OR[id]; delete OF[id]; delete OE[id]; saveRes(); rRes(); rGrid(); uStats(); toast('Cleared','#f59e0b'); }
+function clearAll(){ if(!confirm('Clear ALL saved results? Database is not affected.'))return; OR={}; OF={}; OE={}; localStorage.removeItem('sm_v2_res'); rRes(); rGrid(); uStats(); toast('All results cleared','#f59e0b'); }
+
+// ═══════════════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════════════
+function bldRow(c){ return[c.name,c.yt||'',c.ytf||'',c.ig||'',c.igf||'',c.fb||'',c.fbf||'',c.li||'',c.lif||'',c.niche||'',c.sub||'',maxFol(c)?fmt(maxFol(c)):'',domPlat(c),c.avgViews||'',c.tier||'',c.notes||''].join('\t'); }
+function rExp(){
+  const fi=document.getElementById('expF')&&document.getElementById('expF').value||'';
+  const rows=DB.filter(c=>{if(fi==='sheet'&&c.src!=='sheet')return false;if(fi==='added'&&c.src!=='added')return false;if(fi==='Tier 1'&&c.tier!=='Tier 1')return false;if(fi==='Tier 2'&&c.tier!=='Tier 2')return false;return true;});
+  document.getElementById('expC').textContent=rows.length+' creators';
+  const h=['Channel Name','YouTube URL','YT Followers','Instagram URL','Insta Followers','Facebook URL','FB Followers','LinkedIn URL','LinkedIn Followers','Niche / Category','Sub-niche','Maximum Followers','Dominant Social Media','Avg Views Per Post (est.)','Priority Tier','Notes'].join('\t');
+  document.getElementById('expPrev').textContent=[h,...rows.slice(0,5).map(bldRow)].join('\n');
+  const oAll=getAllV();
+  if(oAll.length){
+    document.getElementById('oExpCard').style.display='block';
+    document.getElementById('oExpC').textContent=oAll.length+' videos';
+    const oh=['Creator','Channel','Title','Views','Multiplier','Category','Avg Views','Published','YouTube URL','Content Type','Tier','Language','Niche','Relevance','Format'].join('\t');
+    document.getElementById('oExpPrev').textContent=[oh,...oAll.slice(0,5).map(v=>[v.creator&&v.creator.name,v.channelName||'',v.title,v.views,v.mult+'×',catOf(v.mult).l,v.avgViews,v.publishedAt||'','https://youtube.com/watch?v='+v.id,ctL(v.creator&&v.creator.ct),v.creator&&v.creator.tier||'',v.creator&&v.creator.lang||'',v.creator&&v.creator.niche||'',v.rel,v.short?'Short':'Long form'].join('\t'))].join('\n');
+  }
+}
+function copyExp(){
+  const fi=document.getElementById('expF')&&document.getElementById('expF').value||'';
+  const rows=DB.filter(c=>{if(fi==='sheet'&&c.src!=='sheet')return false;if(fi==='added'&&c.src!=='added')return false;if(fi==='Tier 1'&&c.tier!=='Tier 1')return false;if(fi==='Tier 2'&&c.tier!=='Tier 2')return false;return true;});
+  const h=['Channel Name','YouTube URL','YT Followers','Instagram URL','Insta Followers','Facebook URL','FB Followers','LinkedIn URL','LinkedIn Followers','Niche / Category','Sub-niche','Maximum Followers','Dominant Social Media','Avg Views Per Post (est.)','Priority Tier','Notes'].join('\t');
+  const tsv=[h,...rows.map(bldRow)].join('\n');
+  navigator.clipboard.writeText(tsv).then(()=>toast('✓ '+rows.length+' rows copied! Go to Sheet → row 3 → Cmd+V')).catch(()=>{document.getElementById('expPrev').textContent=tsv;toast('Select preview text and copy manually','#f59e0b');});
+}
+function copyOExp(){
+  const oAll=getAllV();
+  const h=['Creator','Channel','Title','Views','Multiplier','Category','Avg Views','Published','YouTube URL','Content Type','Tier','Language','Niche','Relevance','Format'].join('\t');
+  const tsv=[h,...oAll.map(v=>[v.creator&&v.creator.name,v.channelName||'',v.title,v.views,v.mult+'×',catOf(v.mult).l,v.avgViews,v.publishedAt||'','https://youtube.com/watch?v='+v.id,ctL(v.creator&&v.creator.ct),v.creator&&v.creator.tier||'',v.creator&&v.creator.lang||'',v.creator&&v.creator.niche||'',v.rel,v.short?'Short':'Long form'].join('\t'))].join('\n');
+  navigator.clipboard.writeText(tsv).then(()=>toast('✓ '+oAll.length+' outlier videos copied!'));
+}
+
+// ═══════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════
+function uSet(){
+  const k=getK();
+  ['ytBadge','apiSt'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=k?'✓ Set':'Not set';el.style.background=k?'#14532d':'#1a2035';el.style.color=k?'#4ade80':'#4a5568';}});
+  const yi=document.getElementById('ytInp'); if(yi)yi.value=k;
+  const acSt=document.getElementById('acSt'); if(acSt)acSt.textContent=k?'Paste YouTube URL for best results':'Set your YouTube API key in Settings first';
+  uBtns();
+}
+function saveK(type){ const m={yt:'ytInp',meta:'metaInp',liapi:'liInp',groq:'groqInp',google:'googleInp'}; const v=(document.getElementById(m[type])&&document.getElementById(m[type]).value||'').trim(); if(!v){toast('Paste a key first','#f59e0b');return;} localStorage.setItem('sm_v2_'+type+'key',v); toast('✓ Key saved — ready to analyze'); uSet(); }
+function clearK(type){ const m={yt:'ytInp',meta:'metaInp',liapi:'liInp',groq:'groqInp',google:'googleInp'}; localStorage.removeItem('sm_v2_'+type+'key'); if(document.getElementById(m[type]))document.getElementById(m[type]).value=''; toast('Key cleared','#f59e0b'); uSet(); }
+function tv(id){ const i=document.getElementById(id); if(i)i.type=i.type==='password'?'text':'password'; }
+
+
+// ═══════════════════════════════════════════════════
+// QUICK ANALYSIS — Task 2
+// ═══════════════════════════════════════════════════
+let qaCreator=null, qaData=null;
+
+function qaFilter(){
+  const q=(document.getElementById('qaSearch').value||'').toLowerCase();
+  const dd=document.getElementById('qaDropdown');
+  const btn=document.getElementById('qaRunBtn');
+  if(!q||q.length<2){dd.style.display='none';qaCreator=null;btn.disabled=true;return;}
+  const matches=DB.filter(c=>c.name.toLowerCase().includes(q)&&c.yt).slice(0,8);
+  if(!matches.length){dd.style.display='none';return;}
+  dd.style.display='block';
+  dd.innerHTML=matches.map(c=>{
+    const safeId=c.id.replace(/'/g,'');
+    return '<div class="qa-drop-item" data-id="'+safeId+'">'+
+    '<strong>'+esc(c.name)+'</strong> <span style="color:#4a5568;font-size:10px">'+esc(c.niche||'')+'</span>'+
+    '<span style="color:'+tcol(c.tier)+';font-size:10px;margin-left:6px">'+c.tier+'</span></div>';
+  }).join('');
+  dd.querySelectorAll('.qa-drop-item').forEach(el=>{
+    el.addEventListener('click',()=>qaSelect(el.dataset.id));
+  });
+}
+
+function qaSelect(id){
+  qaCreator=DB.find(c=>c.id===id);
+  if(!qaCreator)return;
+  document.getElementById('qaSearch').value=qaCreator.name;
+  document.getElementById('qaDropdown').style.display='none';
+  document.getElementById('qaRunBtn').disabled=false;
+  document.getElementById('qaSt').textContent='Ready to analyze '+qaCreator.name;
+}
+
+async function qaRun(){
+  if(!qaCreator){toast('Select a creator first','#f59e0b');return;}
+  const key=getK();
+  if(!key){toast('Set YouTube API key in Settings','#dc2626');return;}
+  document.getElementById('qaRunBtn').disabled=true;
+  document.getElementById('qaSt').textContent='⟳ Analyzing '+qaCreator.name+'…';
+  document.getElementById('qaResult').style.display='none';
+  document.getElementById('qaFB').style.display='none';
+  document.getElementById('qaList').innerHTML='';
+  try{
+    const r=await analyzeC(qaCreator);
+    qaData=r;
+    OR[qaCreator.id]=r;
+    saveRes();
+    document.getElementById('qaClearBtn').style.display='inline-flex';
+    document.getElementById('qaSt').textContent='✓ '+r.channelName+' — '+r.totalAnalyzed+' videos analyzed, '+r.topVideos.length+' outliers found';
+    // Show summary
+    const cats2=r.cats||{};
+    document.getElementById('qaResult').style.display='block';
+    document.getElementById('qaResult').innerHTML=
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">'+
+      '<div class="sbox" style="min-width:70px"><div class="sn">'+r.totalAnalyzed+'</div><div class="sl">Analyzed</div></div>'+
+      '<div class="sbox" style="min-width:70px"><div class="sn">'+fmt(r.avgViews)+'</div><div class="sl">Avg Views</div></div>'+
+      '<div class="sbox" style="min-width:70px"><div class="sn" style="color:#dc2626">'+(cats2.mega||0)+'</div><div class="sl">🔴 Mega</div></div>'+
+      '<div class="sbox" style="min-width:70px"><div class="sn" style="color:#ea580c">'+(cats2.major||0)+'</div><div class="sl">🟠 Major</div></div>'+
+      '<div class="sbox" style="min-width:70px"><div class="sn" style="color:#ca8a04">'+(cats2.solid||0)+'</div><div class="sl">🟡 Solid</div></div>'+
+      '<div class="sbox" style="min-width:70px"><div class="sn" style="color:#15803d">'+(cats2.above||0)+'</div><div class="sl">🟢 Above</div></div>'+
+      '</div>';
+    document.getElementById('qaFB').style.display='flex';
+    qaRender();
+    uStats();
+    rGrid();
+  }catch(e){
+    document.getElementById('qaSt').textContent='⚠ '+e.message;
+    toast('Error: '+e.message,'#dc2626');
+  }
+  document.getElementById('qaRunBtn').disabled=false;
+}
+
+function qaRender(){
+  if(!qaData)return;
+  const sortBy=document.getElementById('qaSort').value||'mult';
+  const tQ=(document.getElementById('qaFTitle').value||'').toLowerCase();
+  const catF=document.getElementById('qaFCat').value||'';
+  const fmtF=document.getElementById('qaFmt').value||'';
+  const relF=document.getElementById('qaFRel').value||'';
+  let vids=(qaData.topVideos||[]).map(v=>({...v,rel:scoreRel(v.title,qaData.creator&&qaData.creator.niche||'')}));
+  if(catF)vids=vids.filter(v=>catOf(v.mult).id===catF);
+  if(tQ)vids=vids.filter(v=>(v.title||'').toLowerCase().includes(tQ));
+  if(fmtF==='shorts')vids=vids.filter(v=>v.short);
+  if(fmtF==='long')vids=vids.filter(v=>!v.short);
+  if(relF)vids=vids.filter(v=>relB(v.rel).id===relF);
+  if(sortBy==='views')vids.sort((a,b)=>b.views-a.views);
+  else if(sortBy==='newest')vids.sort((a,b)=>(b.publishedAt||'').localeCompare(a.publishedAt||''));
+  else if(sortBy==='rel')vids.sort((a,b)=>b.rel-a.rel);
+  else vids.sort((a,b)=>b.mult-a.mult);
+  document.getElementById('qaFCnt').textContent=vids.length+' videos';
+  document.getElementById('qaList').innerHTML=vids.length?vids.map((v,i)=>{
+    const c=catOf(v.mult),m=v.mult>=10?Math.round(v.mult):v.mult.toFixed(1),rb2=relB(v.rel);
+    return '<a class="qa-vid" href="https://youtube.com/watch?v='+v.id+'" target="_blank">'+
+      '<span style="font-size:10px;color:#334155;width:16px">'+(i+1)+'</span>'+
+      (v.thumbnail?'<img src="'+esc(v.thumbnail)+'" style="width:60px;height:34px;border-radius:3px;object-fit:cover;flex-shrink:0" alt="" onerror=\"this.style.display=\x27none\x27\">':'')+
+      '<div style="flex:1;min-width:0"><div style="font-size:12px;color:#f1f5f9;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(v.title)+'</div>'+
+      '<div style="display:flex;gap:4px;margin-top:2px">'+
+      (v.publishedAt?'<span style="font-size:9px;color:#334155">'+v.publishedAt+'</span>':'')+
+      (v.short?'<span class="fb-badge">⚡ Short</span>':'')+
+      '</div></div>'+
+      '<div style="text-align:right;flex-shrink:0;min-width:95px">'+
+      '<div style="font-size:12px;font-weight:700;color:#f1f5f9">'+fmt(v.views)+'</div>'+
+      '<span class="cb" style="background:'+c.c+';font-size:9px">'+m+'× '+c.l+'</span><br>'+
+      '<span class="'+rb2.cls+'">'+rb2.l+'</span></div>'+
+      '</a>';
+  }).join(''):'<div style="color:#4a5568;font-size:12px;padding:12px">No videos match your filters.</div>';
+}
+
+function qaClear(){
+  qaData=null; qaCreator=null;
+  document.getElementById('qaSearch').value='';
+  document.getElementById('qaSt').textContent='Search and select a creator above';
+  document.getElementById('qaRunBtn').disabled=true;
+  document.getElementById('qaResult').style.display='none';
+  document.getElementById('qaFB').style.display='none';
+  document.getElementById('qaList').innerHTML='';
+  document.getElementById('qaClearBtn').style.display='none';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#qaSearch')&&!e.target.closest('#qaDropdown')){
+    const dd=document.getElementById('qaDropdown');
+    if(dd)dd.style.display='none';
+  }
+});
+
+
+function cGridF(){
+  ['oGQ','oGNiche','oGTier','oGCT','oGLang','oGPlat'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  rGrid();
+}
+
+function populateGridNiches(){
+  const el=document.getElementById('oGNiche');
+  if(!el||el.dataset.populated)return;
+  const niches=[...new Set(DB.map(c=>c.niche).filter(Boolean))].sort();
+  el.innerHTML='<option value="">All niches</option>'+niches.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
+  el.dataset.populated='1';
+}
+
+// ═══════════════════════════════════════════════════
+// INIT — runs once on page load
+// ═══════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════
+// V2 — HOOK LIBRARY, SCRIPT GENERATOR, GROQ, CLUSTERING
+// ═══════════════════════════════════════════════════
+
+const HOOK_CATS = ['Curiosity','Shock','Contrarian','Authority','Mistake','Question','Statistic','Fear','Hope','Story','Transformation','Visual','Product Reveal','Customer Pain','Before/After'];
+
+const SEED_HOOKS = [
+{t:"I checked 50 hospital uniform orders. 38 of them were overpaying.",cat:"Shock",lang:"English"},
+{t:"Yeh school apne uniform budget ka 40% sirf isliye waste kar raha hai.",cat:"Shock",lang:"Hinglish"},
+{t:"Most procurement managers don't know this one trick.",cat:"Curiosity",lang:"English"},
+{t:"Aapka vendor aapko fabric ke baare mein jhooth bol raha hai.",cat:"Contrarian",lang:"Hinglish"},
+{t:"We tested 12 fabrics. Only 3 survived 100 washes.",cat:"Statistic",lang:"English"},
+{t:"Stop ordering uniforms until you watch this.",cat:"Authority",lang:"English"},
+{t:"Yeh galti 9 out of 10 corporates karte hain uniform order karte waqt.",cat:"Mistake",lang:"Hinglish"},
+{t:"What if your uniform vendor is the reason you're losing money?",cat:"Question",lang:"English"},
+{t:"Is your hospital staff uniform actually hygienic? Most aren't.",cat:"Fear",lang:"English"},
+{t:"Humne ek factory mein jaake dekha ki asli embroidery kaise hoti hai.",cat:"Visual",lang:"Hinglish"},
+{t:"This MSME saved 4 lakh rupees with one procurement change.",cat:"Story",lang:"English"},
+{t:"Before vs after: what proper uniform fitting actually does to your brand.",cat:"Before/After",lang:"English"},
+{t:"I refused to sell this fabric to a client. Here's why.",cat:"Authority",lang:"English"},
+{t:"Yeh dekh ke aap apna current vendor change kar doge.",cat:"Curiosity",lang:"Hinglish"},
+{t:"School uniforms don't have to look cheap. Here's proof.",cat:"Transformation",lang:"English"},
+{t:"The real cost of a 50 rupee cheaper uniform fabric.",cat:"Customer Pain",lang:"English"},
+{t:"Maine ek vendor ka fabric test kiya, result dekh ke shock lag gaya.",cat:"Shock",lang:"Hinglish"},
+{t:"Why we don't offer free samples — and why that's good for you.",cat:"Contrarian",lang:"English"},
+{t:"A Bollywood star wore this exact fabric pattern. Here's the real story.",cat:"Product Reveal",lang:"English"},
+{t:"3 questions to ask your uniform vendor before signing any order.",cat:"Authority",lang:"English"},
+{t:"Procurement managers, this mistake is costing you lakhs every year.",cat:"Mistake",lang:"English"},
+{t:"Humne ek corporate client ka uniform budget 30% kam kar diya, bina quality compromise kiye.",cat:"Statistic",lang:"Hinglish"},
+{t:"This is what happens when you skip quality control on uniform orders.",cat:"Fear",lang:"English"},
+{t:"Why do hospitals still use the wrong fabric for scrubs?",cat:"Question",lang:"English"},
+{t:"From a small tailor shop to supplying 200+ corporates. Here's how.",cat:"Transformation",lang:"English"},
+{t:"Ek MSME ne apna pura branding budget uniform pe kharcha kiya, result dekho.",cat:"Story",lang:"Hinglish"},
+{t:"Wait till you see what's really inside a cheap polyester uniform.",cat:"Curiosity",lang:"English"},
+{t:"Government tender ke liye uniform order karte waqt yeh mat bhoolna.",cat:"Authority",lang:"Hinglish"},
+{t:"I inspected a school's uniform supplier. The findings were alarming.",cat:"Shock",lang:"English"},
+{t:"Hospital staff deserve better than this. We fixed it.",cat:"Hope",lang:"English"},
+];
+
+let HOOKS = JSON.parse(localStorage.getItem('sm_v2_hooks')||'null');
+if(!HOOKS){HOOKS=SEED_HOOKS.map((h,i)=>({...h,id:'h'+i,fav:false,used:0,added:new Date().toISOString().slice(0,10),source:'seed'}));saveHooks();}
+let hkFavOnly=false;
+let hkImpRows=[];
+
+function saveHooks(){localStorage.setItem('sm_v2_hooks',JSON.stringify(HOOKS));}
+
+function populateHookCats(){
+  const sels=['hkCat','hkAddCat'];
+  sels.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&!el.dataset.pop){
+      const opts=HOOK_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+      el.innerHTML=(id==='hkCat'?'<option value="">All categories</option>':'')+opts;
+      el.dataset.pop='1';
+    }
+  });
+}
+
+function catColor(cat){
+  const m={Curiosity:'#5b5fef',Shock:'#dc2626',Contrarian:'#ea580c',Authority:'#0891b2',Mistake:'#ca8a04',Question:'#7c3aed',Statistic:'#0d9488',Fear:'#be123c',Hope:'#16a34a',Story:'#c026d3',Transformation:'#2563eb',Visual:'#db2777',"Product Reveal":'#9333ea',"Customer Pain":'#dc2626',"Before/After":'#0284c7'};
+  return m[cat]||'#5b5fef';
+}
+
+function rHooks(){
+  const q=(document.getElementById('hkQ').value||'').toLowerCase();
+  const cat=document.getElementById('hkCat').value;
+  const lang=document.getElementById('hkLang').value;
+  let f=HOOKS.filter(h=>{
+    if(q&&!h.t.toLowerCase().includes(q))return false;
+    if(cat&&h.cat!==cat)return false;
+    if(lang&&h.lang!==lang)return false;
+    if(hkFavOnly&&!h.fav)return false;
+    return true;
+  });
+  document.getElementById('hkCnt').textContent=f.length+' hooks';
+  document.getElementById('hkFavBtn').textContent=hkFavOnly?'★ Showing favourites':'☆ Favourites only';
+  document.getElementById('hkList').innerHTML=f.map(h=>{
+    const c=catColor(h.cat);
+    return '<div class="hookcard"><div class="hooktxt">'+esc(h.t)+'</div>'+
+      '<div class="hookmeta">'+
+      '<span class="cat-pill" style="background:'+c+'22;color:'+c+'">'+h.cat+'</span>'+
+      '<span style="font-size:9px;color:#4a5568">'+h.lang+'</span>'+
+      '<button class="btnh" onclick="toggleFav(\''+h.id+'\')">'+(h.fav?'★':'☆')+'</button>'+
+      '<button class="btnh" onclick="copyHook(\''+h.id+'\')">📋 Copy</button>'+
+      '<button class="btnh" onclick="useHookInScript(\''+h.id+'\')">→ Use in Script</button>'+
+      '<button class="btnh" style="background:#450a0a;color:#f87171" onclick="deleteHook(\''+h.id+'\')">✕</button>'+
+      '</div></div>';
+  }).join('')||'<div style="color:#4a5568;font-size:11px;padding:14px">No hooks match your filters.</div>';
+}
+
+function toggleFav(id){const h=HOOKS.find(x=>x.id===id);if(h){h.fav=!h.fav;saveHooks();rHooks();}}
+function copyHook(id){const h=HOOKS.find(x=>x.id===id);if(h){navigator.clipboard.writeText(h.t);toast('✓ Hook copied');}}
+function deleteHook(id){if(!confirm('Delete this hook?'))return;HOOKS=HOOKS.filter(h=>h.id!==id);saveHooks();rHooks();}
+function useHookInScript(id){
+  const h=HOOKS.find(x=>x.id===id);
+  if(!h)return;
+  scrTab('gen');
+  document.getElementById('sgTopic').value=h.t;
+  toast('Hook loaded into Script Generator');
+}
+
+function toggleHkAdd(){const el=document.getElementById('hkAddForm');el.style.display=el.style.display==='none'?'block':'none';}
+function addHookManual(){
+  const t=document.getElementById('hkAddTxt').value.trim();
+  if(!t){toast('Type a hook first','#f59e0b');return;}
+  const cat=document.getElementById('hkAddCat').value||'Story';
+  const lang=document.getElementById('hkAddLang').value;
+  HOOKS.push({id:'h'+Date.now(),t,cat,lang,fav:false,used:0,added:new Date().toISOString().slice(0,10),source:'manual'});
+  saveHooks();rHooks();
+  document.getElementById('hkAddTxt').value='';
+  toast('✓ Hook added');
+}
+
+function doHkPaste(){
+  const t=document.getElementById('hkPaste').value.trim();
+  if(!t)return;
+  const rows=t.split('\\n').map(l=>l.split('\\t'));
+  showHkImpPrev(rows);
+}
+function doHkFile(file){
+  if(!file)return;
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='csv'){
+    const r=new FileReader();
+    r.onload=e=>{const rows=e.target.result.split('\\n').map(l=>l.split(',').map(c=>c.replace(/^"|"$/g,'').trim()));showHkImpPrev(rows);};
+    r.readAsText(file);
+  } else if(ext==='xlsx'||ext==='xls'){
+    const r=new FileReader();
+    r.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});showHkImpPrev(rows);}catch(err){toast('Could not read file','#dc2626');}};
+    r.readAsArrayBuffer(file);
+  }
+}
+function showHkImpPrev(rows){
+  const first=rows[0]||[];
+  const start=(first[0]||'').toLowerCase().match(/hook|text/)?1:0;
+  hkImpRows=rows.slice(start).filter(r=>r&&r[0]&&String(r[0]).trim()).map(r=>({
+    t:String(r[0]||'').trim(),
+    cat:HOOK_CATS.includes(r[1])?r[1]:'Story',
+    lang:String(r[2]||'English').trim(),
+    source:String(r[3]||'imported').trim()||'imported',
+    notes:String(r[4]||'').trim()
+  }));
+  document.getElementById('hkImpSum').textContent=hkImpRows.length+' hooks ready to import';
+  document.getElementById('hkImpPrev').style.display='block';
+}
+function confirmHkImport(){
+  hkImpRows.forEach(r=>HOOKS.push({id:'h'+Date.now()+Math.random(),t:r.t,cat:r.cat,lang:r.lang,fav:false,used:0,added:new Date().toISOString().slice(0,10),source:r.source}));
+  saveHooks();
+  document.getElementById('hkImpPrev').style.display='none';
+  document.getElementById('hkPaste').value='';
+  hkImpRows=[];
+  rHooks();
+  toast('✓ Hooks imported');
+}
+function cancelHkImport(){document.getElementById('hkImpPrev').style.display='none';hkImpRows=[];}
+
+// ═══════════════════════════════════════════════════
+// GROQ API INTEGRATION
+// ═══════════════════════════════════════════════════
+async function groqCall(systemPrompt,userPrompt,maxTokens){
+  const key=getGroqK();
+  if(!key)throw new Error('Set your Groq API key in Settings first');
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+    body:JSON.stringify({
+      model:'openai/gpt-oss-120b',
+      messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],
+      max_tokens:maxTokens||1500,
+      temperature:0.8
+    })
+  });
+  const d=await r.json();
+  if(d.error)throw new Error(d.error.message||'Groq API error');
+  return d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content||'';
+}
+
+function getVoiceProfile(){
+  return localStorage.getItem('sm_v2_voiceprofile')||DEFAULT_VOICE_PROFILE;
+}
+
+const DEFAULT_VOICE_PROFILE=`Sparsh, founder of SupplyMate, a B2B uniform procurement company. Speaks in confident, direct Hinglish-friendly English. Short punchy sentences, no corporate fluff. Talks to MSMEs, hospital procurement managers, school admins, and corporate HR as equals, not as a salesman. Opens with a strong hook in the first 3 seconds, asks rhetorical questions, backs claims with specific numbers, closes with a clear action. Fast-paced delivery, minimal pauses, high energy. Uses hand gestures for emphasis on numbers and key points.`;
+
+let currentSimoraFmt='talking';
+function selSimoraFmt(fmt){
+  currentSimoraFmt=fmt;
+  document.querySelectorAll('.simora-opt').forEach(el=>el.classList.toggle('sel',el.dataset.fmt===fmt));
+}
+
+const SIMORA_FMT_LABEL={talking:'Talking to camera + B-roll cuts',split:'Split screen (creator/data side by side)',pip:'Picture-in-Picture (video full screen, avatar circle)'};
+
+async function sgRun(){
+  const topic=document.getElementById('sgTopic').value.trim();
+  if(!topic){toast('Enter a topic first','#f59e0b');return;}
+  const format=document.getElementById('sgFormat').value;
+  const len=document.getElementById('sgLen').value;
+  const key=getGroqK();
+  if(!key){toast('Set Groq API key in Settings','#dc2626');return;}
+  document.getElementById('sgRunBtn').disabled=true;
+  document.getElementById('sgSt').textContent='⟳ Generating script…';
+  document.getElementById('sgResult').innerHTML='';
+  try{
+    const sys='You are a content writer for SupplyMate. Voice profile: '+getVoiceProfile()+'\\n\\nYou write video scripts in the format requested. Always respond in this exact structure with these exact headers:\\n\\nHOOK_VARIANTS:\\n1. [hook 1]\\n2. [hook 2]\\n3. [hook 3]\\n4. [hook 4]\\n5. [hook 5]\\n\\nOPENING:\\n[first 5 seconds, caption-friendly]\\n\\nBODY:\\n[scene by scene script broken into short lines]\\n\\nCTA:\\n[call to action]\\n\\nPRODUCTION_NOTES:\\n[which AI character type suits this, avatar vs real footage recommendation]\\n\\nBROLL:\\n1. [broll idea 1 with youtube search term]\\n2. [broll idea 2 with youtube search term]\\n3. [broll idea 3 with youtube search term]';
+    const usr='Topic: '+topic+'\\nFormat: '+format+'\\nLength: '+len+' seconds\\nSimora format: '+SIMORA_FMT_LABEL[currentSimoraFmt]+'\\n\\nWrite the full script now.';
+    const out=await groqCall(sys,usr,2000);
+    renderScriptResult(topic,format,len,out);
+    document.getElementById('sgSt').textContent='✓ Script generated';
+  }catch(e){
+    document.getElementById('sgSt').textContent='⚠ '+e.message;
+    toast('Error: '+e.message,'#dc2626');
+  }
+  document.getElementById('sgRunBtn').disabled=false;
+}
+
+function parseScriptOutput(raw){
+  const sections={hooks:[],opening:'',body:'',cta:'',production:'',broll:[]};
+  const hookM=raw.match(/HOOK_VARIANTS:([\s\S]*?)(?=OPENING:|$)/i);
+  if(hookM)sections.hooks=hookM[1].split('\n').map(l=>l.replace(/^\d+\.\s*/,'').trim()).filter(Boolean);
+  const openM=raw.match(/OPENING:([\s\S]*?)(?=BODY:|$)/i);
+  if(openM)sections.opening=openM[1].trim();
+  const bodyM=raw.match(/BODY:([\s\S]*?)(?=CTA:|$)/i);
+  if(bodyM)sections.body=bodyM[1].trim();
+  const ctaM=raw.match(/CTA:([\s\S]*?)(?=PRODUCTION_NOTES:|$)/i);
+  if(ctaM)sections.cta=ctaM[1].trim();
+  const prodM=raw.match(/PRODUCTION_NOTES:([\s\S]*?)(?=BROLL:|$)/i);
+  if(prodM)sections.production=prodM[1].trim();
+  const brollM=raw.match(/BROLL:([\s\S]*?)$/i);
+  if(brollM)sections.broll=brollM[1].split('\n').map(l=>l.replace(/^\d+\.\s*/,'').trim()).filter(Boolean);
+  return sections;
+}
+
+let lastScriptData=null;
+function renderScriptResult(topic,format,len,raw){
+  const s=parseScriptOutput(raw);
+  lastScriptData={topic,format,len,simora:currentSimoraFmt,...s,raw,date:new Date().toISOString()};
+  const html=
+    '<div class="scriptbox">'+
+    '<div class="scriptsec"><div class="lbl">Hook Variants (pick one)</div>'+
+    s.hooks.map((h,i)=>'<div class="hookcard" style="cursor:pointer" onclick="pickScriptHook('+i+')"><div class="hooktxt">'+esc(h)+'</div></div>').join('')+
+    '</div>'+
+    '<div class="scriptsec"><div class="lbl">Opening (first 5 seconds)</div><div class="scripttxt">'+esc(s.opening)+'</div></div>'+
+    '<div class="scriptsec"><div class="lbl">Body</div><div class="scripttxt">'+esc(s.body)+'</div></div>'+
+    '<div class="scriptsec"><div class="lbl">CTA</div><div class="scripttxt">'+esc(s.cta)+'</div></div>'+
+    '<div class="scriptsec"><div class="lbl">Simora Production Notes</div><div class="scripttxt">Format: '+SIMORA_FMT_LABEL[currentSimoraFmt]+'\\n\\n'+esc(s.production)+'</div></div>'+
+    '<div class="scriptsec"><div class="lbl">B-roll Suggestions</div>'+
+    s.broll.map(b=>'<div class="broll-item">🎬 '+esc(b)+'</div>').join('')+
+    '</div>'+
+    '<div class="row" style="margin-top:9px"><button class="btns" onclick="saveScript()">✓ Save to My Scripts</button><button class="btn" onclick="copyScript()">📋 Copy Full Script</button></div>'+
+    '</div>';
+  document.getElementById('sgResult').innerHTML=html;
+}
+
+function pickScriptHook(i){
+  if(lastScriptData)lastScriptData.pickedHook=lastScriptData.hooks[i];
+  toast('Hook '+(i+1)+' selected');
+}
+
+let MY_SCRIPTS=JSON.parse(localStorage.getItem('sm_v2_scripts')||'[]');
+function saveMyScripts(){localStorage.setItem('sm_v2_scripts',JSON.stringify(MY_SCRIPTS));}
+
+function saveScript(){
+  if(!lastScriptData){toast('Nothing to save','#f59e0b');return;}
+  MY_SCRIPTS.unshift({...lastScriptData,id:'sc'+Date.now(),fav:false});
+  saveMyScripts();
+  toast('✓ Script saved to My Scripts');
+  rMyScripts();
+}
+function copyScript(){
+  if(!lastScriptData)return;
+  const s=lastScriptData;
+  const txt='HOOK: '+(s.pickedHook||s.hooks[0]||'')+'\\n\\nOPENING:\\n'+s.opening+'\\n\\nBODY:\\n'+s.body+'\\n\\nCTA:\\n'+s.cta+'\\n\\nPRODUCTION NOTES:\\n'+s.production+'\\n\\nB-ROLL:\\n'+s.broll.join('\\n');
+  navigator.clipboard.writeText(txt);
+  toast('✓ Script copied');
+}
+
+function rMyScripts(){
+  const fmtF=document.getElementById('myScrFmt');
+  if(fmtF&&!fmtF.dataset.pop){
+    const formats=['AI Storytelling','Case Study','Myth Debunking','Founder POV','Visual Storytelling','Product Explainer','Bollywood Uniform','Uniform Tips','Aesthetic BTS','Raw BTS','Testimonial','Direct Ad'];
+    fmtF.innerHTML='<option value="">All formats</option>'+formats.map(f=>'<option value="'+f+'">'+f+'</option>').join('');
+    fmtF.dataset.pop='1';
+  }
+  const fv=fmtF?fmtF.value:'';
+  const sv=document.getElementById('myScrSimora')?document.getElementById('myScrSimora').value:'';
+  let f=MY_SCRIPTS.filter(s=>{
+    if(fv&&s.format!==fv)return false;
+    if(sv&&s.simora!==sv)return false;
+    return true;
+  });
+  document.getElementById('myScrCnt').textContent='('+MY_SCRIPTS.length+')';
+  document.getElementById('myScriptsList').innerHTML=f.length?f.map(s=>{
+    const d=new Date(s.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+    return '<div class="card"><div class="row ac" style="margin-bottom:5px">'+
+      '<div style="flex:1"><div style="font-size:12px;font-weight:700;color:#f1f5f9">'+esc(s.topic)+'</div>'+
+      '<div style="font-size:9px;color:#4a5568">'+esc(s.format)+' · '+s.len+'s · '+SIMORA_FMT_LABEL[s.simora]+' · '+d+'</div></div>'+
+      '<button class="btnh" onclick="toggleScriptFav(\''+s.id+'\')">'+(s.fav?'★':'☆')+'</button>'+
+      '<button class="btn" onclick="copySavedScript(\''+s.id+'\')">📋 Copy</button>'+
+      '<button class="btnd" onclick="deleteScript(\''+s.id+'\')">✕</button>'+
+      '</div>'+
+      '<div style="font-size:11px;color:#94a3b8"><strong style="color:#818cf8">Hook:</strong> '+esc(s.pickedHook||s.hooks[0]||'')+'</div>'+
+      '</div>';
+  }).join(''):'<div style="color:#4a5568;font-size:11px;padding:14px">No scripts saved yet. Generate one from the Script Generator tab.</div>';
+}
+function toggleScriptFav(id){const s=MY_SCRIPTS.find(x=>x.id===id);if(s){s.fav=!s.fav;saveMyScripts();rMyScripts();}}
+function copySavedScript(id){
+  const s=MY_SCRIPTS.find(x=>x.id===id);
+  if(!s)return;
+  const txt='HOOK: '+(s.pickedHook||s.hooks[0]||'')+'\\n\\nOPENING:\\n'+s.opening+'\\n\\nBODY:\\n'+s.body+'\\n\\nCTA:\\n'+s.cta+'\\n\\nPRODUCTION NOTES:\\n'+s.production+'\\n\\nB-ROLL:\\n'+(s.broll||[]).join('\\n');
+  navigator.clipboard.writeText(txt);
+  toast('✓ Copied');
+}
+function deleteScript(id){if(!confirm('Delete this script?'))return;MY_SCRIPTS=MY_SCRIPTS.filter(s=>s.id!==id);saveMyScripts();rMyScripts();}
+function clearAllScripts(){if(!confirm('Clear all saved scripts?'))return;MY_SCRIPTS=[];saveMyScripts();rMyScripts();toast('Cleared','#f59e0b');}
+function copyAllScripts(){
+  const h=['Title','Format','Length','Simora Format','Hook','Opening','Body','CTA','Production Notes','B-roll','Date'].join('\\t');
+  const rows=MY_SCRIPTS.map(s=>[s.topic,s.format,s.len+'s',SIMORA_FMT_LABEL[s.simora],s.pickedHook||s.hooks[0]||'',s.opening,s.body,s.cta,s.production,(s.broll||[]).join(' | '),new Date(s.date).toLocaleDateString()].join('\\t'));
+  navigator.clipboard.writeText([h,...rows].join('\\n'));
+  toast('✓ '+MY_SCRIPTS.length+' scripts copied as TSV');
+}
+
+// ═══════════════════════════════════════════════════
+// EXTRACT FROM TRANSCRIPT
+// ═══════════════════════════════════════════════════
+async function extractFromTranscript(){
+  const txt=document.getElementById('sgTranscriptTxt').value.trim();
+  if(!txt){toast('Paste transcript text first','#f59e0b');return;}
+  const key=getGroqK();
+  if(!key){toast('Set Groq API key in Settings','#dc2626');return;}
+  toast('⟳ Extracting stories…','#5b5fef');
+  try{
+    const sys='Extract individual self-contained stories, case studies, or procurement hacks from this transcript. For each one, give a short topic title only, one per line, no numbering, no extra text.';
+    const out=await groqCall(sys,txt.slice(0,6000),800);
+    const topics=out.split('\\n').map(l=>l.trim()).filter(Boolean);
+    if(topics.length){
+      document.getElementById('sgTopic').value=topics[0];
+      toast('✓ Found '+topics.length+' stories. First one loaded — generate, then come back for more.');
+    }
+  }catch(e){toast('Error: '+e.message,'#dc2626');}
+}
+
+// ═══════════════════════════════════════════════════
+// TOPIC CLUSTERING
+// ═══════════════════════════════════════════════════
+async function runClustering(){
+  const all=getAllV();
+  if(!all.length){toast('No saved outlier results yet — analyze some creators first','#f59e0b');return;}
+  const key=getGroqK();
+  if(!key){toast('Set Groq API key in Settings','#dc2626');return;}
+  document.getElementById('clusterList').innerHTML='<div style="color:#818cf8;font-size:11px;padding:14px">⟳ Clustering '+all.length+' videos…</div>';
+  try{
+    const titles=all.slice(0,80).map(v=>v.title).join('\\n');
+    const sys='Group these video titles into 4-8 content theme clusters relevant to a B2B uniform procurement company. For each cluster respond in this format:\\nCLUSTER: [theme name]\\nCOUNT: [how many titles roughly fit]\\nANGLE: [one sentence suggested SupplyMate content angle]\\n---';
+    const out=await groqCall(sys,titles,1500);
+    const clusters=out.split('---').map(c=>c.trim()).filter(Boolean).map(c=>{
+      const name=(c.match(/CLUSTER:\\s*(.+)/)||[])[1]||'Cluster';
+      const count=(c.match(/COUNT:\\s*(.+)/)||[])[1]||'';
+      const angle=(c.match(/ANGLE:\\s*(.+)/)||[])[1]||'';
+      return {name,count,angle};
+    });
+    document.getElementById('clusterList').innerHTML=clusters.map(c=>
+      '<div class="cluster-card"><div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:3px">'+esc(c.name)+'</div>'+
+      '<div style="font-size:10px;color:#4a5568;margin-bottom:6px">~'+esc(c.count)+' related videos</div>'+
+      '<div style="font-size:11px;color:#94a3b8;margin-bottom:8px">'+esc(c.angle)+'</div>'+
+      '<button class="btn" onclick="scrTab(\'gen\');document.getElementById(\'sgTopic\').value='+JSON.stringify(c.angle)+'">→ Generate Script for this Cluster</button>'+
+      '</div>'
+    ).join('')||'<div style="color:#4a5568;font-size:11px;padding:14px">Could not generate clusters. Try again.</div>';
+  }catch(e){
+    document.getElementById('clusterList').innerHTML='<div style="color:#f87171;font-size:11px;padding:14px">⚠ '+e.message+'</div>';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// CONTENT IDEAS
+// ═══════════════════════════════════════════════════
+let IDEAS=JSON.parse(localStorage.getItem('sm_v2_ideas')||'[]');
+function saveIdeas(){localStorage.setItem('sm_v2_ideas',JSON.stringify(IDEAS));}
+
+async function genIdeas(){
+  const all=getAllV();
+  const key=getGroqK();
+  if(!key){toast('Set Groq API key in Settings','#dc2626');return;}
+  toast('⟳ Generating ideas…','#5b5fef');
+  try{
+    const context=all.length?all.slice(0,40).map(v=>v.title).join('\\n'):'General B2B uniform procurement content';
+    const sys='Suggest 6 video content ideas for SupplyMate, a B2B uniform procurement company, based on these trending topics. For each respond in this format:\\nTITLE: [video title]\\nFORMAT: [one of: AI Storytelling, Case Study, Myth Debunking, Founder POV, Visual Storytelling, Product Explainer, Bollywood Uniform, Uniform Tips, Aesthetic BTS, Raw BTS, Testimonial, Direct Ad]\\nHOOK: [hook type]\\nWHY: [one sentence reasoning]\\n---';
+    const out=await groqCall(sys,context,1500);
+    const ideas=out.split('---').map(c=>c.trim()).filter(Boolean).map(c=>({
+      title:(c.match(/TITLE:\\s*(.+)/)||[])[1]||'',
+      format:(c.match(/FORMAT:\\s*(.+)/)||[])[1]||'',
+      hook:(c.match(/HOOK:\\s*(.+)/)||[])[1]||'',
+      why:(c.match(/WHY:\\s*(.+)/)||[])[1]||'',
+      id:'idea'+Date.now()+Math.random(),date:new Date().toISOString().slice(0,10),source:'ai'
+    })).filter(i=>i.title);
+    IDEAS=[...ideas,...IDEAS];
+    saveIdeas();
+    rIdeas();
+    toast('✓ '+ideas.length+' ideas generated');
+  }catch(e){toast('Error: '+e.message,'#dc2626');}
+}
+
+function rIdeas(){
+  document.getElementById('ideaList').innerHTML=IDEAS.length?IDEAS.map(i=>
+    '<div class="card"><div class="row ac" style="margin-bottom:4px">'+
+    '<div style="flex:1;font-size:12px;font-weight:700;color:#f1f5f9">'+esc(i.title)+'</div>'+
+    '<button class="btn" onclick="scrTab(\'gen\');document.getElementById(\'sgTopic\').value='+JSON.stringify(i.title)+'">→ Generate Script</button>'+
+    '<button class="btnd" onclick="deleteIdea(\''+i.id+'\')">✕</button>'+
+    '</div>'+
+    '<div style="font-size:10px;color:#4a5568">'+esc(i.format)+' · '+esc(i.hook)+' hook</div>'+
+    '<div style="font-size:11px;color:#94a3b8;margin-top:3px">'+esc(i.why)+'</div>'+
+    '</div>'
+  ).join(''):'<div style="color:#4a5568;font-size:11px;padding:14px">No ideas yet. Click Generate Ideas or add one manually.</div>';
+}
+function toggleIdeaAdd(){const el=document.getElementById('ideaAddForm');el.style.display=el.style.display==='none'?'block':'none';}
+function addIdeaManual(){
+  const title=document.getElementById('ideaAddTitle').value.trim();
+  const paste=document.getElementById('ideaAddPaste').value.trim();
+  if(paste){
+    const rows=paste.split('\\n').map(l=>l.split('\\t'));
+    rows.forEach(r=>{
+      if(r[0]&&r[0].trim())IDEAS.unshift({title:r[0].trim(),format:r[1]||'',hook:r[2]||'',why:r[3]||'',id:'idea'+Date.now()+Math.random(),date:new Date().toISOString().slice(0,10),source:'sheet'});
+    });
+  } else if(title){
+    IDEAS.unshift({title,format:'',hook:'',why:'',id:'idea'+Date.now(),date:new Date().toISOString().slice(0,10),source:'manual'});
+  } else {toast('Type a title or paste rows','#f59e0b');return;}
+  saveIdeas();rIdeas();
+  document.getElementById('ideaAddTitle').value='';
+  document.getElementById('ideaAddPaste').value='';
+  toast('✓ Idea(s) added');
+}
+function deleteIdea(id){IDEAS=IDEAS.filter(i=>i.id!==id);saveIdeas();rIdeas();}
+
+// ═══════════════════════════════════════════════════
+// SCRIPTS TAB NAVIGATION
+// ═══════════════════════════════════════════════════
+
+function sendOutlierToScript(title){
+  go('scr');
+  scrTab('gen');
+  document.getElementById('sgTopic').value=title;
+  toast('Outlier loaded into Script Generator');
+}
+
+async function analyseHookVerts(title,btnEl){
+  const key=getGroqK();
+  if(!key){toast('Set Groq API key in Settings first','#dc2626');return;}
+  if(btnEl)btnEl.textContent='⟳ Analysing…';
+  try{
+    const sys='Analyse this viral video title using the VERTS framework. Respond in exactly this format:\nV: [visual hook - what likely appears in frame 0-3s]\nE: [editing hook - likely cut style or pattern interrupt]\nR: [retention hook - the promise keeping viewers watching]\nT: [text/script hook - the likely opening line]\nS: [structure hook - likely format: talking head, split screen, news style, etc]\nTOPIC: [what this is really about]\nEMOTION: [primary emotion triggered]';
+    const out=await groqCall(sys,'Video title: '+title,500);
+    showVertsPopup(title,out,btnEl);
+  }catch(e){toast('Error: '+e.message,'#dc2626');}
+  if(btnEl)btnEl.textContent='🔍 Analyse Hook';
+}
+
+function showVertsPopup(title,raw,btnEl){
+  const card=btnEl.closest('a')?btnEl.closest('a').nextElementSibling:btnEl.parentElement;
+  let existing=card.nextElementSibling;
+  if(existing&&existing.classList&&existing.classList.contains('vertspop')){existing.remove();return;}
+  const lines=raw.split('\n').filter(Boolean);
+  const html='<div class="vertspop" style="background:#07090f;border:1px solid #5b5fef;border-radius:7px;padding:10px;margin:-3px 0 8px 0;font-size:10px;color:#94a3b8;line-height:1.6">'+
+    lines.map(l=>esc(l)).join('<br>')+
+    '<div style="margin-top:6px"><button class="btnh" onclick="scrTab(\'gen\');go(\'scr\');document.getElementById(\'sgTopic\').value='+JSON.stringify(title)+'">→ Use in Script Generator</button></div>'+
+    '</div>';
+  card.insertAdjacentHTML('afterend',html);
+}
+
+function scrTab(name){
+  ['lib','gen','my','clu','idea'].forEach(n=>{
+    const p=document.getElementById('scrp-'+n);
+    if(p)p.style.display=n===name?'block':'none';
+  });
+  document.querySelectorAll('#scrTabs .ptab').forEach((t,i)=>{
+    const names=['lib','gen','my','clu','idea'];
+    t.classList.toggle('on',names[i]===name);
+  });
+  if(name==='lib'){populateHookCats();rHooks();}
+  if(name==='my')rMyScripts();
+  if(name==='idea')rIdeas();
+}
+
+// ═══════════════════════════════════════════════════
+// SETTINGS — Voice profile, Simora defaults, Sheet headers
+// ═══════════════════════════════════════════════════
+function saveVoiceProfile(){
+  const v=document.getElementById('voiceProfile').value.trim();
+  localStorage.setItem('sm_v2_voiceprofile',v||DEFAULT_VOICE_PROFILE);
+  document.getElementById('vpSt').textContent='✓ Saved';
+  setTimeout(()=>{document.getElementById('vpSt').textContent='';},2000);
+}
+function saveSimoraDefaults(){
+  localStorage.setItem('sm_v2_simora_fmt',document.getElementById('simoraDefFmt').value);
+  localStorage.setItem('sm_v2_simora_char',document.getElementById('simoraDefChar').value);
+  toast('✓ Simora defaults saved');
+}
+
+const SHEET_HEADERS={
+  hooks:'Hook Text\\tCategory\\tLanguage\\tSource\\tNotes',
+  ideas:'Title\\tFormat\\tHook Type\\tWhy It Works\\tPriority',
+  scripts:'Title\\tFormat\\tLength\\tHook\\tScript Body\\tProduction Notes\\tB-roll Suggestions\\tDate'
+};
+function copyHeaderRow(type){
+  navigator.clipboard.writeText(SHEET_HEADERS[type]);
+  toast('✓ Headers copied — paste as row 1 in your Sheet');
+}
+
+// Update uSet to also reflect groq/google badges and voice profile
+const _origUSet=uSet;
+uSet=function(){
+  _origUSet();
+  const gk=getGroqK(),gogk=getGoogleK();
+  const gb=document.getElementById('groqBadge');
+  if(gb){gb.textContent=gk?'✓ Set':'Not set';gb.style.background=gk?'#14532d':'#1a2035';gb.style.color=gk?'#4ade80':'#4a5568';}
+  const gob=document.getElementById('googleBadge');
+  if(gob){gob.textContent=gogk?'✓ Set':'Not set';gob.style.background=gogk?'#14532d':'#1a2035';gob.style.color=gogk?'#4ade80':'#4a5568';}
+  const gi=document.getElementById('groqInp');if(gi)gi.value=gk;
+  const goi=document.getElementById('googleInp');if(goi)goi.value=gogk;
+  const vp=document.getElementById('voiceProfile');if(vp&&!vp.dataset.loaded){vp.value=getVoiceProfile();vp.dataset.loaded='1';}
+  const sf=document.getElementById('simoraDefFmt');if(sf)sf.value=localStorage.getItem('sm_v2_simora_fmt')||'talking';
+  const sc=document.getElementById('simoraDefChar');if(sc)sc.value=localStorage.getItem('sm_v2_simora_char')||'founder';
+};
+
+
+uNav();
+uSet();
+rDB();
+rGrid();
+rExp();
+populateGridNiches();
+document.getElementById('oDt').value=new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
