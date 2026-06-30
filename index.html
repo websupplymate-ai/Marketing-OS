@@ -171,6 +171,31 @@
   .card.new{ border-style:dashed; background: transparent; }
   .card.new .card-title{ color: var(--text-muted); }
 
+  .card[data-href], .card[data-soon]{ cursor:pointer; }
+  .card[data-href]:hover{ border-color: var(--blue); }
+  .card[data-soon]:hover{ border-color: var(--border); }
+  .dock-item[data-href], .dock-item[data-soon]{ cursor:pointer; }
+  .dock-item[data-href]:hover{ background: var(--blue-tint); color: var(--blue); }
+  .dock-item[data-soon]:hover{ color: var(--text); }
+
+  /* ---- Coming soon modal ---- */
+  .modal-backdrop{
+    position:fixed; inset:0; background: rgba(14,20,28,.45);
+    display:none; align-items:center; justify-content:center; z-index:50;
+  }
+  .modal-backdrop.open{ display:flex; }
+  .modal{
+    background: var(--bg-card); border:1px solid var(--border); border-radius:10px;
+    padding:24px; width:340px; text-align:center;
+  }
+  .modal-icon{
+    width:42px; height:42px; border-radius:8px; background: var(--blue-tint); color: var(--blue);
+    display:flex; align-items:center; justify-content:center; font-size:18px; margin:0 auto 14px;
+  }
+  .modal h3{ font-size:16px; font-weight:600; margin-bottom:6px; }
+  .modal p{ font-size:13px; color: var(--text-muted); line-height:1.55; margin-bottom:18px; }
+  .modal .btn{ width:100%; }
+
   .btn{
     border:none; border-radius:6px; padding:8px 14px;
     font-size:13px; font-weight:500; cursor:pointer; color:#fff;
@@ -227,27 +252,27 @@
       <div class="dock-item active"><span class="ic">▦</span> Home<span class="status live"></span></div>
 
       <div class="dock-section">Intelligence</div>
-      <div class="dock-item"><span class="ic">◎</span> Competitor Insights<span class="status live"></span></div>
-      <div class="dock-item"><span class="ic">⌁</span> Data Scraper<span class="status live"></span></div>
+      <div class="dock-item" data-href="https://marketing-os.web-supplymate.workers.dev/apps/competitor-insights/"><span class="ic">◎</span> Competitor Insights<span class="status live"></span></div>
+      <div class="dock-item" data-soon="Data Scraper"><span class="ic">⌁</span> Data Scraper<span class="status warn"></span></div>
 
       <div class="dock-section">Content</div>
-      <div class="dock-item"><span class="ic">▤</span> Content Planner<span class="status live"></span></div>
-      <div class="dock-item"><span class="ic">✎</span> Scriptwriter<span class="status live"></span></div>
-      <div class="dock-item"><span class="ic">▥</span> Post Planner<span class="status warn"></span></div>
+      <div class="dock-item" data-href="https://marketing-os.web-supplymate.workers.dev/apps/content-planner/"><span class="ic">▤</span> Content Planner<span class="status live"></span></div>
+      <div class="dock-item" data-soon="Scriptwriter"><span class="ic">✎</span> Scriptwriter<span class="status warn"></span></div>
+      <div class="dock-item" data-soon="Post Planner"><span class="ic">▥</span> Post Planner<span class="status warn"></span></div>
 
       <div class="dock-section">Channels</div>
-      <div class="dock-item"><span class="ic">☎</span> AI Calling<span class="status live"></span></div>
-      <div class="dock-item"><span class="ic">◈</span> WhatsApp Marketing<span class="status live"></span></div>
-      <div class="dock-item"><span class="ic">▶</span> Meta Ads<span class="status live"></span></div>
-      <div class="dock-item"><span class="ic">⊙</span> Google Ads<span class="status live"></span></div>
-      <div class="dock-item"><span class="ic">⚑</span> Regional / Hindi Ads<span class="status warn"></span></div>
+      <div class="dock-item" data-soon="AI Calling"><span class="ic">☎</span> AI Calling<span class="status warn"></span></div>
+      <div class="dock-item" data-soon="WhatsApp Marketing"><span class="ic">◈</span> WhatsApp Marketing<span class="status warn"></span></div>
+      <div class="dock-item" data-soon="Meta Ads"><span class="ic">▶</span> Meta Ads<span class="status warn"></span></div>
+      <div class="dock-item" data-soon="Google Ads"><span class="ic">⊙</span> Google Ads<span class="status warn"></span></div>
+      <div class="dock-item" data-soon="Regional / Hindi Ads"><span class="ic">⚑</span> Regional / Hindi Ads<span class="status warn"></span></div>
 
       <div class="dock-section">Growth</div>
-      <div class="dock-item"><span class="ic">↗</span> Organic Growth<span class="status warn"></span></div>
+      <div class="dock-item" data-soon="Organic Growth"><span class="ic">↗</span> Organic Growth<span class="status warn"></span></div>
 
       <div class="dock-section">System</div>
-      <div class="dock-item"><span class="ic">⚙</span> Data Sources</div>
-      <div class="dock-item"><span class="ic">◌</span> Reporting</div>
+      <div class="dock-item" data-soon="Data Sources"><span class="ic">⚙</span> Data Sources</div>
+      <div class="dock-item" data-soon="Reporting"><span class="ic">◌</span> Reporting</div>
     </div>
 
     <div class="main">
@@ -259,20 +284,20 @@
 
       <div class="section-label">Intelligence</div>
       <div class="grid">
-        <div class="card featured">
+        <div class="card featured" data-href="https://marketing-os.web-supplymate.workers.dev/apps/competitor-insights/">
           <div class="card-top"><div class="card-icon">◎</div><span class="badge live"><span class="d"></span>Live</span></div>
           <div class="card-title">Competitor Insights</div>
           <div class="card-desc">Tracks competitor pricing, ad creatives, positioning and posting cadence. Upload a competitor workbook to refresh — each file is read as two sheets, <b style="color:var(--text)">p</b> (purchase data) and <b style="color:var(--text)">s</b> (sale data), and combined into margin and demand views below.</div>
           <div class="card-meta"><span>source: competitor-db</span><span class="num">synced 4m ago</span></div>
         </div>
-        <div class="card">
-          <div class="card-top"><div class="card-icon">⌁</div><span class="badge live"><span class="d"></span>Live</span></div>
+        <div class="card" data-soon="Data Scraper">
+          <div class="card-top"><div class="card-icon">⌁</div><span class="badge planned"><span class="d"></span>Coming soon</span></div>
           <div class="card-title">Data Scraper</div>
           <div class="card-desc">Pulls structured data from web, marketplaces, and social profiles on schedule.</div>
-          <div class="card-meta"><span>source: scraper-jobs</span><span class="num">12 jobs active</span></div>
+          <div class="card-meta"><span>source: scraper-jobs</span><span class="num">not deployed</span></div>
         </div>
-        <div class="card">
-          <div class="card-top"><div class="card-icon green">↕</div><span class="badge planned"><span class="d"></span>Recommended</span></div>
+        <div class="card" data-soon="Purchase vs. sale margin tracker">
+          <div class="card-top"><div class="card-icon green">↕</div><span class="badge planned"><span class="d"></span>Coming soon</span></div>
           <div class="card-title">Purchase vs. sale margin tracker</div>
           <div class="card-desc">Auto-derived from the <b style="color:var(--text)">p</b>/<b style="color:var(--text)">s</b> sheets in each competitor upload: landed cost vs. sale price, by SKU and by date, so you can see competitor margin and undercut pricing without opening the workbook.</div>
           <div class="card-meta"><span>source: competitor-db</span><span class="num">not built yet</span></div>
@@ -281,20 +306,20 @@
 
       <div class="section-label">Content</div>
       <div class="grid">
-        <div class="card">
+        <div class="card featured" data-href="https://marketing-os.web-supplymate.workers.dev/apps/content-planner/">
           <div class="card-top"><div class="card-icon">▤</div><span class="badge live"><span class="d"></span>Live</span></div>
           <div class="card-title">Content Planner</div>
           <div class="card-desc">Calendar of campaigns, themes, and content briefs across channels.</div>
           <div class="card-meta"><span>source: planner-db</span><span class="num">22 items this wk</span></div>
         </div>
-        <div class="card">
-          <div class="card-top"><div class="card-icon">✎</div><span class="badge live"><span class="d"></span>Live</span></div>
+        <div class="card" data-soon="Scriptwriter">
+          <div class="card-top"><div class="card-icon">✎</div><span class="badge planned"><span class="d"></span>Coming soon</span></div>
           <div class="card-title">Scriptwriter</div>
           <div class="card-desc">AI-drafted scripts for reels, ads, and call/WhatsApp flows, version-tracked.</div>
-          <div class="card-meta"><span>source: script-engine</span><span class="num">6 drafts pending</span></div>
+          <div class="card-meta"><span>source: script-engine</span><span class="num">not deployed</span></div>
         </div>
-        <div class="card">
-          <div class="card-top"><div class="card-icon">▥</div><span class="badge planned"><span class="d"></span>Recommended</span></div>
+        <div class="card" data-soon="Post Planner">
+          <div class="card-top"><div class="card-icon">▥</div><span class="badge planned"><span class="d"></span>Coming soon</span></div>
           <div class="card-title">Post Planner</div>
           <div class="card-desc">Schedules and auto-publishes organic posts across Instagram, FB, LinkedIn, X — pulls finished assets from Scriptwriter + Content Planner.</div>
           <div class="card-meta"><span>source: TBD</span><span class="num">not connected</span></div>
@@ -303,31 +328,31 @@
 
       <div class="section-label">Channels</div>
       <div class="grid">
-        <div class="card">
-          <div class="card-top"><div class="card-icon">☎</div><span class="badge live"><span class="d"></span>Live</span></div>
+        <div class="card" data-soon="AI Calling">
+          <div class="card-top"><div class="card-icon">☎</div><span class="badge planned"><span class="d"></span>Coming soon</span></div>
           <div class="card-title">AI Calling</div>
           <div class="card-desc">Outbound/inbound AI voice agent: call logs, conversion rate, sentiment.</div>
-          <div class="card-meta"><span>source: calling-platform</span><span class="num">184 calls today</span></div>
+          <div class="card-meta"><span>source: calling-platform</span><span class="num">not deployed</span></div>
         </div>
-        <div class="card">
-          <div class="card-top"><div class="card-icon">◈</div><span class="badge live"><span class="d"></span>Live</span></div>
+        <div class="card" data-soon="WhatsApp Marketing">
+          <div class="card-top"><div class="card-icon">◈</div><span class="badge planned"><span class="d"></span>Coming soon</span></div>
           <div class="card-title">WhatsApp Marketing</div>
           <div class="card-desc">Broadcast lists, template performance, chatbot conversion funnel.</div>
-          <div class="card-meta"><span>source: whatsapp-api</span><span class="num">3.2k sent today</span></div>
+          <div class="card-meta"><span>source: whatsapp-api</span><span class="num">not deployed</span></div>
         </div>
-        <div class="card">
-          <div class="card-top"><div class="card-icon">▶</div><span class="badge live"><span class="d"></span>Live</span></div>
+        <div class="card" data-soon="Meta Ads">
+          <div class="card-top"><div class="card-icon">▶</div><span class="badge planned"><span class="d"></span>Coming soon</span></div>
           <div class="card-title">Meta Ads</div>
           <div class="card-desc">Campaign spend, CTR, CPL/CPA across Facebook + Instagram.</div>
-          <div class="card-meta"><span>source: meta-ads-api</span><span class="num">synced 9m ago</span></div>
+          <div class="card-meta"><span>source: meta-ads-api</span><span class="num">not deployed</span></div>
         </div>
-        <div class="card">
-          <div class="card-top"><div class="card-icon">⊙</div><span class="badge live"><span class="d"></span>Live</span></div>
+        <div class="card" data-soon="Google Ads">
+          <div class="card-top"><div class="card-icon">⊙</div><span class="badge planned"><span class="d"></span>Coming soon</span></div>
           <div class="card-title">Google Ads</div>
           <div class="card-desc">Search/PMax spend, conversions, keyword performance.</div>
-          <div class="card-meta"><span>source: google-ads-api</span><span class="num">synced 9m ago</span></div>
+          <div class="card-meta"><span>source: google-ads-api</span><span class="num">not deployed</span></div>
         </div>
-        <div class="card">
+        <div class="card" data-soon="Regional / Hindi ad campaigns">
           <div class="card-top"><div class="card-icon">⚑</div><span class="badge planned"><span class="d"></span>Needs setup</span></div>
           <div class="card-title">Regional / Hindi ad campaigns</div>
           <div class="card-desc">Dedicated module for region/language-specific creative and spend, since performance and tone differ from the main ad sets.</div>
@@ -337,19 +362,19 @@
 
       <div class="section-label">Growth</div>
       <div class="grid">
-        <div class="card">
-          <div class="card-top"><div class="card-icon">↗</div><span class="badge planned"><span class="d"></span>Recommended</span></div>
+        <div class="card" data-soon="Organic growth strategy">
+          <div class="card-top"><div class="card-icon">↗</div><span class="badge planned"><span class="d"></span>Coming soon</span></div>
           <div class="card-title">Organic growth strategy</div>
           <div class="card-desc">SEO, community, referral and influencer tracking — the non-paid counterpart to Meta/Google Ads.</div>
           <div class="card-meta"><span>source: TBD</span><span class="num">not connected</span></div>
         </div>
-        <div class="card">
+        <div class="card" data-soon="Lead / CRM hub">
           <div class="card-top"><div class="card-icon">☆</div><span class="badge idea"><span class="d"></span>Idea</span></div>
           <div class="card-title">Lead / CRM hub</div>
           <div class="card-desc">Unified lead record so AI Calling, WhatsApp, and Ads all write to one customer timeline instead of three silos.</div>
           <div class="card-meta"><span>source: TBD</span><span class="num">not connected</span></div>
         </div>
-        <div class="card">
+        <div class="card" data-soon="Unified analytics / ROI">
           <div class="card-top"><div class="card-icon">◐</div><span class="badge idea"><span class="d"></span>Idea</span></div>
           <div class="card-title">Unified analytics / ROI</div>
           <div class="card-desc">Cross-channel attribution: spend → leads → calls → WhatsApp replies → conversion, in one funnel.</div>
@@ -382,6 +407,15 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="soonBackdrop">
+  <div class="modal">
+    <div class="modal-icon">◌</div>
+    <h3 id="soonTitle">Coming soon</h3>
+    <p id="soonDesc">This module isn't deployed yet. Once it's live, this card will take you straight to it.</p>
+    <button class="btn" id="soonClose">Got it</button>
+  </div>
+</div>
+
 <script>
   (function(){
     var root = document.documentElement;
@@ -404,6 +438,34 @@
     darkBtn.addEventListener('click', function(){ apply('dark'); });
 
     apply(theme);
+  })();
+
+  (function(){
+    var backdrop = document.getElementById('soonBackdrop');
+    var title = document.getElementById('soonTitle');
+    var desc = document.getElementById('soonDesc');
+    var closeBtn = document.getElementById('soonClose');
+
+    function openSoon(name){
+      title.textContent = name + ' — coming soon';
+      desc.textContent = name + " isn't deployed yet. Once it's live, this card will take you straight to it.";
+      backdrop.classList.add('open');
+    }
+    function closeSoon(){ backdrop.classList.remove('open'); }
+
+    closeBtn.addEventListener('click', closeSoon);
+    backdrop.addEventListener('click', function(e){ if(e.target === backdrop) closeSoon(); });
+
+    document.querySelectorAll('[data-href]').forEach(function(el){
+      el.addEventListener('click', function(){
+        window.open(el.getAttribute('data-href'), '_blank', 'noopener');
+      });
+    });
+    document.querySelectorAll('[data-soon]').forEach(function(el){
+      el.addEventListener('click', function(){
+        openSoon(el.getAttribute('data-soon'));
+      });
+    });
   })();
 </script>
 </body>
