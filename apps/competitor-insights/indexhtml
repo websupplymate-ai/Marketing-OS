@@ -4,64 +4,89 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SupplyMate — Market Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  :root{
-    --bg:#f6f5f1; --surface:#ffffff; --surface-2:#eeede6;
-    --ink:#14161a; --ink-soft:#5b5e58; --ink-muted:#8b8a82;
-    --border:#e2e1da; --border-strong:#cfcec5;
-    --accent:#0f6e56; --accent-soft:#e1f5ee; --accent-ink:#085041;
-    --danger:#a32d2d; --danger-soft:#fcebeb;
-    --warning:#854f0b; --warning-soft:#faeeda;
-    --success:#3b6d11; --success-soft:#eaf3de;
-    --radius:8px;
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  :root, [data-theme="light"]{
+    --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F7F9FC;
+    --ink:#10151D; --ink-soft:#6B7686; --ink-muted:#8B95A3;
+    --border:#E5E9EF; --border-strong:#D6DCE5;
+    --primary:#1B4F8C; --primary-tint:#EAF2FF;
+    --secondary:#2F8F5B; --secondary-tint:#E7F6EC;
+    --danger:#A3372D; --danger-tint:#FBEAE8;
+    --warning:#8A5A0B; --warning-tint:#FBF1DF;
+  }
+  [data-theme="dark"]{
+    --bg:#0E141C; --surface:#141C27; --surface-2:#192230;
+    --ink:#F2F5F9; --ink-soft:#8B97A8; --ink-muted:#67738A;
+    --border:#243042; --border-strong:#2E3C52;
+    --primary:#4A90D9; --primary-tint:#1A2533;
+    --secondary:#52C57F; --secondary-tint:#16271E;
+    --danger:#E08178; --danger-tint:#2A1A19;
+    --warning:#E0B567; --warning-tint:#2A2114;
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--ink);font-size:14px;}
-  button{font:inherit;cursor:pointer;border:0.5px solid var(--border-strong);background:var(--surface);
-    border-radius:var(--radius);padding:8px 14px;color:var(--ink);}
+  body{margin:0;background:var(--bg);color:var(--ink);font-size:14px;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;transition:background 0.15s,color 0.15s;}
+  h1,h2,h3,p,span,td,th,label{font-family:inherit;}
+  .num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;}
+  button{font:inherit;font-weight:500;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface);
+    border-radius:6px;padding:8px 14px;color:var(--ink);transition:background 0.1s;}
   button:hover{background:var(--surface-2);}
-  button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
-  button.primary:hover{background:var(--accent-ink);}
+  button.primary{background:var(--primary);color:#fff;border-color:var(--primary);}
+  button.primary:hover{filter:brightness(1.08);}
+  button.secondary{background:var(--secondary);color:#fff;border-color:var(--secondary);}
+  button.secondary:hover{filter:brightness(1.08);}
   button:disabled{opacity:0.4;cursor:not-allowed;}
-  input,select{font:inherit;padding:8px 10px;border:0.5px solid var(--border-strong);border-radius:var(--radius);
+  input,select{font:inherit;padding:8px 10px;border:1px solid var(--border-strong);border-radius:6px;
     background:var(--surface);color:var(--ink);width:100%;}
   table{width:100%;border-collapse:collapse;font-size:13px;}
-  th{text-align:left;padding:8px 10px;color:var(--ink-soft);font-weight:500;border-bottom:0.5px solid var(--border-strong);
+  th{text-align:left;padding:8px 10px;color:var(--ink-soft);font-weight:500;border-bottom:1px solid var(--border-strong);
     cursor:pointer;white-space:nowrap;}
-  td{padding:8px 10px;border-bottom:0.5px solid var(--border);}
+  td{padding:8px 10px;border-bottom:1px solid var(--border);}
   tr:hover td{background:var(--surface-2);}
-  .card{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;}
   .pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:500;}
-  .pill-high{background:var(--danger-soft);color:var(--danger);}
-  .pill-medium{background:var(--warning-soft);color:var(--warning);}
+  .pill-high{background:var(--danger-tint);color:var(--danger);}
+  .pill-medium{background:var(--warning-tint);color:var(--warning);}
   .pill-low{background:var(--surface-2);color:var(--ink-soft);}
+  .icon-box{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;}
+  .icon-box.blue{background:var(--primary-tint);color:var(--primary);}
+  .icon-box.green{background:var(--secondary-tint);color:var(--secondary);}
   #app{display:flex;min-height:100vh;}
-  #sidebar{width:220px;flex-shrink:0;background:#11151c;color:#e9e8e2;padding:1.25rem 0;display:flex;flex-direction:column;}
-  #sidebar .brand{padding:0 1.25rem;margin-bottom:1.5rem;font-size:15px;font-weight:500;}
-  #sidebar .brand span{color:#5dcaa5;}
-  .navitem{display:flex;align-items:center;gap:10px;padding:9px 1.25rem;font-size:13px;cursor:pointer;color:#b8b6ae;}
-  .navitem:hover{color:#fff;}
-  .navitem.active{background:rgba(255,255,255,0.08);color:#fff;border-right:2px solid #5dcaa5;}
+  #sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:20px 0;display:flex;flex-direction:column;}
+  #sidebar .brand{padding:0 20px;margin-bottom:24px;font-size:15px;font-weight:600;color:var(--ink);}
+  #sidebar .brand span{color:var(--primary);}
+  .navitem{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink-soft);}
+  .navitem:hover{color:var(--ink);background:var(--surface-2);}
+  .navitem.active{background:var(--primary-tint);color:var(--primary);}
   .navitem.disabled{opacity:0.35;pointer-events:none;}
-  #main{flex:1;min-width:0;padding:1.5rem 2rem;}
-  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
-  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1.25rem;}
-  .kpi-label{font-size:12px;color:var(--ink-soft);margin:0;}
+  .theme-toggle{display:flex;align-items:center;gap:8px;margin:16px 20px 0;padding-top:16px;border-top:1px solid var(--border);}
+  .theme-switch{position:relative;width:38px;height:20px;border-radius:99px;background:var(--border-strong);cursor:pointer;flex-shrink:0;}
+  .theme-switch .knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--surface);transition:left 0.15s;}
+  [data-theme="dark"] .theme-switch{background:var(--primary);}
+  [data-theme="dark"] .theme-switch .knob{left:20px;}
+  #main{flex:1;min-width:0;padding:24px 32px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+  h1.page-title{font-size:18px;font-weight:600;margin:0;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;}
+  .kpi-label{font-size:12px;color:var(--ink-soft);margin:0;font-weight:500;}
   .kpi-value{font-size:24px;font-weight:600;margin:4px 0 0;}
-  .grid-2{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-bottom:1.25rem;}
+  .grid-2{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-bottom:20px;}
   .chart-wrap{position:relative;width:100%;height:220px;}
   .upload-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:1rem;}
-  .field label{font-size:12px;color:var(--ink-soft);display:block;margin-bottom:4px;}
+  .field label{font-size:12px;color:var(--ink-soft);font-weight:500;display:block;margin-bottom:4px;}
   .map-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0;}
-  .ds-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:6px;font-size:13px;}
+  .ds-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;font-size:13px;}
   .muted{color:var(--ink-soft);}
-  .empty{padding:3rem 1rem;text-align:center;color:var(--ink-soft);}
   .search-bar{display:flex;gap:10px;margin-bottom:12px;}
-  .badge-competitor{display:inline-block;background:var(--accent-soft);color:var(--accent-ink);font-size:11px;padding:2px 8px;border-radius:99px;margin-right:4px;}
+  .badge-competitor{display:inline-block;background:var(--primary-tint);color:var(--primary);font-size:11px;font-weight:500;padding:2px 8px;border-radius:99px;margin-right:4px;}
+  .sheet-tag{display:inline-block;font-size:10px;font-weight:600;padding:1px 7px;border-radius:99px;margin-left:6px;}
+  .sheet-tag.sale{background:var(--secondary-tint);color:var(--secondary);}
+  .sheet-tag.purchase{background:var(--primary-tint);color:var(--primary);}
 </style>
 </head>
 <body>
@@ -69,15 +94,35 @@
   <div id="sidebar">
     <div class="brand">Supply<span>Mate</span></div>
     <div id="nav"></div>
+    <div class="theme-toggle">
+      <div class="theme-switch" id="theme-switch"><div class="knob"></div></div>
+      <span class="muted" style="font-size:12px;" id="theme-label">Light mode</span>
+    </div>
   </div>
   <div id="main"></div>
 </div>
 
 <script>
+/* ============== THEME ============== */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('supplymate-theme', t);
+  document.getElementById('theme-label').textContent = t==='dark' ? 'Dark mode' : 'Light mode';
+}
+function initTheme(){
+  const saved = localStorage.getItem('supplymate-theme');
+  applyTheme(saved === 'dark' ? 'dark' : 'light');
+  document.getElementById('theme-switch').onclick = ()=>{
+    const cur = document.documentElement.getAttribute('data-theme');
+    applyTheme(cur==='dark' ? 'light' : 'dark');
+  };
+}
+
 /* ============== STATE ============== */
-let datasets = [];        // {competitorName, fileName, rows: extracted mapped rows}
-let pendingParse = null;  // {competitorName, headers, rawRows}
+let datasets = [];        // {competitorName, type:'sale'|'purchase', fileName, sheetName, rows}
+let pendingFile = null;   // {competitorName, fileName, sheets:[{name, headers, rawRows, detectedType}]}
 let companyMaster = {};
+let supplierMaster = {};
 let competitorStats = {};
 let marketTotals = {};
 let monthlyTrend = [];
@@ -92,6 +137,7 @@ const NAV_ITEMS = [
   {id:'executive', icon:'◧', label:'Executive', requiresData:true},
   {id:'competitors', icon:'◫', label:'Competitors', requiresData:true},
   {id:'customers', icon:'◔', label:'Customers / leads', requiresData:true},
+  {id:'suppliers', icon:'▤', label:'Suppliers', requiresData:true},
   {id:'forecasting', icon:'↗', label:'Forecasting', requiresData:true},
 ];
 
@@ -108,7 +154,7 @@ function renderNav(){
   });
 }
 
-/* ============== FILE PARSING ============== */
+/* ============== FILE PARSING (multi-sheet aware) ============== */
 function guessColumn(headers, candidates){
   const lower = headers.map(h=>h.toLowerCase().trim());
   for(const c of candidates){
@@ -118,18 +164,28 @@ function guessColumn(headers, candidates){
   return '';
 }
 
+function detectSheetType(name){
+  const n = name.trim().toLowerCase();
+  if(n.startsWith('p')) return 'purchase';
+  if(n.startsWith('s')) return 'sale';
+  return 'sale';
+}
+
 function parseFile(file, callback){
   const ext = file.name.split('.').pop().toLowerCase();
   if(ext==='csv'){
-    Papa.parse(file, {header:true, skipEmptyLines:true, complete: res=> callback(res.meta.fields, res.data)});
+    Papa.parse(file, {header:true, skipEmptyLines:true, complete: res=>{
+      callback([{name:'data', detectedType:'sale', headers:res.meta.fields, rawRows:res.data}]);
+    }});
   } else {
     const reader = new FileReader();
     reader.onload = e=>{
       const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
-      const sheet = wb.Sheets[wb.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json(sheet, {defval:''});
-      const headers = json.length ? Object.keys(json[0]) : [];
-      callback(headers, json);
+      const sheets = wb.SheetNames.map(name=>{
+        const json = XLSX.utils.sheet_to_json(wb.Sheets[name], {defval:''});
+        return {name, detectedType: detectSheetType(name), headers: json.length?Object.keys(json[0]):[], rawRows: json};
+      }).filter(s=>s.rawRows.length>0);
+      callback(sheets);
     };
     reader.readAsArrayBuffer(file);
   }
@@ -156,20 +212,20 @@ function renderUpload(){
   main.innerHTML = `
     <div class="topbar">
       <div>
-        <p style="font-size:18px;font-weight:600;margin:0;">Upload data</p>
-        <p class="muted" style="margin:4px 0 0;font-size:13px;">Add one or more invoice/transaction files, one per competitor or source.</p>
+        <h1 class="page-title">Upload data</h1>
+        <p class="muted" style="margin:4px 0 0;font-size:13px;">Add a file per competitor. If it has sheets named with "p" (purchase) and "s" (sale), both are detected automatically.</p>
       </div>
     </div>
-    <div class="card" style="margin-bottom:1rem;">
+    <div class="card" style="margin-bottom:16px;">
       <div class="upload-row">
-        <div class="field"><label>Source / competitor name</label><input id="ds-name" placeholder="e.g. Competitor A" /></div>
+        <div class="field"><label>Competitor name</label><input id="ds-name" placeholder="e.g. Competitor A" /></div>
         <div class="field"><label>File (.csv, .xlsx, .xls)</label><input id="ds-file" type="file" accept=".csv,.xlsx,.xls" /></div>
         <button class="primary" id="ds-parse-btn">Parse file</button>
       </div>
       <div id="mapping-zone"></div>
     </div>
-    <div class="card" style="margin-bottom:1rem;">
-      <p style="font-weight:500;margin:0 0 8px;">Datasets added (${datasets.length})</p>
+    <div class="card" style="margin-bottom:16px;">
+      <p style="font-weight:600;margin:0 0 8px;">Datasets added (${datasets.length})</p>
       <div id="ds-list">${datasets.length===0 ? '<p class="muted" style="font-size:13px;">No datasets added yet.</p>' : ''}</div>
     </div>
     <button class="primary" id="process-btn" ${datasets.length===0?'disabled':''}>Process all data and build dashboard</button>
@@ -179,7 +235,8 @@ function renderUpload(){
   datasets.forEach((d,i)=>{
     const row = document.createElement('div');
     row.className = 'ds-row';
-    row.innerHTML = `<span><strong>${d.competitorName}</strong> &middot; ${d.fileName} &middot; ${d.rows.length} rows</span>`;
+    row.innerHTML = `<span><strong>${d.competitorName}</strong> &middot; ${d.fileName} (${d.sheetName})
+      <span class="sheet-tag ${d.type}">${d.type==='sale'?'Sale':'Purchase'}</span> &middot; <span class="num">${d.rows.length}</span> rows</span>`;
     const rm = document.createElement('button');
     rm.textContent = 'Remove';
     rm.onclick = ()=>{ datasets.splice(i,1); renderUpload(); };
@@ -189,12 +246,11 @@ function renderUpload(){
 
   document.getElementById('ds-parse-btn').onclick = ()=>{
     const name = document.getElementById('ds-name').value.trim();
-    const fileInput = document.getElementById('ds-file');
-    const file = fileInput.files[0];
-    if(!name){ alert('Enter a source / competitor name first.'); return; }
+    const file = document.getElementById('ds-file').files[0];
+    if(!name){ alert('Enter a competitor name first.'); return; }
     if(!file){ alert('Choose a file first.'); return; }
-    parseFile(file, (headers, rows)=>{
-      pendingParse = {competitorName:name, fileName:file.name, headers, rawRows:rows};
+    parseFile(file, (sheets)=>{
+      pendingFile = {competitorName:name, fileName:file.name, sheets};
       renderMapping();
     });
   };
@@ -204,50 +260,67 @@ function renderUpload(){
 
 function renderMapping(){
   const zone = document.getElementById('mapping-zone');
-  if(!pendingParse){ zone.innerHTML=''; return; }
-  const h = pendingParse.headers;
-  const guess = {
-    company: guessColumn(h, ['company','buyer','customer','name','party']),
-    gst: guessColumn(h, ['gst','tax id','gstin']),
-    amount: guessColumn(h, ['amount','invoice value','total','value']),
-    date: guessColumn(h, ['date','invoice date','month']),
-    industry: guessColumn(h, ['industry','sector','category']),
-    location: guessColumn(h, ['location','city','state','district']),
-  };
-  const opts = (sel)=> h.map(field=>`<option value="${field}" ${field===sel?'selected':''}>${field}</option>`).join('') + `<option value="">— none —</option>`;
-  zone.innerHTML = `
-    <p style="font-size:13px;font-weight:500;margin:14px 0 4px;">Map columns for ${pendingParse.competitorName} (${pendingParse.rawRows.length} rows detected)</p>
-    <div class="map-grid">
-      <div class="field"><label>Company name (required)</label><select id="map-company">${opts(guess.company)}</select></div>
-      <div class="field"><label>GST / tax ID</label><select id="map-gst">${opts(guess.gst)}</select></div>
-      <div class="field"><label>Invoice amount (required)</label><select id="map-amount">${opts(guess.amount)}</select></div>
-      <div class="field"><label>Invoice date (required)</label><select id="map-date">${opts(guess.date)}</select></div>
-      <div class="field"><label>Industry</label><select id="map-industry">${opts(guess.industry)}</select></div>
-      <div class="field"><label>Location</label><select id="map-location">${opts(guess.location)}</select></div>
-    </div>
-    <button class="primary" id="confirm-map-btn">Add this dataset</button>
-  `;
-  document.getElementById('confirm-map-btn').onclick = ()=>{
-    const m = {
-      company: document.getElementById('map-company').value,
-      gst: document.getElementById('map-gst').value,
-      amount: document.getElementById('map-amount').value,
-      date: document.getElementById('map-date').value,
-      industry: document.getElementById('map-industry').value,
-      location: document.getElementById('map-location').value,
+  if(!pendingFile){ zone.innerHTML=''; return; }
+  zone.innerHTML = `<p style="font-size:13px;font-weight:600;margin:14px 0 4px;">
+    ${pendingFile.fileName} &mdash; ${pendingFile.sheets.length} sheet(s) detected</p>
+    <div id="sheet-forms"></div>
+    <button class="primary" id="confirm-map-btn" style="margin-top:8px;">Add ${pendingFile.sheets.length>1?'these datasets':'this dataset'}</button>`;
+
+  const formsZone = document.getElementById('sheet-forms');
+  pendingFile.sheets.forEach((s,idx)=>{
+    const h = s.headers;
+    const guess = {
+      company: guessColumn(h, ['company','buyer','customer','supplier','vendor','name','party']),
+      gst: guessColumn(h, ['gst','tax id','gstin']),
+      amount: guessColumn(h, ['amount','invoice value','total','value']),
+      date: guessColumn(h, ['date','invoice date','month']),
+      industry: guessColumn(h, ['industry','sector','category']),
+      location: guessColumn(h, ['location','city','state','district']),
     };
-    if(!m.company || !m.amount || !m.date){ alert('Company, amount, and date are required.'); return; }
-    const rows = pendingParse.rawRows.map(r=>({
-      company: String(r[m.company]||'').trim(),
-      gst: m.gst ? String(r[m.gst]||'').trim().toUpperCase() : '',
-      amount: parseFloat(String(r[m.amount]).replace(/[^0-9.\-]/g,'')) || 0,
-      date: parseDate(r[m.date]),
-      industry: m.industry ? String(r[m.industry]||'').trim() : 'Unknown',
-      location: m.location ? String(r[m.location]||'').trim() : 'Unknown',
-      competitor: pendingParse.competitorName,
-    })).filter(r=> r.company && r.date && r.amount>0);
-    datasets.push({competitorName: pendingParse.competitorName, fileName: pendingParse.fileName, rows});
-    pendingParse = null;
+    const opts = (sel)=> h.map(f=>`<option value="${f}" ${f===sel?'selected':''}>${f}</option>`).join('') + `<option value="">— none —</option>`;
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;';
+    wrap.innerHTML = `
+      <p style="font-size:13px;font-weight:600;margin:0 0 8px;">Sheet "${s.name}"
+        <span class="sheet-tag ${s.detectedType}">${s.detectedType==='sale'?'Sale data':'Purchase data'}</span>
+        <span class="muted" style="font-weight:400;"> &middot; ${s.rawRows.length} rows</span></p>
+      <div class="field" style="max-width:220px;margin-bottom:8px;">
+        <label>Sheet type</label>
+        <select data-role="type" data-idx="${idx}">
+          <option value="sale" ${s.detectedType==='sale'?'selected':''}>Sale (competitor → customer)</option>
+          <option value="purchase" ${s.detectedType==='purchase'?'selected':''}>Purchase (competitor → supplier)</option>
+        </select>
+      </div>
+      <div class="map-grid">
+        <div class="field"><label>Party name (required)</label><select data-role="company" data-idx="${idx}">${opts(guess.company)}</select></div>
+        <div class="field"><label>GST / tax ID</label><select data-role="gst" data-idx="${idx}">${opts(guess.gst)}</select></div>
+        <div class="field"><label>Amount (required)</label><select data-role="amount" data-idx="${idx}">${opts(guess.amount)}</select></div>
+        <div class="field"><label>Date (required)</label><select data-role="date" data-idx="${idx}">${opts(guess.date)}</select></div>
+        <div class="field"><label>Industry</label><select data-role="industry" data-idx="${idx}">${opts(guess.industry)}</select></div>
+        <div class="field"><label>Location</label><select data-role="location" data-idx="${idx}">${opts(guess.location)}</select></div>
+      </div>
+    `;
+    formsZone.appendChild(wrap);
+  });
+
+  document.getElementById('confirm-map-btn').onclick = ()=>{
+    pendingFile.sheets.forEach((s,idx)=>{
+      const get = role => document.querySelector(`[data-role="${role}"][data-idx="${idx}"]`).value;
+      const type = get('type');
+      const m = {company:get('company'), gst:get('gst'), amount:get('amount'), date:get('date'), industry:get('industry'), location:get('location')};
+      if(!m.company || !m.amount || !m.date){ alert(`Sheet "${s.name}": party, amount, and date are required.`); return; }
+      const rows = s.rawRows.map(r=>({
+        company: String(r[m.company]||'').trim(),
+        gst: m.gst ? String(r[m.gst]||'').trim().toUpperCase() : '',
+        amount: parseFloat(String(r[m.amount]).replace(/[^0-9.\-]/g,'')) || 0,
+        date: parseDate(r[m.date]),
+        industry: m.industry ? String(r[m.industry]||'').trim() : 'Unknown',
+        location: m.location ? String(r[m.location]||'').trim() : 'Unknown',
+        competitor: pendingFile.competitorName,
+      })).filter(r=> r.company && r.date && r.amount>0);
+      datasets.push({competitorName: pendingFile.competitorName, type, fileName: pendingFile.fileName, sheetName: s.name, rows});
+    });
+    pendingFile = null;
     renderUpload();
   };
 }
@@ -255,10 +328,12 @@ function renderMapping(){
 /* ============== PROCESSING ENGINE ============== */
 function processAllData(){
   companyMaster = {};
+  supplierMaster = {};
   competitorStats = {};
-  const allRows = datasets.flatMap(d=>d.rows);
+  const saleRows = datasets.filter(d=>d.type==='sale').flatMap(d=>d.rows);
+  const purchaseRows = datasets.filter(d=>d.type==='purchase').flatMap(d=>d.rows);
 
-  allRows.forEach(r=>{
+  saleRows.forEach(r=>{
     const key = r.gst || r.company.toUpperCase().replace(/\s+/g,' ');
     if(!companyMaster[key]){
       companyMaster[key] = {displayName:r.company, gst:r.gst, industry:r.industry||'Unknown',
@@ -304,18 +379,37 @@ function processAllData(){
     c.priority = c.leadScore>=75 ? 'High' : c.leadScore>=50 ? 'Medium' : 'Low';
   });
 
-  datasets.forEach(d=>{
-    const companiesSet = new Set();
-    let revenue = 0;
-    d.rows.forEach(r=>{ companiesSet.add(r.gst || r.company.toUpperCase()); revenue += r.amount; });
-    const sorted = [...d.rows].sort((a,b)=>a.date-b.date);
+  purchaseRows.forEach(r=>{
+    const key = r.competitor + '::' + (r.gst || r.company.toUpperCase());
+    if(!supplierMaster[key]){
+      supplierMaster[key] = {competitor:r.competitor, displayName:r.company, gst:r.gst,
+        industry:r.industry||'Unknown', location:r.location||'Unknown', transactions:[]};
+    }
+    supplierMaster[key].transactions.push({amount:r.amount, date:r.date});
+  });
+  Object.values(supplierMaster).forEach(s=>{
+    s.transactions.sort((a,b)=>a.date-b.date);
+    s.count = s.transactions.length;
+    s.totalSpend = s.transactions.reduce((sum,t)=>sum+t.amount,0);
+    s.avgInvoice = s.totalSpend / s.count;
+    s.lastPurchase = s.transactions[s.count-1].date;
+  });
+
+  const competitorNames = new Set([...datasets.map(d=>d.competitorName)]);
+  competitorNames.forEach(name=>{
+    const rows = saleRows.filter(r=>r.competitor===name);
+    const companiesSet = new Set(rows.map(r=> r.gst || r.company.toUpperCase()));
+    const revenue = rows.reduce((s,r)=>s+r.amount,0);
+    const sorted = [...rows].sort((a,b)=>a.date-b.date);
     const mid = Math.floor(sorted.length/2)||1;
     const fh = sorted.slice(0,mid).reduce((s,t)=>s+t.amount,0);
     const sh = sorted.slice(mid).reduce((s,t)=>s+t.amount,0);
-    competitorStats[d.competitorName] = {
+    const procurement = purchaseRows.filter(r=>r.competitor===name).reduce((s,r)=>s+r.amount,0);
+    competitorStats[name] = {
       customers: companiesSet.size, revenue,
-      avgDeal: revenue/d.rows.length,
+      avgDeal: rows.length ? revenue/rows.length : 0,
       growth: fh>0 ? ((sh-fh)/fh)*100 : 0,
+      procurement,
     };
   });
 
@@ -330,7 +424,7 @@ function processAllData(){
   };
 
   const monthMap = {};
-  allRows.forEach(r=>{
+  saleRows.forEach(r=>{
     const key = r.date.getFullYear()+'-'+String(r.date.getMonth()+1).padStart(2,'0');
     monthMap[key] = (monthMap[key]||0) + r.amount;
   });
@@ -349,31 +443,43 @@ function fmtCurrency(v){
 }
 function fmtDate(d){ return d ? d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—'; }
 
+function chartColors(){
+  const dark = document.documentElement.getAttribute('data-theme')==='dark';
+  return {
+    primary: dark ? '#4A90D9' : '#1B4F8C',
+    primaryFill: dark ? 'rgba(74,144,217,0.15)' : 'rgba(27,79,140,0.08)',
+    secondary: dark ? '#52C57F' : '#2F8F5B',
+    grid: dark ? '#243042' : '#E5E9EF',
+    text: dark ? '#8B97A8' : '#6B7686',
+    palette: ['#1B4F8C','#2F8F5B','#8A5A0B','#A3372D','#6B5CA5','#3D8FA6'],
+  };
+}
+
 /* ============== EXECUTIVE VIEW ============== */
 function renderExecutive(){
   const main = document.getElementById('main');
   main.innerHTML = `
     <div class="topbar">
       <div>
-        <p style="font-size:18px;font-weight:600;margin:0;">Executive overview</p>
-        <p class="muted" style="margin:4px 0 0;font-size:13px;">${datasets.length} dataset(s) &middot; ${marketTotals.uniqueCompanies} unique companies</p>
+        <h1 class="page-title">Executive overview</h1>
+        <p class="muted" style="margin:4px 0 0;font-size:13px;">${datasets.length} dataset(s) &middot; <span class="num">${marketTotals.uniqueCompanies}</span> unique companies</p>
       </div>
       <button id="export-btn">Export company master (CSV)</button>
     </div>
     <div class="kpi-grid">
-      <div class="card"><p class="kpi-label">Unique companies</p><p class="kpi-value">${marketTotals.uniqueCompanies}</p></div>
-      <div class="card"><p class="kpi-label">Estimated market size</p><p class="kpi-value">${fmtCurrency(marketTotals.marketSize)}</p></div>
-      <div class="card"><p class="kpi-label">Average deal size</p><p class="kpi-value">${fmtCurrency(marketTotals.avgDeal)}</p></div>
-      <div class="card"><p class="kpi-label">Predicted orders, next 30d</p><p class="kpi-value">${marketTotals.predictedOrdersNext30}</p></div>
+      <div class="card"><p class="kpi-label">Unique companies</p><p class="kpi-value num">${marketTotals.uniqueCompanies}</p></div>
+      <div class="card"><p class="kpi-label">Estimated market size</p><p class="kpi-value num">${fmtCurrency(marketTotals.marketSize)}</p></div>
+      <div class="card"><p class="kpi-label">Average deal size</p><p class="kpi-value num">${fmtCurrency(marketTotals.avgDeal)}</p></div>
+      <div class="card"><p class="kpi-label">Predicted orders, next 30d</p><p class="kpi-value num">${marketTotals.predictedOrdersNext30}</p></div>
     </div>
     <div class="grid-2">
-      <div class="card"><p style="font-weight:500;margin:0 0 8px;font-size:13px;">Revenue trend, all sources</p>
+      <div class="card"><p style="font-weight:600;margin:0 0 8px;font-size:13px;">Revenue trend, all sources</p>
         <div class="chart-wrap"><canvas id="trend-chart"></canvas></div></div>
-      <div class="card"><p style="font-weight:500;margin:0 0 8px;font-size:13px;">Market share by source</p>
+      <div class="card"><p style="font-weight:600;margin:0 0 8px;font-size:13px;">Market share by source</p>
         <div class="chart-wrap"><canvas id="share-chart"></canvas></div></div>
     </div>
     <div class="card">
-      <p style="font-weight:500;margin:0 0 8px;font-size:13px;">Top ranked leads</p>
+      <p style="font-weight:600;margin:0 0 8px;font-size:13px;">Top ranked leads</p>
       <table><thead><tr><th>Company</th><th>Industry</th><th>Predicted next</th><th>Lead score</th><th>Priority</th></tr></thead>
       <tbody id="exec-leads"></tbody></table>
     </div>
@@ -383,24 +489,26 @@ function renderExecutive(){
   const tbody = document.getElementById('exec-leads');
   Object.values(companyMaster).sort((a,b)=>b.leadScore-a.leadScore).slice(0,8).forEach(c=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${c.displayName}</td><td class="muted">${c.industry}</td><td>${fmtDate(c.predictedNextPurchase)}</td><td>${c.leadScore}</td>
+    tr.innerHTML = `<td>${c.displayName}</td><td class="muted">${c.industry}</td><td class="num">${fmtDate(c.predictedNextPurchase)}</td><td class="num">${c.leadScore}</td>
       <td><span class="pill pill-${c.priority.toLowerCase()}">${c.priority}</span></td>`;
     tbody.appendChild(tr);
   });
 
+  const cc = chartColors();
   new Chart(document.getElementById('trend-chart'), {
     type:'line',
-    data:{ labels: monthlyTrend.map(m=>m[0]), datasets:[{data: monthlyTrend.map(m=>m[1]), borderColor:'#0f6e56',
-      backgroundColor:'rgba(15,110,86,0.1)', fill:true, tension:0.3, pointRadius:3}]},
-    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}
+    data:{ labels: monthlyTrend.map(m=>m[0]), datasets:[{data: monthlyTrend.map(m=>m[1]), borderColor:cc.primary,
+      backgroundColor:cc.primaryFill, fill:true, tension:0.3, pointRadius:3}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:cc.text},grid:{color:cc.grid}},y:{ticks:{color:cc.text},grid:{color:cc.grid}}}}
   });
 
   const compEntries = Object.entries(competitorStats);
   new Chart(document.getElementById('share-chart'), {
     type:'doughnut',
     data:{ labels: compEntries.map(e=>e[0]), datasets:[{data: compEntries.map(e=>e[1].revenue),
-      backgroundColor:['#2a78d6','#1baf7a','#eda100','#e34948','#9085e9','#e87ba4'], borderColor:'#fff', borderWidth:2}]},
-    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{boxWidth:10,font:{size:11}}}}}
+      backgroundColor:cc.palette, borderColor:document.documentElement.getAttribute('data-theme')==='dark'?'#141C27':'#fff', borderWidth:2}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{boxWidth:10,font:{size:11},color:cc.text}}}}
   });
 }
 
@@ -408,10 +516,10 @@ function renderExecutive(){
 function renderCompetitors(){
   const main = document.getElementById('main');
   const names = Object.keys(competitorStats);
-  if(!selectedCompetitor) selectedCompetitor = names[0];
+  if(!selectedCompetitor || !names.includes(selectedCompetitor)) selectedCompetitor = names[0];
   main.innerHTML = `
-    <div class="topbar"><div><p style="font-size:18px;font-weight:600;margin:0;">Competitors</p>
-      <p class="muted" style="margin:4px 0 0;font-size:13px;">${names.length} sources tracked</p></div></div>
+    <div class="topbar"><div><h1 class="page-title">Competitors</h1>
+      <p class="muted" style="margin:4px 0 0;font-size:13px;"><span class="num">${names.length}</span> sources tracked</p></div></div>
     <div style="display:flex;gap:14px;">
       <div style="width:240px;flex-shrink:0;" id="comp-list"></div>
       <div style="flex:1;min-width:0;" id="comp-detail"></div>
@@ -423,9 +531,9 @@ function renderCompetitors(){
     const row = document.createElement('div');
     row.className = 'ds-row';
     row.style.cursor = 'pointer';
-    if(n===selectedCompetitor){ row.style.background='var(--accent-soft)'; row.style.borderColor='var(--accent)'; }
-    row.innerHTML = `<span><strong>${n}</strong><br><span class="muted" style="font-size:11px;">${s.customers} customers</span></span>
-      <span style="font-size:11px;color:${s.growth>=0?'var(--success)':'var(--danger)'};">${s.growth>=0?'+':''}${s.growth.toFixed(1)}%</span>`;
+    if(n===selectedCompetitor){ row.style.background='var(--primary-tint)'; row.style.borderColor='var(--primary)'; }
+    row.innerHTML = `<span><strong>${n}</strong><br><span class="muted num" style="font-size:11px;">${s.customers} customers</span></span>
+      <span class="num" style="font-size:11px;color:${s.growth>=0?'var(--secondary)':'var(--danger)'};">${s.growth>=0?'+':''}${s.growth.toFixed(1)}%</span>`;
     row.onclick = ()=>{ selectedCompetitor = n; renderCompetitors(); };
     list.appendChild(row);
   });
@@ -438,14 +546,37 @@ function renderCompetitors(){
     <div class="card">
       <p style="font-size:15px;font-weight:600;margin:0 0 12px;">${selectedCompetitor}</p>
       <div class="kpi-grid">
-        <div><p class="kpi-label">Customers</p><p class="kpi-value" style="font-size:18px;">${s.customers}</p></div>
-        <div><p class="kpi-label">Revenue</p><p class="kpi-value" style="font-size:18px;">${fmtCurrency(s.revenue)}</p></div>
-        <div><p class="kpi-label">Avg deal</p><p class="kpi-value" style="font-size:18px;">${fmtCurrency(s.avgDeal)}</p></div>
-        <div><p class="kpi-label">Growth</p><p class="kpi-value" style="font-size:18px;color:${s.growth>=0?'var(--success)':'var(--danger)'};">${s.growth>=0?'+':''}${s.growth.toFixed(1)}%</p></div>
+        <div><p class="kpi-label">Customers</p><p class="kpi-value num" style="font-size:18px;">${s.customers}</p></div>
+        <div><p class="kpi-label">Revenue</p><p class="kpi-value num" style="font-size:18px;">${fmtCurrency(s.revenue)}</p></div>
+        <div><p class="kpi-label">Avg deal</p><p class="kpi-value num" style="font-size:18px;">${fmtCurrency(s.avgDeal)}</p></div>
+        <div><p class="kpi-label">Growth</p><p class="kpi-value num" style="font-size:18px;color:${s.growth>=0?'var(--secondary)':'var(--danger)'};">${s.growth>=0?'+':''}${s.growth.toFixed(1)}%</p></div>
       </div>
-      <p style="font-weight:500;margin:14px 0 8px;font-size:13px;">Top customers</p>
-      <table><tbody>${companiesForComp.map(c=>`<tr><td>${c.displayName}</td><td class="muted">${c.industry}</td><td style="text-align:right;">${fmtCurrency(c.totalPurchases)}</td></tr>`).join('')}</tbody></table>
+      <p style="font-weight:600;margin:14px 0 8px;font-size:13px;">Top customers</p>
+      <table><tbody>${companiesForComp.map(c=>`<tr><td>${c.displayName}</td><td class="muted">${c.industry}</td><td class="num" style="text-align:right;">${fmtCurrency(c.totalPurchases)}</td></tr>`).join('')}</tbody></table>
     </div>
+  `;
+}
+
+/* ============== SUPPLIERS VIEW ============== */
+function renderSuppliers(){
+  const main = document.getElementById('main');
+  const allSuppliers = Object.values(supplierMaster);
+  const names = [...new Set(allSuppliers.map(s=>s.competitor))];
+  main.innerHTML = `
+    <div class="topbar"><div><h1 class="page-title">Suppliers</h1>
+      <p class="muted" style="margin:4px 0 0;font-size:13px;">Competitor procurement, from purchase-sheet data</p></div></div>
+    ${allSuppliers.length===0 ? `<div class="card"><p class="muted" style="font-size:13px;margin:0;">No purchase-sheet data was uploaded — only sale-side data is available, so there's no supplier view to show yet.</p></div>` : `
+    <div class="kpi-grid">
+      ${names.map(n=>`<div class="card"><p class="kpi-label">${n} &middot; total procurement</p>
+        <p class="kpi-value num">${fmtCurrency(competitorStats[n] ? competitorStats[n].procurement : 0)}</p></div>`).join('')}
+    </div>
+    <div class="card" style="padding:0;overflow:auto;">
+      <table><thead><tr><th>Competitor</th><th>Supplier</th><th>Industry</th><th>Total spend</th><th>Avg invoice</th><th>Last purchase</th></tr></thead>
+      <tbody>${allSuppliers.sort((a,b)=>b.totalSpend-a.totalSpend).slice(0,200).map(s=>`
+        <tr><td>${s.competitor}</td><td>${s.displayName}</td><td class="muted">${s.industry}</td>
+          <td class="num">${fmtCurrency(s.totalSpend)}</td><td class="num">${fmtCurrency(s.avgInvoice)}</td><td class="num">${fmtDate(s.lastPurchase)}</td></tr>
+      `).join('')}</tbody></table>
+    </div>`}
   `;
 }
 
@@ -453,8 +584,8 @@ function renderCompetitors(){
 function renderCustomers(){
   const main = document.getElementById('main');
   main.innerHTML = `
-    <div class="topbar"><div><p style="font-size:18px;font-weight:600;margin:0;">Customers / leads</p>
-      <p class="muted" style="margin:4px 0 0;font-size:13px;">${marketTotals.uniqueCompanies} companies across all sources</p></div></div>
+    <div class="topbar"><div><h1 class="page-title">Customers / leads</h1>
+      <p class="muted" style="margin:4px 0 0;font-size:13px;"><span class="num">${marketTotals.uniqueCompanies}</span> companies across all sources</p></div></div>
     <div class="search-bar">
       <input id="lead-search" placeholder="Search company or industry" style="flex:1;" value="${leadFilter.search}" />
       <select id="lead-priority" style="width:160px;">
@@ -511,11 +642,11 @@ function renderLeadRows(){
       <td>${c.displayName}</td>
       <td class="muted">${c.industry}</td>
       <td>${[...c.competitorsSelling].map(s=>`<span class="badge-competitor">${s}</span>`).join('')}</td>
-      <td>${fmtCurrency(c.totalPurchases)}</td>
-      <td>${fmtCurrency(c.avgInvoice)}</td>
-      <td style="color:${c.growthPct>=0?'var(--success)':'var(--danger)'};">${c.growthPct>=0?'+':''}${c.growthPct.toFixed(0)}%</td>
-      <td>${fmtDate(c.predictedNextPurchase)}</td>
-      <td>${c.leadScore}</td>
+      <td class="num">${fmtCurrency(c.totalPurchases)}</td>
+      <td class="num">${fmtCurrency(c.avgInvoice)}</td>
+      <td class="num" style="color:${c.growthPct>=0?'var(--secondary)':'var(--danger)'};">${c.growthPct>=0?'+':''}${c.growthPct.toFixed(0)}%</td>
+      <td class="num">${fmtDate(c.predictedNextPurchase)}</td>
+      <td class="num">${c.leadScore}</td>
       <td><span class="pill pill-${c.priority.toLowerCase()}">${c.priority}</span></td>
       <td class="muted">${c.status}</td>
     </tr>
@@ -531,16 +662,16 @@ function renderForecasting(){
     .sort((a,b)=>a.predictedNextPurchase-b.predictedNextPurchase)
     .slice(0,100);
   main.innerHTML = `
-    <div class="topbar"><div><p style="font-size:18px;font-weight:600;margin:0;">Forecasting</p>
+    <div class="topbar"><div><h1 class="page-title">Forecasting</h1>
       <p class="muted" style="margin:4px 0 0;font-size:13px;">Expected reorder windows, ranked by date</p></div></div>
     <div class="card" style="padding:0;overflow:auto;">
       <table>
         <thead><tr><th>Company</th><th>Last purchase</th><th>Avg gap (days)</th><th>Expected purchase</th>
           <th>Expected amount</th><th>Lead score</th></tr></thead>
         <tbody>${upcoming.map(c=>`
-          <tr><td>${c.displayName}</td><td class="muted">${fmtDate(c.lastPurchase)}</td>
-            <td class="muted">${Math.round(c.avgGapDays)}</td><td>${fmtDate(c.predictedNextPurchase)}</td>
-            <td>${fmtCurrency(c.avgInvoice)}</td><td>${c.leadScore}</td></tr>
+          <tr><td>${c.displayName}</td><td class="muted num">${fmtDate(c.lastPurchase)}</td>
+            <td class="muted num">${Math.round(c.avgGapDays)}</td><td class="num">${fmtDate(c.predictedNextPurchase)}</td>
+            <td class="num">${fmtCurrency(c.avgInvoice)}</td><td class="num">${c.leadScore}</td></tr>
         `).join('')}</tbody>
       </table>
     </div>
@@ -571,8 +702,10 @@ function render(){
   else if(currentView==='executive') renderExecutive();
   else if(currentView==='competitors') renderCompetitors();
   else if(currentView==='customers') renderCustomers();
+  else if(currentView==='suppliers') renderSuppliers();
   else if(currentView==='forecasting') renderForecasting();
 }
+initTheme();
 render();
 </script>
 </body>
