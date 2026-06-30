@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SupplyMate — Market Intelligence Platform</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root{
+    --bg:#f6f5f1; --surface:#ffffff; --surface-2:#eeede6;
+    --ink:#14161a; --ink-soft:#5b5e58; --ink-muted:#8b8a82;
+    --border:#e2e1da; --border-strong:#cfcec5;
+    --accent:#0f6e56; --accent-soft:#e1f5ee; --accent-ink:#085041;
+    --danger:#a32d2d; --danger-soft:#fcebeb;
+    --warning:#854f0b; --warning-soft:#faeeda;
+    --success:#3b6d11; --success-soft:#eaf3de;
+    --radius:8px;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-size:14px;}
+  button{font:inherit;cursor:pointer;border:0.5px solid var(--border-strong);background:var(--surface);
+    border-radius:var(--radius);padding:8px 14px;color:var(--ink);}
+  button:hover{background:var(--surface-2);}
+  button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+  button.primary:hover{background:var(--accent-ink);}
+  button:disabled{opacity:0.4;cursor:not-allowed;}
+  input,select{font:inherit;padding:8px 10px;border:0.5px solid var(--border-strong);border-radius:var(--radius);
+    background:var(--surface);color:var(--ink);width:100%;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;padding:8px 10px;color:var(--ink-soft);font-weight:500;border-bottom:0.5px solid var(--border-strong);
+    cursor:pointer;white-space:nowrap;}
+  td{padding:8px 10px;border-bottom:0.5px solid var(--border);}
+  tr:hover td{background:var(--surface-2);}
+  .card{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;}
+  .pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:500;}
+  .pill-high{background:var(--danger-soft);color:var(--danger);}
+  .pill-medium{background:var(--warning-soft);color:var(--warning);}
+  .pill-low{background:var(--surface-2);color:var(--ink-soft);}
+  #app{display:flex;min-height:100vh;}
+  #sidebar{width:220px;flex-shrink:0;background:#11151c;color:#e9e8e2;padding:1.25rem 0;display:flex;flex-direction:column;}
+  #sidebar .brand{padding:0 1.25rem;margin-bottom:1.5rem;font-size:15px;font-weight:500;}
+  #sidebar .brand span{color:#5dcaa5;}
+  .navitem{display:flex;align-items:center;gap:10px;padding:9px 1.25rem;font-size:13px;cursor:pointer;color:#b8b6ae;}
+  .navitem:hover{color:#fff;}
+  .navitem.active{background:rgba(255,255,255,0.08);color:#fff;border-right:2px solid #5dcaa5;}
+  .navitem.disabled{opacity:0.35;pointer-events:none;}
+  #main{flex:1;min-width:0;padding:1.5rem 2rem;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1.25rem;}
+  .kpi-label{font-size:12px;color:var(--ink-soft);margin:0;}
+  .kpi-value{font-size:24px;font-weight:600;margin:4px 0 0;}
+  .grid-2{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-bottom:1.25rem;}
+  .chart-wrap{position:relative;width:100%;height:220px;}
+  .upload-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:1rem;}
+  .field label{font-size:12px;color:var(--ink-soft);display:block;margin-bottom:4px;}
+  .map-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0;}
+  .ds-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:6px;font-size:13px;}
+  .muted{color:var(--ink-soft);}
+  .empty{padding:3rem 1rem;text-align:center;color:var(--ink-soft);}
+  .search-bar{display:flex;gap:10px;margin-bottom:12px;}
+  .badge-competitor{display:inline-block;background:var(--accent-soft);color:var(--accent-ink);font-size:11px;padding:2px 8px;border-radius:99px;margin-right:4px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar">
+    <div class="brand">Supply<span>Mate</span></div>
+    <div id="nav"></div>
+  </div>
+  <div id="main"></div>
+</div>
+
+<script>
+/* ============== STATE ============== */
+let datasets = [];        // {competitorName, fileName, rows: extracted mapped rows}
+let pendingParse = null;  // {competitorName, headers, rawRows}
+let companyMaster = {};
+let competitorStats = {};
+let marketTotals = {};
+let monthlyTrend = [];
+let processed = false;
+let currentView = 'upload';
+let selectedCompetitor = null;
+let leadSort = {key:'leadScore', dir:'desc'};
+let leadFilter = {priority:'all', search:''};
+
+const NAV_ITEMS = [
+  {id:'upload', icon:'⬆', label:'Upload data', requiresData:false},
+  {id:'executive', icon:'◧', label:'Executive', requiresData:true},
+  {id:'competitors', icon:'◫', label:'Competitors', requiresData:true},
+  {id:'customers', icon:'◔', label:'Customers / leads', requiresData:true},
+  {id:'forecasting', icon:'↗', label:'Forecasting', requiresData:true},
+];
+
+/* ============== NAV ============== */
+function renderNav(){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = '';
+  NAV_ITEMS.forEach(item=>{
+    const el = document.createElement('div');
+    el.className = 'navitem' + (currentView===item.id?' active':'') + ((item.requiresData && !processed)?' disabled':'');
+    el.innerHTML = '<span>'+item.icon+'</span>'+item.label;
+    el.onclick = ()=>{ currentView=item.id; render(); };
+    nav.appendChild(el);
+  });
+}
+
+/* ============== FILE PARSING ============== */
+function guessColumn(headers, candidates){
+  const lower = headers.map(h=>h.toLowerCase().trim());
+  for(const c of candidates){
+    const idx = lower.findIndex(h=>h.includes(c));
+    if(idx>-1) return headers[idx];
+  }
+  return '';
+}
+
+function parseFile(file, callback){
+  const ext = file.name.split('.').pop().toLowerCase();
+  if(ext==='csv'){
+    Papa.parse(file, {header:true, skipEmptyLines:true, complete: res=> callback(res.meta.fields, res.data)});
+  } else {
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(sheet, {defval:''});
+      const headers = json.length ? Object.keys(json[0]) : [];
+      callback(headers, json);
+    };
+    reader.readAsArrayBuffer(file);
+  }
+}
+
+function parseDate(val){
+  if(!val) return null;
+  if(val instanceof Date) return val;
+  let d = new Date(val);
+  if(!isNaN(d)) return d;
+  const parts = String(val).split(/[\/\-\.]/);
+  if(parts.length===3){
+    let [a,b,c] = parts.map(p=>parseInt(p,10));
+    if(c<100) c+=2000;
+    d = new Date(c,b-1,a);
+    if(!isNaN(d)) return d;
+  }
+  return null;
+}
+
+/* ============== UPLOAD VIEW ============== */
+function renderUpload(){
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="topbar">
+      <div>
+        <p style="font-size:18px;font-weight:600;margin:0;">Upload data</p>
+        <p class="muted" style="margin:4px 0 0;font-size:13px;">Add one or more invoice/transaction files, one per competitor or source.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="upload-row">
+        <div class="field"><label>Source / competitor name</label><input id="ds-name" placeholder="e.g. Competitor A" /></div>
+        <div class="field"><label>File (.csv, .xlsx, .xls)</label><input id="ds-file" type="file" accept=".csv,.xlsx,.xls" /></div>
+        <button class="primary" id="ds-parse-btn">Parse file</button>
+      </div>
+      <div id="mapping-zone"></div>
+    </div>
+    <div class="card" style="margin-bottom:1rem;">
+      <p style="font-weight:500;margin:0 0 8px;">Datasets added (${datasets.length})</p>
+      <div id="ds-list">${datasets.length===0 ? '<p class="muted" style="font-size:13px;">No datasets added yet.</p>' : ''}</div>
+    </div>
+    <button class="primary" id="process-btn" ${datasets.length===0?'disabled':''}>Process all data and build dashboard</button>
+  `;
+
+  const dsList = document.getElementById('ds-list');
+  datasets.forEach((d,i)=>{
+    const row = document.createElement('div');
+    row.className = 'ds-row';
+    row.innerHTML = `<span><strong>${d.competitorName}</strong> &middot; ${d.fileName} &middot; ${d.rows.length} rows</span>`;
+    const rm = document.createElement('button');
+    rm.textContent = 'Remove';
+    rm.onclick = ()=>{ datasets.splice(i,1); renderUpload(); };
+    row.appendChild(rm);
+    dsList.appendChild(row);
+  });
+
+  document.getElementById('ds-parse-btn').onclick = ()=>{
+    const name = document.getElementById('ds-name').value.trim();
+    const fileInput = document.getElementById('ds-file');
+    const file = fileInput.files[0];
+    if(!name){ alert('Enter a source / competitor name first.'); return; }
+    if(!file){ alert('Choose a file first.'); return; }
+    parseFile(file, (headers, rows)=>{
+      pendingParse = {competitorName:name, fileName:file.name, headers, rawRows:rows};
+      renderMapping();
+    });
+  };
+
+  document.getElementById('process-btn').onclick = processAllData;
+}
+
+function renderMapping(){
+  const zone = document.getElementById('mapping-zone');
+  if(!pendingParse){ zone.innerHTML=''; return; }
+  const h = pendingParse.headers;
+  const guess = {
+    company: guessColumn(h, ['company','buyer','customer','name','party']),
+    gst: guessColumn(h, ['gst','tax id','gstin']),
+    amount: guessColumn(h, ['amount','invoice value','total','value']),
+    date: guessColumn(h, ['date','invoice date','month']),
+    industry: guessColumn(h, ['industry','sector','category']),
+    location: guessColumn(h, ['location','city','state','district']),
+  };
+  const opts = (sel)=> h.map(field=>`<option value="${field}" ${field===sel?'selected':''}>${field}</option>`).join('') + `<option value="">— none —</option>`;
+  zone.innerHTML = `
+    <p style="font-size:13px;font-weight:500;margin:14px 0 4px;">Map columns for ${pendingParse.competitorName} (${pendingParse.rawRows.length} rows detected)</p>
+    <div class="map-grid">
+      <div class="field"><label>Company name (required)</label><select id="map-company">${opts(guess.company)}</select></div>
+      <div class="field"><label>GST / tax ID</label><select id="map-gst">${opts(guess.gst)}</select></div>
+      <div class="field"><label>Invoice amount (required)</label><select id="map-amount">${opts(guess.amount)}</select></div>
+      <div class="field"><label>Invoice date (required)</label><select id="map-date">${opts(guess.date)}</select></div>
+      <div class="field"><label>Industry</label><select id="map-industry">${opts(guess.industry)}</select></div>
+      <div class="field"><label>Location</label><select id="map-location">${opts(guess.location)}</select></div>
+    </div>
+    <button class="primary" id="confirm-map-btn">Add this dataset</button>
+  `;
+  document.getElementById('confirm-map-btn').onclick = ()=>{
+    const m = {
+      company: document.getElementById('map-company').value,
+      gst: document.getElementById('map-gst').value,
+      amount: document.getElementById('map-amount').value,
+      date: document.getElementById('map-date').value,
+      industry: document.getElementById('map-industry').value,
+      location: document.getElementById('map-location').value,
+    };
+    if(!m.company || !m.amount || !m.date){ alert('Company, amount, and date are required.'); return; }
+    const rows = pendingParse.rawRows.map(r=>({
+      company: String(r[m.company]||'').trim(),
+      gst: m.gst ? String(r[m.gst]||'').trim().toUpperCase() : '',
+      amount: parseFloat(String(r[m.amount]).replace(/[^0-9.\-]/g,'')) || 0,
+      date: parseDate(r[m.date]),
+      industry: m.industry ? String(r[m.industry]||'').trim() : 'Unknown',
+      location: m.location ? String(r[m.location]||'').trim() : 'Unknown',
+      competitor: pendingParse.competitorName,
+    })).filter(r=> r.company && r.date && r.amount>0);
+    datasets.push({competitorName: pendingParse.competitorName, fileName: pendingParse.fileName, rows});
+    pendingParse = null;
+    renderUpload();
+  };
+}
+
+/* ============== PROCESSING ENGINE ============== */
+function processAllData(){
+  companyMaster = {};
+  competitorStats = {};
+  const allRows = datasets.flatMap(d=>d.rows);
+
+  allRows.forEach(r=>{
+    const key = r.gst || r.company.toUpperCase().replace(/\s+/g,' ');
+    if(!companyMaster[key]){
+      companyMaster[key] = {displayName:r.company, gst:r.gst, industry:r.industry||'Unknown',
+        location:r.location||'Unknown', competitorsSelling:new Set(), transactions:[]};
+    }
+    const c = companyMaster[key];
+    c.competitorsSelling.add(r.competitor);
+    c.transactions.push({competitor:r.competitor, amount:r.amount, date:r.date});
+    if(r.industry && r.industry!=='Unknown') c.industry = r.industry;
+    if(r.location && r.location!=='Unknown') c.location = r.location;
+  });
+
+  const now = new Date();
+  let maxAvgInvoice = 1;
+  Object.values(companyMaster).forEach(c=>{
+    c.transactions.sort((a,b)=>a.date-b.date);
+    c.count = c.transactions.length;
+    c.totalPurchases = c.transactions.reduce((s,t)=>s+t.amount,0);
+    c.avgInvoice = c.totalPurchases / c.count;
+    if(c.avgInvoice>maxAvgInvoice) maxAvgInvoice = c.avgInvoice;
+    c.firstPurchase = c.transactions[0].date;
+    c.lastPurchase = c.transactions[c.count-1].date;
+    const daySpan = Math.max((c.lastPurchase-c.firstPurchase)/86400000, 1);
+    c.frequency = c.count>1 ? c.count/(daySpan/365) : 1;
+    const gaps = [];
+    for(let i=1;i<c.count;i++) gaps.push((c.transactions[i].date - c.transactions[i-1].date)/86400000);
+    c.avgGapDays = gaps.length ? gaps.reduce((s,g)=>s+g,0)/gaps.length : 90;
+    c.predictedNextPurchase = new Date(c.lastPurchase.getTime() + c.avgGapDays*86400000);
+    const mid = Math.floor(c.count/2) || 1;
+    const firstHalf = c.transactions.slice(0,mid).reduce((s,t)=>s+t.amount,0);
+    const secondHalf = c.transactions.slice(mid).reduce((s,t)=>s+t.amount,0);
+    c.growthPct = firstHalf>0 ? ((secondHalf-firstHalf)/firstHalf)*100 : 0;
+    c.daysSinceLast = (now - c.lastPurchase)/86400000;
+    c.status = c.daysSinceLast > c.avgGapDays*2 ? 'At risk' : c.daysSinceLast > c.avgGapDays ? 'Due soon' : 'Active';
+  });
+
+  Object.values(companyMaster).forEach(c=>{
+    const recency = clamp(100 - c.daysSinceLast*100/180, 0, 100);
+    const frequency = clamp(c.frequency*100/12, 0, 100);
+    const monetary = clamp(c.avgInvoice/maxAvgInvoice*100, 0, 100);
+    const growth = clamp(50 + c.growthPct/2, 0, 100);
+    c.leadScore = Math.round(0.3*recency + 0.25*frequency + 0.25*monetary + 0.2*growth);
+    c.priority = c.leadScore>=75 ? 'High' : c.leadScore>=50 ? 'Medium' : 'Low';
+  });
+
+  datasets.forEach(d=>{
+    const companiesSet = new Set();
+    let revenue = 0;
+    d.rows.forEach(r=>{ companiesSet.add(r.gst || r.company.toUpperCase()); revenue += r.amount; });
+    const sorted = [...d.rows].sort((a,b)=>a.date-b.date);
+    const mid = Math.floor(sorted.length/2)||1;
+    const fh = sorted.slice(0,mid).reduce((s,t)=>s+t.amount,0);
+    const sh = sorted.slice(mid).reduce((s,t)=>s+t.amount,0);
+    competitorStats[d.competitorName] = {
+      customers: companiesSet.size, revenue,
+      avgDeal: revenue/d.rows.length,
+      growth: fh>0 ? ((sh-fh)/fh)*100 : 0,
+    };
+  });
+
+  const allCompanies = Object.values(companyMaster);
+  const marketSize = allCompanies.reduce((s,c)=>s+c.totalPurchases,0);
+  const totalTxns = allCompanies.reduce((s,c)=>s+c.count,0);
+  const next30 = allCompanies.filter(c=> (c.predictedNextPurchase-now)/86400000 <= 30 && (c.predictedNextPurchase-now)/86400000 >= -5).length;
+  marketTotals = {
+    uniqueCompanies: allCompanies.length,
+    marketSize, avgDeal: totalTxns? marketSize/totalTxns : 0,
+    predictedOrdersNext30: next30,
+  };
+
+  const monthMap = {};
+  allRows.forEach(r=>{
+    const key = r.date.getFullYear()+'-'+String(r.date.getMonth()+1).padStart(2,'0');
+    monthMap[key] = (monthMap[key]||0) + r.amount;
+  });
+  monthlyTrend = Object.entries(monthMap).sort((a,b)=> a[0]<b[0]?-1:1).slice(-8);
+
+  processed = true;
+  currentView = 'executive';
+  render();
+}
+
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+function fmtCurrency(v){
+  if(v>=10000000) return '₹'+(v/10000000).toFixed(2)+' Cr';
+  if(v>=100000) return '₹'+(v/100000).toFixed(1)+'L';
+  return '₹'+Math.round(v).toLocaleString('en-IN');
+}
+function fmtDate(d){ return d ? d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—'; }
+
+/* ============== EXECUTIVE VIEW ============== */
+function renderExecutive(){
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="topbar">
+      <div>
+        <p style="font-size:18px;font-weight:600;margin:0;">Executive overview</p>
+        <p class="muted" style="margin:4px 0 0;font-size:13px;">${datasets.length} dataset(s) &middot; ${marketTotals.uniqueCompanies} unique companies</p>
+      </div>
+      <button id="export-btn">Export company master (CSV)</button>
+    </div>
+    <div class="kpi-grid">
+      <div class="card"><p class="kpi-label">Unique companies</p><p class="kpi-value">${marketTotals.uniqueCompanies}</p></div>
+      <div class="card"><p class="kpi-label">Estimated market size</p><p class="kpi-value">${fmtCurrency(marketTotals.marketSize)}</p></div>
+      <div class="card"><p class="kpi-label">Average deal size</p><p class="kpi-value">${fmtCurrency(marketTotals.avgDeal)}</p></div>
+      <div class="card"><p class="kpi-label">Predicted orders, next 30d</p><p class="kpi-value">${marketTotals.predictedOrdersNext30}</p></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><p style="font-weight:500;margin:0 0 8px;font-size:13px;">Revenue trend, all sources</p>
+        <div class="chart-wrap"><canvas id="trend-chart"></canvas></div></div>
+      <div class="card"><p style="font-weight:500;margin:0 0 8px;font-size:13px;">Market share by source</p>
+        <div class="chart-wrap"><canvas id="share-chart"></canvas></div></div>
+    </div>
+    <div class="card">
+      <p style="font-weight:500;margin:0 0 8px;font-size:13px;">Top ranked leads</p>
+      <table><thead><tr><th>Company</th><th>Industry</th><th>Predicted next</th><th>Lead score</th><th>Priority</th></tr></thead>
+      <tbody id="exec-leads"></tbody></table>
+    </div>
+  `;
+  document.getElementById('export-btn').onclick = exportCSV;
+
+  const tbody = document.getElementById('exec-leads');
+  Object.values(companyMaster).sort((a,b)=>b.leadScore-a.leadScore).slice(0,8).forEach(c=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${c.displayName}</td><td class="muted">${c.industry}</td><td>${fmtDate(c.predictedNextPurchase)}</td><td>${c.leadScore}</td>
+      <td><span class="pill pill-${c.priority.toLowerCase()}">${c.priority}</span></td>`;
+    tbody.appendChild(tr);
+  });
+
+  new Chart(document.getElementById('trend-chart'), {
+    type:'line',
+    data:{ labels: monthlyTrend.map(m=>m[0]), datasets:[{data: monthlyTrend.map(m=>m[1]), borderColor:'#0f6e56',
+      backgroundColor:'rgba(15,110,86,0.1)', fill:true, tension:0.3, pointRadius:3}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}
+  });
+
+  const compEntries = Object.entries(competitorStats);
+  new Chart(document.getElementById('share-chart'), {
+    type:'doughnut',
+    data:{ labels: compEntries.map(e=>e[0]), datasets:[{data: compEntries.map(e=>e[1].revenue),
+      backgroundColor:['#2a78d6','#1baf7a','#eda100','#e34948','#9085e9','#e87ba4'], borderColor:'#fff', borderWidth:2}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{boxWidth:10,font:{size:11}}}}}
+  });
+}
+
+/* ============== COMPETITORS VIEW ============== */
+function renderCompetitors(){
+  const main = document.getElementById('main');
+  const names = Object.keys(competitorStats);
+  if(!selectedCompetitor) selectedCompetitor = names[0];
+  main.innerHTML = `
+    <div class="topbar"><div><p style="font-size:18px;font-weight:600;margin:0;">Competitors</p>
+      <p class="muted" style="margin:4px 0 0;font-size:13px;">${names.length} sources tracked</p></div></div>
+    <div style="display:flex;gap:14px;">
+      <div style="width:240px;flex-shrink:0;" id="comp-list"></div>
+      <div style="flex:1;min-width:0;" id="comp-detail"></div>
+    </div>
+  `;
+  const list = document.getElementById('comp-list');
+  names.forEach(n=>{
+    const s = competitorStats[n];
+    const row = document.createElement('div');
+    row.className = 'ds-row';
+    row.style.cursor = 'pointer';
+    if(n===selectedCompetitor){ row.style.background='var(--accent-soft)'; row.style.borderColor='var(--accent)'; }
+    row.innerHTML = `<span><strong>${n}</strong><br><span class="muted" style="font-size:11px;">${s.customers} customers</span></span>
+      <span style="font-size:11px;color:${s.growth>=0?'var(--success)':'var(--danger)'};">${s.growth>=0?'+':''}${s.growth.toFixed(1)}%</span>`;
+    row.onclick = ()=>{ selectedCompetitor = n; renderCompetitors(); };
+    list.appendChild(row);
+  });
+
+  const detail = document.getElementById('comp-detail');
+  const s = competitorStats[selectedCompetitor];
+  const companiesForComp = Object.values(companyMaster).filter(c=>c.competitorsSelling.has(selectedCompetitor))
+    .sort((a,b)=>b.totalPurchases-a.totalPurchases).slice(0,6);
+  detail.innerHTML = `
+    <div class="card">
+      <p style="font-size:15px;font-weight:600;margin:0 0 12px;">${selectedCompetitor}</p>
+      <div class="kpi-grid">
+        <div><p class="kpi-label">Customers</p><p class="kpi-value" style="font-size:18px;">${s.customers}</p></div>
+        <div><p class="kpi-label">Revenue</p><p class="kpi-value" style="font-size:18px;">${fmtCurrency(s.revenue)}</p></div>
+        <div><p class="kpi-label">Avg deal</p><p class="kpi-value" style="font-size:18px;">${fmtCurrency(s.avgDeal)}</p></div>
+        <div><p class="kpi-label">Growth</p><p class="kpi-value" style="font-size:18px;color:${s.growth>=0?'var(--success)':'var(--danger)'};">${s.growth>=0?'+':''}${s.growth.toFixed(1)}%</p></div>
+      </div>
+      <p style="font-weight:500;margin:14px 0 8px;font-size:13px;">Top customers</p>
+      <table><tbody>${companiesForComp.map(c=>`<tr><td>${c.displayName}</td><td class="muted">${c.industry}</td><td style="text-align:right;">${fmtCurrency(c.totalPurchases)}</td></tr>`).join('')}</tbody></table>
+    </div>
+  `;
+}
+
+/* ============== CUSTOMERS / LEADS VIEW ============== */
+function renderCustomers(){
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="topbar"><div><p style="font-size:18px;font-weight:600;margin:0;">Customers / leads</p>
+      <p class="muted" style="margin:4px 0 0;font-size:13px;">${marketTotals.uniqueCompanies} companies across all sources</p></div></div>
+    <div class="search-bar">
+      <input id="lead-search" placeholder="Search company or industry" style="flex:1;" value="${leadFilter.search}" />
+      <select id="lead-priority" style="width:160px;">
+        <option value="all">All priorities</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+    </div>
+    <div class="card" style="padding:0;overflow:auto;">
+      <table>
+        <thead><tr>
+          <th data-key="displayName">Company</th><th data-key="industry">Industry</th>
+          <th data-key="competitorsSelling">Sources</th><th data-key="totalPurchases">Total purchases</th>
+          <th data-key="avgInvoice">Avg invoice</th><th data-key="growthPct">Growth</th>
+          <th data-key="predictedNextPurchase">Predicted next</th><th data-key="leadScore">Lead score</th>
+          <th data-key="priority">Priority</th><th data-key="status">Status</th>
+        </tr></thead>
+        <tbody id="lead-body"></tbody>
+      </table>
+    </div>
+  `;
+  document.getElementById('lead-priority').value = leadFilter.priority;
+  document.getElementById('lead-search').oninput = e=>{ leadFilter.search = e.target.value; renderLeadRows(); };
+  document.getElementById('lead-priority').onchange = e=>{ leadFilter.priority = e.target.value; renderLeadRows(); };
+  document.querySelectorAll('th[data-key]').forEach(th=>{
+    th.onclick = ()=>{
+      const key = th.dataset.key;
+      leadSort.dir = (leadSort.key===key && leadSort.dir==='desc') ? 'asc' : 'desc';
+      leadSort.key = key;
+      renderLeadRows();
+    };
+  });
+  renderLeadRows();
+}
+
+function renderLeadRows(){
+  const tbody = document.getElementById('lead-body');
+  if(!tbody) return;
+  let rows = Object.values(companyMaster);
+  if(leadFilter.priority!=='all') rows = rows.filter(c=>c.priority===leadFilter.priority);
+  if(leadFilter.search) rows = rows.filter(c=> (c.displayName+c.industry).toLowerCase().includes(leadFilter.search.toLowerCase()));
+  rows.sort((a,b)=>{
+    let av=a[leadSort.key], bv=b[leadSort.key];
+    if(leadSort.key==='competitorsSelling'){ av=a.competitorsSelling.size; bv=b.competitorsSelling.size; }
+    if(av instanceof Date) { av=av.getTime(); bv=bv.getTime(); }
+    if(typeof av==='string'){ av=av.toLowerCase(); bv=bv.toLowerCase(); }
+    if(av<bv) return leadSort.dir==='asc'?-1:1;
+    if(av>bv) return leadSort.dir==='asc'?1:-1;
+    return 0;
+  });
+  tbody.innerHTML = rows.slice(0,200).map(c=>`
+    <tr>
+      <td>${c.displayName}</td>
+      <td class="muted">${c.industry}</td>
+      <td>${[...c.competitorsSelling].map(s=>`<span class="badge-competitor">${s}</span>`).join('')}</td>
+      <td>${fmtCurrency(c.totalPurchases)}</td>
+      <td>${fmtCurrency(c.avgInvoice)}</td>
+      <td style="color:${c.growthPct>=0?'var(--success)':'var(--danger)'};">${c.growthPct>=0?'+':''}${c.growthPct.toFixed(0)}%</td>
+      <td>${fmtDate(c.predictedNextPurchase)}</td>
+      <td>${c.leadScore}</td>
+      <td><span class="pill pill-${c.priority.toLowerCase()}">${c.priority}</span></td>
+      <td class="muted">${c.status}</td>
+    </tr>
+  `).join('');
+}
+
+/* ============== FORECASTING VIEW ============== */
+function renderForecasting(){
+  const main = document.getElementById('main');
+  const now = new Date();
+  const upcoming = Object.values(companyMaster)
+    .filter(c=> c.predictedNextPurchase >= new Date(now-7*86400000))
+    .sort((a,b)=>a.predictedNextPurchase-b.predictedNextPurchase)
+    .slice(0,100);
+  main.innerHTML = `
+    <div class="topbar"><div><p style="font-size:18px;font-weight:600;margin:0;">Forecasting</p>
+      <p class="muted" style="margin:4px 0 0;font-size:13px;">Expected reorder windows, ranked by date</p></div></div>
+    <div class="card" style="padding:0;overflow:auto;">
+      <table>
+        <thead><tr><th>Company</th><th>Last purchase</th><th>Avg gap (days)</th><th>Expected purchase</th>
+          <th>Expected amount</th><th>Lead score</th></tr></thead>
+        <tbody>${upcoming.map(c=>`
+          <tr><td>${c.displayName}</td><td class="muted">${fmtDate(c.lastPurchase)}</td>
+            <td class="muted">${Math.round(c.avgGapDays)}</td><td>${fmtDate(c.predictedNextPurchase)}</td>
+            <td>${fmtCurrency(c.avgInvoice)}</td><td>${c.leadScore}</td></tr>
+        `).join('')}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ============== EXPORT ============== */
+function exportCSV(){
+  const headers = ['Company','GST','Industry','Location','Total Purchases','Avg Invoice','Frequency (per yr)',
+    'Last Purchase','Predicted Next Purchase','Growth %','Lead Score','Priority','Status','Sources'];
+  const rows = Object.values(companyMaster).map(c=>[
+    c.displayName, c.gst, c.industry, c.location, c.totalPurchases.toFixed(2), c.avgInvoice.toFixed(2),
+    c.frequency.toFixed(2), fmtDate(c.lastPurchase), fmtDate(c.predictedNextPurchase), c.growthPct.toFixed(1),
+    c.leadScore, c.priority, c.status, [...c.competitorsSelling].join('|')
+  ]);
+  const csv = [headers, ...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'company_master.csv';
+  a.click();
+}
+
+/* ============== RENDER ROUTER ============== */
+function render(){
+  renderNav();
+  if(currentView==='upload') renderUpload();
+  else if(currentView==='executive') renderExecutive();
+  else if(currentView==='competitors') renderCompetitors();
+  else if(currentView==='customers') renderCustomers();
+  else if(currentView==='forecasting') renderForecasting();
+}
+render();
+</script>
+</body>
+</html>
