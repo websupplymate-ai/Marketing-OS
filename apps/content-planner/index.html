@@ -1,129 +1,198 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function(){
+  try{
+    var saved=localStorage.getItem('sm_v2_theme');
+    var theme=saved||'light';
+    document.documentElement.setAttribute('data-theme',theme);
+  }catch(e){}
+})();
+</script>
 <title>SupplyMate CIA-1 V2</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --c-primary:#1B4F8C; --c-primary-tint:#EAF2FF;
+  --c-secondary:#2F8F5B; --c-secondary-tint:#E7F6EC;
+  --c-bg:#FFFFFF; --c-card:#F7F9FC; --c-border:#E5E9EF;
+  --c-text:#10151D; --c-text-muted:#6B7686;
+  --c-error:#dc2626; --c-error-tint:#fee2e2;
+  --c-warn:#d97706; --c-warn-tint:#fef3c7;
+  --font-ui:'Inter',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+html[data-theme="dark"]{
+  --c-primary:#4A90D9; --c-primary-tint:#1A2533;
+  --c-secondary:#52C57F; --c-secondary-tint:#16271E;
+  --c-bg:#0E141C; --c-card:#141C27; --c-border:#243042;
+  --c-text:#F2F5F9; --c-text-muted:#8B97A8;
+  --c-error:#f87171; --c-error-tint:#3b0a0a;
+  --c-warn:#fbbf24; --c-warn-tint:#3b2800;
+}
+
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:#07090f;color:#e2e8f0;font-family:system-ui,sans-serif;font-size:14px;}
-.nav{background:#0a0d16;border-bottom:1px solid #1a2035;padding:0 16px;position:sticky;top:0;z-index:100;}
+body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-ui);font-size:14px;transition:background 0.15s,color 0.15s;}
+.mono{font-family:var(--font-mono);}
+
+.nav{background:var(--c-card);border-bottom:1px solid var(--c-border);padding:0 16px;position:sticky;top:0;z-index:100;}
 .nav-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;}
-.logo{background:linear-gradient(135deg,#5b5fef,#a855f7);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:900;color:#fff;margin-right:10px;white-space:nowrap;}
-.nt{font-size:13px;font-weight:700;color:#f1f5f9;}
-.ns{font-size:9px;color:#4a5568;}
+.logo{background:var(--c-primary-tint);color:var(--c-primary);border-radius:8px;padding:3px 10px;font-size:11px;font-weight:600;margin-right:10px;white-space:nowrap;border:1px solid var(--c-border);}
+.nt{font-size:13px;font-weight:600;color:var(--c-text);}
+.ns{font-size:9px;color:var(--c-text-muted);}
 .tabs{display:flex;margin-left:12px;flex:1;overflow-x:auto;}
-.tab{background:none;border:none;border-bottom:3px solid transparent;color:#64748b;padding:13px 9px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;}
-.tab.on{border-bottom-color:#5b5fef;color:#f1f5f9;}
-.tab:hover{color:#94a3b8;}
-.nr{margin-left:auto;font-size:11px;color:#22c55e;font-weight:700;white-space:nowrap;padding-left:10px;}
+.tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--c-text-muted);padding:13px 9px;font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:var(--font-ui);}
+.tab.on{border-bottom-color:var(--c-primary);color:var(--c-primary);font-weight:600;}
+.tab:hover{color:var(--c-text);}
+.nr{margin-left:auto;font-size:11px;color:var(--c-secondary);font-weight:600;white-space:nowrap;padding-left:10px;font-family:var(--font-mono);}
+.theme-toggle{background:var(--c-bg);border:1px solid var(--c-border);border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:9px;font-size:13px;color:var(--c-text-muted);flex-shrink:0;}
+.theme-toggle:hover{border-color:var(--c-primary);color:var(--c-primary);}
+
 .main{max-width:1320px;margin:0 auto;padding:14px 16px;}
 .pg{display:none;}.pg.on{display:block;}
-.card{background:#0d1117;border:1px solid #1a2035;border-radius:9px;padding:13px 16px;margin-bottom:11px;}
-.h2{font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:3px;}
-.sub{font-size:10px;color:#4a5568;margin-bottom:10px;}
-.lbl{font-size:9px;font-weight:700;color:#4a5568;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;}
-.btn{background:#1a2035;color:#94a3b8;border:none;border-radius:6px;padding:6px 11px;cursor:pointer;font-size:11px;font-weight:600;}
-.btn:hover{background:#222d45;}
-.btnp{background:linear-gradient(135deg,#5b5fef,#7c3aed);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;}
-.btnp:disabled{background:#1a2035;color:#4a5568;cursor:not-allowed;}
-.btns{background:#14532d;color:#4ade80;border:none;border-radius:6px;padding:6px 11px;font-size:11px;font-weight:600;cursor:pointer;}
-.btnd{background:#450a0a;color:#f87171;border:none;border-radius:6px;padding:6px 11px;font-size:11px;font-weight:600;cursor:pointer;}
-.btnh{background:#2d1b4e;color:#c084fc;border:none;border-radius:6px;padding:5px 9px;font-size:10px;font-weight:600;cursor:pointer;}
-.inp{background:#07090f;border:1px solid #2d3748;border-radius:6px;padding:6px 9px;color:#f1f5f9;font-size:11px;outline:none;width:100%;}
-.inp:focus{border-color:#5b5fef;}
-.sel{background:#07090f;border:1px solid #1a2035;border-radius:6px;padding:6px 9px;color:#e2e8f0;font-size:11px;outline:none;cursor:pointer;}
+.card{background:var(--c-card);border:1px solid var(--c-border);border-radius:10px;padding:16px;margin-bottom:11px;}
+.h2{font-size:13px;font-weight:600;color:var(--c-text);margin-bottom:3px;}
+.sub{font-size:10px;color:var(--c-text-muted);margin-bottom:10px;}
+.lbl{font-size:9px;font-weight:600;color:var(--c-text-muted);letter-spacing:0.3px;margin-bottom:4px;}
+
+.btn{background:var(--c-bg);color:var(--c-text-muted);border:1px solid var(--c-border);border-radius:6px;padding:6px 11px;cursor:pointer;font-size:11px;font-weight:500;font-family:var(--font-ui);}
+.btn:hover{border-color:var(--c-primary);color:var(--c-primary);}
+.btnp{background:var(--c-primary);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font-ui);}
+.btnp:hover{opacity:0.9;}
+.btnp:disabled{background:var(--c-border);color:var(--c-text-muted);cursor:not-allowed;}
+.btns{background:var(--c-secondary);color:#fff;border:none;border-radius:6px;padding:6px 11px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font-ui);}
+.btns:hover{opacity:0.9;}
+.btnd{background:var(--c-error-tint);color:var(--c-error);border:1px solid var(--c-error);border-radius:6px;padding:6px 11px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font-ui);}
+.btnh{background:var(--c-primary-tint);color:var(--c-primary);border:none;border-radius:6px;padding:5px 9px;font-size:10px;font-weight:500;cursor:pointer;font-family:var(--font-ui);}
+
+.inp{background:var(--c-bg);border:1px solid var(--c-border);border-radius:6px;padding:6px 9px;color:var(--c-text);font-size:11px;outline:none;width:100%;font-family:var(--font-ui);}
+.inp:focus{border-color:var(--c-primary);}
+.sel{background:var(--c-bg);border:1px solid var(--c-border);border-radius:6px;padding:6px 9px;color:var(--c-text);font-size:11px;outline:none;cursor:pointer;font-family:var(--font-ui);}
+
 .row{display:flex;gap:7px;flex-wrap:wrap;align-items:flex-start;margin-bottom:7px;}
 .ac{align-items:center;}
 .f1{flex:1;min-width:0;}
 .col{display:flex;flex-direction:column;gap:4px;}
 .srow{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px;}
-.sbox{background:#0d1117;border:1px solid #1a2035;border-radius:7px;padding:8px 11px;flex:1;min-width:68px;}
-.sn{font-size:16px;font-weight:800;color:#f1f5f9;}
-.sl{font-size:9px;color:#4a5568;margin-top:1px;}
-.tw{overflow-x:auto;border-radius:7px;border:1px solid #1a2035;}
+.sbox{background:var(--c-card);border:1px solid var(--c-border);border-radius:8px;padding:8px 11px;flex:1;min-width:68px;}
+.sn{font-size:16px;font-weight:600;color:var(--c-text);font-family:var(--font-mono);}
+.sl{font-size:9px;color:var(--c-text-muted);margin-top:1px;}
+
+.tw{overflow-x:auto;border-radius:10px;border:1px solid var(--c-border);}
 table{width:100%;border-collapse:collapse;font-size:10px;}
-th{background:#0a0d16;color:#64748b;font-size:8px;font-weight:700;text-transform:uppercase;padding:7px 8px;text-align:left;border-bottom:1px solid #1a2035;white-space:nowrap;position:sticky;top:0;}
-td{padding:5px 8px;border-bottom:1px solid #0a0d16;vertical-align:middle;}
-tr:hover td{background:#0d1420;}
-.ci{background:#0a0d16;border:1px solid #334155;border-radius:3px;padding:3px 5px;color:#f1f5f9;font-size:9px;outline:none;width:100%;}
-.ci:focus{border-color:#5b5fef;}
+th{background:var(--c-card);color:var(--c-text-muted);font-size:8px;font-weight:600;letter-spacing:0.3px;padding:7px 8px;text-align:left;border-bottom:1px solid var(--c-border);white-space:nowrap;position:sticky;top:0;}
+td{padding:5px 8px;border-bottom:1px solid var(--c-border);vertical-align:middle;color:var(--c-text);}
+tr:hover td{background:var(--c-primary-tint);}
+.ci{background:var(--c-bg);border:1px solid var(--c-border);border-radius:4px;padding:3px 5px;color:var(--c-text);font-size:9px;outline:none;width:100%;font-family:var(--font-ui);}
+.ci:focus{border-color:var(--c-primary);}
+
 .fb{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:11px;}
-.pw{height:5px;background:#1a2035;border-radius:4px;overflow:hidden;display:none;margin-bottom:4px;}
-.pf{height:100%;background:linear-gradient(90deg,#5b5fef,#a855f7);transition:width 0.3s;width:0%;}
-.pst{font-size:10px;color:#818cf8;min-height:14px;margin-bottom:7px;display:none;font-family:monospace;}
-.oi{background:#0d1117;border:1px solid #1a2035;border-radius:8px;padding:9px 11px;display:flex;gap:8px;align-items:center;margin-bottom:5px;text-decoration:none;color:inherit;}
-.oi:hover{border-color:#5b5fef;}
-.rk{width:20px;height:20px;border-radius:4px;background:#1a2035;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#64748b;flex-shrink:0;}
-.rk.g{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;}
-.rk.s{background:linear-gradient(135deg,#94a3b8,#64748b);color:#fff;}
-.rk.b{background:linear-gradient(135deg,#b45309,#92400e);color:#fff;}
-.th{width:68px;height:38px;border-radius:4px;object-fit:cover;flex-shrink:0;background:#1a2035;}
-.tph{width:68px;height:38px;border-radius:4px;background:#1a2035;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#4a5568;}
+.pw{height:5px;background:var(--c-border);border-radius:4px;overflow:hidden;display:none;margin-bottom:4px;}
+.pf{height:100%;background:var(--c-primary);transition:width 0.3s;width:0%;}
+.pst{font-size:10px;color:var(--c-primary);min-height:14px;margin-bottom:7px;display:none;font-family:var(--font-mono);}
+
+.oi{background:var(--c-card);border:1px solid var(--c-border);border-radius:10px;padding:9px 11px;display:flex;gap:8px;align-items:center;margin-bottom:5px;text-decoration:none;color:inherit;}
+.oi:hover{border-color:var(--c-primary);}
+.rk{width:20px;height:20px;border-radius:6px;background:var(--c-primary-tint);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--c-primary);flex-shrink:0;font-family:var(--font-mono);}
+.rk.g{background:#fef3c7;color:#b45309;}
+.rk.s{background:var(--c-border);color:var(--c-text-muted);}
+.rk.b{background:#fed7aa;color:#9a3412;}
+html[data-theme="dark"] .rk.g{background:#3b2800;color:#fbbf24;}
+html[data-theme="dark"] .rk.b{background:#3b2000;color:#fb923c;}
+
+.th{width:68px;height:38px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--c-border);}
+.tph{width:68px;height:38px;border-radius:6px;background:var(--c-border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--c-text-muted);}
 .oin{flex:1;min-width:0;}
-.ott{font-size:11px;font-weight:600;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
+.ott{font-size:11px;font-weight:500;color:var(--c-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
 .otg{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
-.otg span{font-size:9px;padding:1px 5px;border-radius:3px;background:#1a2035;color:#94a3b8;}
+.otg span{font-size:9px;padding:1px 5px;border-radius:4px;background:var(--c-border);color:var(--c-text-muted);}
 .ost{text-align:right;flex-shrink:0;min-width:88px;}
-.ov{font-size:13px;font-weight:800;color:#f1f5f9;margin-bottom:2px;}
-.cb{display:inline-block;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:800;color:#fff;white-space:nowrap;}
-.oav{font-size:9px;color:#4a5568;margin-top:1px;}
-.ptabs{display:flex;gap:2px;border-bottom:1px solid #1a2035;margin-bottom:11px;flex-wrap:wrap;}
-.ptab{background:none;border:none;border-bottom:2px solid transparent;color:#64748b;padding:7px 11px;font-size:11px;font-weight:600;cursor:pointer;}
-.ptab.on{border-bottom-color:#5b5fef;color:#f1f5f9;}
-.acc{background:#0d1117;border:1px solid #1a2035;border-radius:8px;overflow:hidden;margin-bottom:6px;}
+.ov{font-size:13px;font-weight:600;color:var(--c-text);margin-bottom:2px;font-family:var(--font-mono);}
+.cb{display:inline-block;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:600;color:#fff;white-space:nowrap;font-family:var(--font-mono);}
+.oav{font-size:9px;color:var(--c-text-muted);margin-top:1px;font-family:var(--font-mono);}
+
+.ptabs{display:flex;gap:2px;border-bottom:1px solid var(--c-border);margin-bottom:11px;flex-wrap:wrap;}
+.ptab{background:none;border:none;border-bottom:2px solid transparent;color:var(--c-text-muted);padding:7px 11px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font-ui);}
+.ptab.on{border-bottom-color:var(--c-primary);color:var(--c-primary);font-weight:600;}
+
+.acc{background:var(--c-card);border:1px solid var(--c-border);border-radius:10px;overflow:hidden;margin-bottom:6px;}
 .ach{padding:9px 11px;cursor:pointer;display:flex;align-items:center;gap:7px;}
-.ach:hover{background:#111622;}
-.acb{border-top:1px solid #1a2035;padding:7px 11px;display:none;}
-.sv{display:flex;gap:7px;align-items:center;padding:6px 8px;border-radius:5px;background:#07090f;border:1px solid #1a2035;margin-bottom:5px;text-decoration:none;color:inherit;}
-.sv:hover{border-color:#5b5fef;}
-.eb{background:#07090f;border:1px solid #1a2035;border-radius:6px;padding:9px;font-size:9px;color:#64748b;font-family:monospace;max-height:150px;overflow-y:auto;white-space:pre;margin-top:6px;}
-.vc{background:#111827;border:2px solid #5b5fef;border-radius:9px;padding:13px;margin-top:9px;}
-.cc{background:#0d1117;border:1px solid #1a2035;border-radius:8px;padding:9px;position:relative;}
-.cc.done{border-color:#14532d;}.cc.err{border-color:#450a0a;}.cc.sel{border-color:#5b5fef;}
-.cc-chk{position:absolute;top:7px;right:7px;width:14px;height:14px;cursor:pointer;accent-color:#5b5fef;}
-.ccn{font-size:11px;font-weight:700;color:#f1f5f9;margin-bottom:2px;padding-right:20px;}
-.ccs{font-size:9px;color:#4a5568;margin-bottom:4px;}
-.ccb{width:100%;border:none;border-radius:4px;padding:5px 0;font-size:10px;font-weight:600;cursor:pointer;margin-top:4px;}
+.ach:hover{background:var(--c-primary-tint);}
+.acb{border-top:1px solid var(--c-border);padding:7px 11px;display:none;}
+.sv{display:flex;gap:7px;align-items:center;padding:6px 8px;border-radius:6px;background:var(--c-bg);border:1px solid var(--c-border);margin-bottom:5px;text-decoration:none;color:inherit;}
+.sv:hover{border-color:var(--c-primary);}
+.eb{background:var(--c-bg);border:1px solid var(--c-border);border-radius:6px;padding:9px;font-size:9px;color:var(--c-text-muted);font-family:var(--font-mono);max-height:150px;overflow-y:auto;white-space:pre;margin-top:6px;}
+.vc{background:var(--c-card);border:1px solid var(--c-primary);border-radius:10px;padding:13px;margin-top:9px;}
+
+.cc{background:var(--c-card);border:1px solid var(--c-border);border-radius:10px;padding:9px;position:relative;}
+.cc.done{border-color:var(--c-secondary);}.cc.err{border-color:var(--c-error);}.cc.sel{border-color:var(--c-primary);}
+.cc-chk{position:absolute;top:7px;right:7px;width:14px;height:14px;cursor:pointer;accent-color:var(--c-primary);}
+.ccn{font-size:11px;font-weight:600;color:var(--c-text);margin-bottom:2px;padding-right:20px;}
+.ccs{font-size:9px;color:var(--c-text-muted);margin-bottom:4px;}
+.ccb{width:100%;border:none;border-radius:6px;padding:5px 0;font-size:10px;font-weight:500;cursor:pointer;margin-top:4px;font-family:var(--font-ui);}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;}
-.ctf{background:#1e3a5f;color:#60a5fa;}.ctfl{background:#1a2e1a;color:#4ade80;}
-.cta{background:#2d1b4e;color:#c084fc;}.ctv{background:#3b2400;color:#fb923c;}
-.ctr{background:#1a2535;color:#94a3b8;}.ctx{background:#1a2035;color:#64748b;}
-.ctb{display:inline-block;font-size:8px;padding:2px 5px;border-radius:6px;font-weight:700;}
-.rb-h{background:#14532d;color:#4ade80;}.rb-m{background:#3b2800;color:#fb923c;}
-.rb-l{background:#3b2000;color:#f59e0b;}.rb-o{background:#450a0a;color:#f87171;}
-.rb{display:inline-block;font-size:8px;padding:2px 4px;border-radius:3px;font-weight:700;}
-.fb-badge{background:#2d1b4e;color:#c084fc;font-size:8px;padding:1px 4px;border-radius:3px;font-weight:700;}
-.mspanel{background:#07090f;border:1px solid #1a2035;border-radius:7px;padding:11px;margin-bottom:9px;display:none;}
+
+.ctf{background:var(--c-primary-tint);color:var(--c-primary);}
+.ctfl{background:var(--c-secondary-tint);color:var(--c-secondary);}
+.cta{background:#f3e8ff;color:#7c3aed;}
+.ctv{background:#fef3c7;color:#b45309;}
+.ctr{background:var(--c-border);color:var(--c-text-muted);}
+.ctx{background:var(--c-border);color:var(--c-text-muted);}
+html[data-theme="dark"] .cta{background:#2d1b4e;color:#c084fc;}
+html[data-theme="dark"] .ctv{background:#3b2800;color:#fb923c;}
+.ctb{display:inline-block;font-size:8px;padding:2px 5px;border-radius:5px;font-weight:500;}
+
+.rb-h{background:var(--c-secondary-tint);color:var(--c-secondary);}
+.rb-m{background:#fef3c7;color:#b45309;}
+.rb-l{background:#fed7aa;color:#9a3412;}
+.rb-o{background:var(--c-error-tint);color:var(--c-error);}
+html[data-theme="dark"] .rb-m{background:#3b2800;color:#fbbf24;}
+html[data-theme="dark"] .rb-l{background:#3b2000;color:#fb923c;}
+.rb{display:inline-block;font-size:8px;padding:2px 4px;border-radius:4px;font-weight:500;}
+.fb-badge{background:#f3e8ff;color:#7c3aed;font-size:8px;padding:1px 4px;border-radius:4px;font-weight:500;}
+html[data-theme="dark"] .fb-badge{background:#2d1b4e;color:#c084fc;}
+
+.mspanel{background:var(--c-bg);border:1px solid var(--c-border);border-radius:8px;padding:11px;margin-bottom:9px;display:none;}
 .mspanel.on{display:block;}
 .mscols{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:11px;}
-.msi{display:flex;align-items:center;gap:6px;font-size:10px;color:#94a3b8;cursor:pointer;padding:2px 0;}
-.msi:hover{color:#f1f5f9;}
-.msi input{accent-color:#5b5fef;width:12px;height:12px;cursor:pointer;flex-shrink:0;}
-.import-drop{background:#07090f;border:2px dashed #1a2035;border-radius:7px;padding:16px;text-align:center;cursor:pointer;margin-bottom:9px;}
-.import-drop:hover{border-color:#5b5fef;}
-#toast{position:fixed;bottom:18px;right:18px;background:#22c55e;color:#fff;padding:9px 14px;border-radius:7px;font-size:11px;font-weight:600;display:none;z-index:9999;}
-.hookcard{background:#0d1117;border:1px solid #1a2035;border-radius:8px;padding:10px 12px;margin-bottom:6px;}
-.hookcard:hover{border-color:#5b5fef33;}
-.hooktxt{font-size:12px;color:#f1f5f9;line-height:1.4;margin-bottom:5px;}
+.msi{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--c-text-muted);cursor:pointer;padding:2px 0;}
+.msi:hover{color:var(--c-text);}
+.msi input{accent-color:var(--c-primary);width:12px;height:12px;cursor:pointer;flex-shrink:0;}
+
+.import-drop{background:var(--c-bg);border:2px dashed var(--c-border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;margin-bottom:9px;}
+.import-drop:hover{border-color:var(--c-primary);}
+
+#toast{position:fixed;bottom:18px;right:18px;background:var(--c-secondary);color:#fff;padding:9px 14px;border-radius:8px;font-size:11px;font-weight:500;display:none;z-index:9999;font-family:var(--font-ui);}
+
+.hookcard{background:var(--c-card);border:1px solid var(--c-border);border-radius:10px;padding:10px 12px;margin-bottom:6px;}
+.hookcard:hover{border-color:var(--c-primary);}
+.hooktxt{font-size:12px;color:var(--c-text);line-height:1.4;margin-bottom:5px;}
 .hookmeta{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-.cat-pill{font-size:8px;padding:2px 6px;border-radius:8px;font-weight:700;}
-.scriptbox{background:#07090f;border:1px solid #1a2035;border-radius:8px;padding:12px;margin-top:8px;}
+.cat-pill{font-size:8px;padding:2px 6px;border-radius:10px;font-weight:500;}
+
+.scriptbox{background:var(--c-bg);border:1px solid var(--c-border);border-radius:10px;padding:12px;margin-top:8px;}
 .scriptsec{margin-bottom:10px;}
-.scriptsec .lbl{color:#818cf8;}
-.scripttxt{font-size:12px;color:#e2e8f0;line-height:1.6;white-space:pre-wrap;}
-.badge-ct{display:inline-block;background:#5b5fef;color:#fff;border-radius:8px;font-size:8px;padding:0 5px;font-weight:700;margin-left:3px;}
+.scriptsec .lbl{color:var(--c-primary);}
+.scripttxt{font-size:12px;color:var(--c-text);line-height:1.6;white-space:pre-wrap;font-family:var(--font-ui);}
+.badge-ct{display:inline-block;background:var(--c-primary);color:#fff;border-radius:10px;font-size:8px;padding:0 5px;font-weight:500;margin-left:3px;}
+
 .simora-fmt{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
-.simora-opt{background:#0d1117;border:1px solid #1a2035;border-radius:6px;padding:8px 10px;cursor:pointer;flex:1;min-width:140px;}
-.simora-opt:hover{border-color:#5b5fef;}
-.simora-opt.sel{border-color:#5b5fef;background:#5b5fef11;}
-.simora-opt .ti{font-size:10px;font-weight:700;color:#f1f5f9;margin-bottom:2px;}
-.simora-opt .td{font-size:9px;color:#64748b;}
-.broll-item{background:#0d1117;border:1px solid #1a2035;border-radius:6px;padding:7px 9px;margin-bottom:4px;font-size:10px;color:#94a3b8;display:flex;gap:6px;align-items:center;}
-.cluster-card{background:#0d1117;border:1px solid #1a2035;border-radius:8px;padding:11px;margin-bottom:7px;}
+.simora-opt{background:var(--c-card);border:1px solid var(--c-border);border-radius:8px;padding:8px 10px;cursor:pointer;flex:1;min-width:140px;}
+.simora-opt:hover{border-color:var(--c-primary);}
+.simora-opt.sel{border-color:var(--c-primary);background:var(--c-primary-tint);}
+.simora-opt .ti{font-size:10px;font-weight:600;color:var(--c-text);margin-bottom:2px;}
+.simora-opt .td{font-size:9px;color:var(--c-text-muted);}
+
+.broll-item{background:var(--c-card);border:1px solid var(--c-border);border-radius:6px;padding:7px 9px;margin-bottom:4px;font-size:10px;color:var(--c-text-muted);display:flex;gap:6px;align-items:center;}
+.cluster-card{background:var(--c-card);border:1px solid var(--c-border);border-radius:10px;padding:11px;margin-bottom:7px;}
+
 ::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:#07090f;}
-::-webkit-scrollbar-thumb{background:#1a2035;border-radius:3px;}
+::-webkit-scrollbar-track{background:var(--c-bg);}
+::-webkit-scrollbar-thumb{background:var(--c-border);border-radius:3px;}
 </style>
 </head>
 <body>
@@ -142,6 +211,7 @@ tr:hover td{background:#0d1420;}
     <button class="tab" onclick="go('set')">Settings</button>
   </div>
   <div class="nr" id="NC">Loading…</div>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Switch theme">☀️</button>
 </div>
 </nav>
 <div class="main">
@@ -426,9 +496,20 @@ tr:hover td{background:#0d1420;}
         <select class="sel" id="rSort" onchange="rRes()"><option value="mult">Highest multiplier</option><option value="views">Highest views</option><option value="newest">Newest first</option><option value="rel">Highest relevance</option><option value="scanned">Most recently scanned</option></select>
         <input class="sel" id="rTQ" placeholder="Search title…" oninput="rRes()" style="width:160px">
         <input class="sel" id="rCQ" placeholder="Search creator…" oninput="rRes()" style="width:140px">
+        <select class="sel" id="rCreatorFilter" onchange="rRes()"><option value="">All creators</option></select>
         <button class="btn" onclick="copyResExcel('all')">📋 Copy to Excel</button>
         <button class="btnd" style="margin-left:auto;font-size:11px;padding:5px 10px" onclick="clearAll()">🗑 Clear All Results</button>
       </div>
+    </div>
+    <div class="card" id="selBar" style="display:none;padding:8px 14px;margin-bottom:8px;border-color:#5b5fef">
+      <div class="row ac" style="margin-bottom:0">
+        <span style="font-size:11px;color:#818cf8;font-weight:700"><span id="selCount2">0</span> videos selected</span>
+        <button class="btnp" onclick="sendSelectionToScript()">📝 Create Script Brief from Selection</button>
+        <button class="btn" onclick="clearVideoSelection()">✕ Clear Selection</button>
+      </div>
+    </div>
+    <div class="row ac" style="margin-bottom:7px">
+      <label class="msi" style="font-size:11px"><input type="checkbox" id="selAllChk" onchange="toggleSelectAllVideos(this.checked)"><span>Select all shown</span></label>
     </div>
     <div id="rList"></div>
   </div>
@@ -452,6 +533,16 @@ tr:hover td{background:#0d1420;}
         <button class="btn" onclick="copyResExcel('recent')" style="align-self:flex-end">📋 Copy to Excel</button>
         <span style="margin-left:auto;font-size:10px;color:#4a5568;align-self:flex-end" id="recentCnt"></span>
       </div>
+    </div>
+    <div class="card" id="selBarRecent" style="display:none;padding:8px 14px;margin-bottom:8px;border-color:#5b5fef">
+      <div class="row ac" style="margin-bottom:0">
+        <span style="font-size:11px;color:#818cf8;font-weight:700"><span id="selCountRecent">0</span> videos selected</span>
+        <button class="btnp" onclick="sendSelectionToScript()">📝 Create Script Brief from Selection</button>
+        <button class="btn" onclick="clearVideoSelection()">✕ Clear Selection</button>
+      </div>
+    </div>
+    <div class="row ac" style="margin-bottom:7px">
+      <label class="msi" style="font-size:11px"><input type="checkbox" id="selAllChkRecent" onchange="toggleSelectAllVideos(this.checked,true)"><span>Select all shown</span></label>
     </div>
     <div id="recentList"></div>
   </div>
@@ -635,6 +726,19 @@ tr:hover td{background:#0d1420;}
     <div class="card">
       <div class="h2">Script Generator</div>
       <div class="sub">Generate a SupplyMate-voice script from an outlier, a topic, or a pasted transcript.</div>
+      <div class="row ac" style="margin-bottom:9px">
+        <button class="btn" onclick="toggleVideoPicker()" id="vpToggleBtn">📂 Pick from Saved Outliers</button>
+        <span style="font-size:10px;color:#4a5568" id="vpHint"></span>
+      </div>
+      <div id="videoPickerPanel" style="display:none;background:#07090f;border:1px solid #1a2035;border-radius:7px;padding:10px;margin-bottom:9px">
+        <div class="fb" style="margin-bottom:6px">
+          <input class="inp" id="vpSearch" placeholder="Search title…" oninput="rVideoPicker()" style="max-width:160px">
+          <select class="sel" id="vpCreator" onchange="rVideoPicker()"><option value="">All creators</option></select>
+          <select class="sel" id="vpSort" onchange="rVideoPicker()"><option value="mult">Highest multiplier</option><option value="newest">Newest first</option></select>
+          <button class="btnp" id="vpUseBtn" onclick="useVideoPickerSelection()" disabled style="margin-left:auto">Use Selected (<span id="vpSelCount">0</span>)</button>
+        </div>
+        <div id="vpList" style="max-height:280px;overflow-y:auto"></div>
+      </div>
       <div class="row">
         <div class="col f1"><div class="lbl">Topic / Idea</div><input class="inp" id="sgTopic" placeholder="e.g. How a hospital saved 3L on uniform procurement"></div>
         <div class="col" style="width:170px"><div class="lbl">Content Format</div><select class="sel inp" id="sgFormat">
@@ -984,7 +1088,6 @@ function rRecent(){
   const nSel=document.getElementById('recentN').value;
   const from=document.getElementById('recentFrom').value;
   const to=document.getElementById('recentTo').value;
-  // Sort by scan time (savedAt) descending — most recent first
   let sorted=[...all].sort((a,b)=>(b.savedAt||'').localeCompare(a.savedAt||''));
   if(from||to){
     sorted=sorted.filter(v=>{
@@ -1001,7 +1104,11 @@ function rRecent(){
     const c=catOf(v.mult),m=v.mult>=10?Math.round(v.mult):v.mult.toFixed(1);
     const rb2=relB(v.rel||scoreRel(v.title,v.creator&&v.creator.niche||''));
     const scDate=v.savedAt?new Date(v.savedAt).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
-    return '<a class="oi" href="https://youtube.com/watch?v='+v.id+'" target="_blank">'+
+    const vid=videoSelKey(v);
+    const isSel=selectedVideos.has(vid);
+    return '<div class="oi" style="'+(isSel?'border-color:#5b5fef;background:#5b5fef0d':'')+'">'+
+      '<input type="checkbox" style="width:15px;height:15px;flex-shrink:0;accent-color:#5b5fef" '+(isSel?'checked':'')+' onchange="toggleVideoSel('+JSON.stringify(vid)+',this.checked,true)">'+
+      '<a href="https://youtube.com/watch?v='+v.id+'" target="_blank" style="display:flex;gap:8px;align-items:center;flex:1;min-width:0;text-decoration:none;color:inherit">'+
       '<div class="rk">'+(i+1)+'</div>'+
       (v.thumbnail?'<img class="th" src="'+esc(v.thumbnail)+'" alt="" onerror="this.style.display=\'none\'">':'<div class="tph">▶</div>')+
       '<div class="oin"><div class="ott">'+esc(v.title)+'</div>'+
@@ -1009,10 +1116,12 @@ function rRecent(){
       (scDate?'<span style="background:#1a2035;padding:1px 5px;border-radius:3px;font-size:8px">📅 '+scDate+'</span>':'')+
       '</div></div>'+
       '<div class="ost"><div class="ov">'+fmt(v.views)+'</div><span class="cb" style="background:'+c.c+'">'+m+'× '+c.l+'</span></div>'+
-      '</a>';
+      '</a>'+
+      '<button class="btnh" style="flex-shrink:0" onclick="sendOutlierToScript('+JSON.stringify(v.title)+')">📝 Script</button>'+
+      '</div>';
   }).join(''):'<div style="color:#4a5568;font-size:11px;padding:14px">No results in this range yet.</div>';
+  updateSelBar();
 }
-
 function copyResExcel(which){
   const all=getAllV();
   let rows=all;
@@ -1028,6 +1137,23 @@ function copyResExcel(which){
   const tsv=[h,...rows.map(v=>[v.creator&&v.creator.name,v.channelName||'',v.title,v.views,v.mult+'×',v.avgViews,v.publishedAt||'','https://youtube.com/watch?v='+v.id,v.creator&&v.creator.niche||'',v.savedAt||''].join('\t'))].join('\n');
   navigator.clipboard.writeText(tsv);
   toast('✓ '+rows.length+' rows copied — paste into Excel or Sheets');
+}
+
+
+// ═══════════════════════════════════════════════════
+// THEME — light/dark toggle with persistence
+// ═══════════════════════════════════════════════════
+function applyThemeIcon(){
+  var theme=document.documentElement.getAttribute('data-theme')||'light';
+  var btn=document.getElementById('themeToggle');
+  if(btn)btn.textContent=theme==='dark'?'🌙':'☀️';
+}
+function toggleTheme(){
+  var cur=document.documentElement.getAttribute('data-theme')||'light';
+  var next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  try{localStorage.setItem('sm_v2_theme',next);}catch(e){}
+  applyThemeIcon();
 }
 
 function go(name){
@@ -1636,6 +1762,7 @@ function rRes(){
   if(!rl.length){
     document.getElementById('rCards').innerHTML='<div style="color:#4a5568;font-size:12px;grid-column:1/-1">No saved results yet. Run analysis in Outlier Finder tab first.</div>';
     document.getElementById('rList').innerHTML='';
+    updateSelBar();
     return;
   }
 
@@ -1653,17 +1780,28 @@ function rRes(){
       (!cats2.mega&&!cats2.major&&!cats2.solid&&!cats2.above?'<span style="color:#334155">No outliers</span>':'')+
       '</div>'+
       '<div style="display:flex;gap:5px">'+
-      '<button class="ccb" style="background:#1a2d4a;color:#60a5fa;flex:1" onclick="go(\'out\')">↺ Re-scan</button>'+
-      '<button class="ccb" style="background:#450a0a;color:#f87171;width:32px" onclick="clrOne(\''+r.creator.id+'\')" title="Clear">🗑</button>'+
+      '<button class="ccb" style="background:#1a2d4a;color:#60a5fa;flex:1" onclick="sendCreatorToScript('+JSON.stringify(r.creator&&r.creator.name)+')">📝 Brief from this Creator</button>'+
+      '<button class="ccb" style="background:#450a0a;color:#f87171;width:32px" onclick="clrOne('+JSON.stringify(r.creator.id)+')" title="Clear">🗑</button>'+
       '</div></div>';
   }).join('');
 
   const tQ=(document.getElementById('rTQ')&&document.getElementById('rTQ').value||'').toLowerCase();
   const cQ=(document.getElementById('rCQ')&&document.getElementById('rCQ').value||'').toLowerCase();
+  const crFilter=(document.getElementById('rCreatorFilter')&&document.getElementById('rCreatorFilter').value)||'';
   const sortBy=document.getElementById('rSort')&&document.getElementById('rSort').value||'mult';
+
+  const crSel=document.getElementById('rCreatorFilter');
+  if(crSel){
+    const names=[...new Set(rl.map(r=>r.creator&&r.creator.name).filter(Boolean))].sort();
+    const curVal=crSel.value;
+    crSel.innerHTML='<option value="">All creators</option>'+names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
+    crSel.value=curVal;
+  }
+
   let f=all.filter(v=>{
     if(tQ&&!(v.title||'').toLowerCase().includes(tQ))return false;
     if(cQ&&!(v.channelName||v.creator&&v.creator.name||'').toLowerCase().includes(cQ))return false;
+    if(crFilter&&(v.creator&&v.creator.name)!==crFilter)return false;
     return true;
   });
   if(sortBy==='views')f.sort((a,b)=>b.views-a.views);
@@ -1677,7 +1815,11 @@ function rRes(){
     const rk=i===0?'rk g':i===1?'rk s':i===2?'rk b':'rk';
     const rb2=relB(v.rel);
     const scDate=v.savedAt?new Date(v.savedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
-    return '<a class="oi" href="https://youtube.com/watch?v='+v.id+'" target="_blank">'+
+    const vid=videoSelKey(v);
+    const isSel=selectedVideos.has(vid);
+    return '<div class="oi" style="'+(isSel?'border-color:#5b5fef;background:#5b5fef0d':'')+'">'+
+      '<input type="checkbox" style="width:15px;height:15px;flex-shrink:0;accent-color:#5b5fef" '+(isSel?'checked':'')+' onchange="toggleVideoSel('+JSON.stringify(vid)+',this.checked)">'+
+      '<a href="https://youtube.com/watch?v='+v.id+'" target="_blank" style="display:flex;gap:8px;align-items:center;flex:1;min-width:0;text-decoration:none;color:inherit">'+
       '<div class="'+rk+'">'+( i+1)+'</div>'+
       (v.thumbnail?'<img class="th" src="'+esc(v.thumbnail)+'" alt="" onerror="this.style.display=\'none\'">':'<div class="tph">▶</div>')+
       '<div class="oin"><div class="ott">'+esc(v.title)+'</div>'+
@@ -1688,10 +1830,13 @@ function rRes(){
       (scDate?'<span style="color:#4a5568;background:#1a2035;padding:1px 5px;border-radius:3px;font-size:9px">📅 '+scDate+'</span>':'')+
       '</div></div>'+
       '<div class="ost"><div class="ov">'+fmt(v.views)+'</div><span class="cb" style="background:'+c.c+'">'+m+'× '+c.l+'</span><div class="oav">avg '+fmt(v.avgViews)+'</div><span class="'+rb2.cls+'">'+rb2.l+'</span></div>'+
-      '</a>';
+      '</a>'+
+      '<button class="btnh" style="flex-shrink:0" onclick="sendOutlierToScript('+JSON.stringify(v.title)+')">📝 Script</button>'+
+      '</div>';
   }).join(''):'<div style="color:#4a5568;font-size:12px;padding:16px">No videos match your search.</div>';
-}
 
+  updateSelBar();
+}
 function clrOne(id){ if(!confirm('Clear results for this creator?'))return; delete OR[id]; delete OF[id]; delete OE[id]; saveRes(); rRes(); rGrid(); uStats(); toast('Cleared','#f59e0b'); }
 function clearAll(){ if(!confirm('Clear ALL saved results? Database is not affected.'))return; OR={}; OF={}; OE={}; localStorage.removeItem('sm_v2_res'); rRes(); rGrid(); uStats(); toast('All results cleared','#f59e0b'); }
 
@@ -1988,6 +2133,75 @@ function useHookInScript(id){
   toast('Hook loaded into Script Generator');
 }
 
+
+// ═══════════════════════════════════════════════════
+// VIDEO PICKER — inside Script Generator, no need to leave Scripts tab
+// ═══════════════════════════════════════════════════
+let vpSelected=new Set();
+
+function toggleVideoPicker(){
+  const p=document.getElementById('videoPickerPanel');
+  const open=p.style.display==='none';
+  p.style.display=open?'block':'none';
+  document.getElementById('vpToggleBtn').textContent=open?'📂 Hide Outlier Picker':'📂 Pick from Saved Outliers';
+  if(open)rVideoPicker();
+}
+
+function rVideoPicker(){
+  const all=getAllV();
+  const crSel=document.getElementById('vpCreator');
+  if(crSel&&!crSel.dataset.pop2){
+    const names=[...new Set(all.map(v=>v.creator&&v.creator.name).filter(Boolean))].sort();
+    crSel.innerHTML='<option value="">All creators</option>'+names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
+    crSel.dataset.pop2='1';
+  }
+  if(!all.length){
+    document.getElementById('vpList').innerHTML='<div style="color:#4a5568;font-size:11px;padding:12px">No saved outlier results yet. Go to Outlier Finder and analyze some creators first.</div>';
+    document.getElementById('vpHint').textContent='';
+    return;
+  }
+  const q=(document.getElementById('vpSearch').value||'').toLowerCase();
+  const cr=document.getElementById('vpCreator').value;
+  const sortBy=document.getElementById('vpSort').value;
+  let f=all.filter(v=>{
+    if(q&&!(v.title||'').toLowerCase().includes(q))return false;
+    if(cr&&(v.creator&&v.creator.name)!==cr)return false;
+    return true;
+  });
+  if(sortBy==='newest')f.sort((a,b)=>(b.publishedAt||'').localeCompare(a.publishedAt||''));
+  else f.sort((a,b)=>b.mult-a.mult);
+  document.getElementById('vpHint').textContent=all.length+' total saved outliers available';
+  document.getElementById('vpList').innerHTML=f.length?f.slice(0,60).map(v=>{
+    const key=videoSelKey(v);
+    const isSel=vpSelected.has(key);
+    const m=v.mult>=10?Math.round(v.mult):v.mult.toFixed(1);
+    return '<label class="msi" style="display:flex;padding:6px 4px;border-bottom:1px solid #1a2035;font-size:11px;color:#cbd5e1;cursor:pointer">'+
+      '<input type="checkbox" '+(isSel?'checked':'')+' onchange="toggleVpSel('+JSON.stringify(key)+',this.checked)" style="margin-right:7px;flex-shrink:0">'+
+      '<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(v.title)+'</span>'+
+      '<span style="color:#4a5568;margin-left:6px;flex-shrink:0">'+esc(v.creator&&v.creator.name||'')+' · '+m+'×</span>'+
+      '</label>';
+  }).join(''):'<div style="color:#4a5568;font-size:11px;padding:12px">No videos match your search.</div>';
+}
+
+function toggleVpSel(key,checked){
+  if(checked)vpSelected.add(key); else vpSelected.delete(key);
+  document.getElementById('vpSelCount').textContent=vpSelected.size;
+  document.getElementById('vpUseBtn').disabled=vpSelected.size===0;
+}
+
+function useVideoPickerSelection(){
+  const all=getAllV();
+  const vids=all.filter(v=>vpSelected.has(videoSelKey(v)));
+  if(!vids.length){toast('Select at least one video','#f59e0b');return;}
+  const label=vids.length>1?(vids.length+' selected outlier videos'):vids[0].title;
+  document.getElementById('sgTopic').value=label;
+  const brief=vids.slice(0,15).map(v=>'- "'+v.title+'" ('+fmt(v.views)+' views, '+v.mult.toFixed(1)+'× creator avg, niche: '+(v.creator&&v.creator.niche||'general')+')').join('\n');
+  window._pendingBrief=brief;
+  toast('✓ '+vids.length+' video(s) loaded — click Generate Script below');
+  document.getElementById('videoPickerPanel').style.display='none';
+  document.getElementById('vpToggleBtn').textContent='📂 Pick from Saved Outliers';
+}
+
 function toggleHkAdd(){const el=document.getElementById('hkAddForm');el.style.display=el.style.display==='none'?'block':'none';}
 function addHookManual(){
   const t=document.getElementById('hkAddTxt').value.trim();
@@ -2089,11 +2303,13 @@ async function sgRun(){
   document.getElementById('sgSt').textContent='⟳ Generating script…';
   document.getElementById('sgResult').innerHTML='';
   try{
-    const sys='You are a content writer for SupplyMate. Voice profile: '+getVoiceProfile()+'\\n\\nYou write video scripts in the format requested. Always respond in this exact structure with these exact headers:\\n\\nHOOK_VARIANTS:\\n1. [hook 1]\\n2. [hook 2]\\n3. [hook 3]\\n4. [hook 4]\\n5. [hook 5]\\n\\nOPENING:\\n[first 5 seconds, caption-friendly]\\n\\nBODY:\\n[scene by scene script broken into short lines]\\n\\nCTA:\\n[call to action]\\n\\nPRODUCTION_NOTES:\\n[which AI character type suits this, avatar vs real footage recommendation]\\n\\nBROLL:\\n1. [broll idea 1 with youtube search term]\\n2. [broll idea 2 with youtube search term]\\n3. [broll idea 3 with youtube search term]';
-    const usr='Topic: '+topic+'\\nFormat: '+format+'\\nLength: '+len+' seconds\\nSimora format: '+SIMORA_FMT_LABEL[currentSimoraFmt]+'\\n\\nWrite the full script now.';
+    const sys='You are a content writer for SupplyMate, a B2B uniform procurement company. Voice profile: '+getVoiceProfile()+'\n\nWhen given one or more trending video titles as reference, your job is to identify the pattern that made them work (hook style, structure, emotion) and adapt that pattern to a SupplyMate B2B procurement angle — do not just copy the topic, transform it to fit hospitals, schools, MSMEs, or corporate uniform buyers.\n\nAlways respond in this exact structure with these exact headers:\n\nHOOK_VARIANTS:\n1. [hook 1]\n2. [hook 2]\n3. [hook 3]\n4. [hook 4]\n5. [hook 5]\n\nOPENING:\n[first 5 seconds, caption-friendly]\n\nBODY:\n[scene by scene script broken into short lines]\n\nCTA:\n[call to action]\n\nPRODUCTION_NOTES:\n[which AI character type suits this, avatar vs real footage recommendation]\n\nBROLL:\n1. [broll idea 1 with youtube search term]\n2. [broll idea 2 with youtube search term]\n3. [broll idea 3 with youtube search term]';
+    const briefContext=window._pendingBrief?('\n\nReference trending video(s) to adapt from:\n'+window._pendingBrief):'';
+    const usr='Topic: '+topic+briefContext+'\nFormat: '+format+'\nLength: '+len+' seconds\nSimora format: '+SIMORA_FMT_LABEL[currentSimoraFmt]+'\n\nWrite the full script now, adapted for SupplyMate B2B procurement audience.';
     const out=await groqCall(sys,usr,2000);
     renderScriptResult(topic,format,len,out);
-    document.getElementById('sgSt').textContent='✓ Script generated';
+    document.getElementById('sgSt').textContent='✓ Script generated'+(window._pendingBrief?' — adapted from trending reference':'');
+    window._pendingBrief=null;
   }catch(e){
     document.getElementById('sgSt').textContent='⚠ '+e.message;
     toast('Error: '+e.message,'#dc2626');
@@ -2237,13 +2453,13 @@ async function runClustering(){
   if(!key){toast('Set Groq API key in Settings','#dc2626');return;}
   document.getElementById('clusterList').innerHTML='<div style="color:#818cf8;font-size:11px;padding:14px">⟳ Clustering '+all.length+' videos…</div>';
   try{
-    const titles=all.slice(0,80).map(v=>v.title).join('\\n');
-    const sys='Group these video titles into 4-8 content theme clusters relevant to a B2B uniform procurement company. For each cluster respond in this format:\\nCLUSTER: [theme name]\\nCOUNT: [how many titles roughly fit]\\nANGLE: [one sentence suggested SupplyMate content angle]\\n---';
+    const titles=all.slice(0,80).map(v=>v.title).join('\n');
+    const sys='Group these video titles into 4-8 content theme clusters relevant to a B2B uniform procurement company. For each cluster respond in this format:\nCLUSTER: [theme name]\nCOUNT: [how many titles roughly fit]\nANGLE: [one sentence suggested SupplyMate content angle]\n---';
     const out=await groqCall(sys,titles,1500);
     const clusters=out.split('---').map(c=>c.trim()).filter(Boolean).map(c=>{
-      const name=(c.match(/CLUSTER:\\s*(.+)/)||[])[1]||'Cluster';
-      const count=(c.match(/COUNT:\\s*(.+)/)||[])[1]||'';
-      const angle=(c.match(/ANGLE:\\s*(.+)/)||[])[1]||'';
+      const name=(c.match(/CLUSTER:\s*(.+)/)||[])[1]||'Cluster';
+      const count=(c.match(/COUNT:\s*(.+)/)||[])[1]||'';
+      const angle=(c.match(/ANGLE:\s*(.+)/)||[])[1]||'';
       return {name,count,angle};
     });
     document.getElementById('clusterList').innerHTML=clusters.map(c=>
@@ -2270,14 +2486,14 @@ async function genIdeas(){
   if(!key){toast('Set Groq API key in Settings','#dc2626');return;}
   toast('⟳ Generating ideas…','#5b5fef');
   try{
-    const context=all.length?all.slice(0,40).map(v=>v.title).join('\\n'):'General B2B uniform procurement content';
-    const sys='Suggest 6 video content ideas for SupplyMate, a B2B uniform procurement company, based on these trending topics. For each respond in this format:\\nTITLE: [video title]\\nFORMAT: [one of: AI Storytelling, Case Study, Myth Debunking, Founder POV, Visual Storytelling, Product Explainer, Bollywood Uniform, Uniform Tips, Aesthetic BTS, Raw BTS, Testimonial, Direct Ad]\\nHOOK: [hook type]\\nWHY: [one sentence reasoning]\\n---';
+    const context=all.length?all.slice(0,40).map(v=>v.title).join('\n'):'General B2B uniform procurement content';
+    const sys='Suggest 6 video content ideas for SupplyMate, a B2B uniform procurement company, based on these trending topics. For each respond in this format:\nTITLE: [video title]\nFORMAT: [one of: AI Storytelling, Case Study, Myth Debunking, Founder POV, Visual Storytelling, Product Explainer, Bollywood Uniform, Uniform Tips, Aesthetic BTS, Raw BTS, Testimonial, Direct Ad]\nHOOK: [hook type]\nWHY: [one sentence reasoning]\n---';
     const out=await groqCall(sys,context,1500);
     const ideas=out.split('---').map(c=>c.trim()).filter(Boolean).map(c=>({
-      title:(c.match(/TITLE:\\s*(.+)/)||[])[1]||'',
-      format:(c.match(/FORMAT:\\s*(.+)/)||[])[1]||'',
-      hook:(c.match(/HOOK:\\s*(.+)/)||[])[1]||'',
-      why:(c.match(/WHY:\\s*(.+)/)||[])[1]||'',
+      title:(c.match(/TITLE:\s*(.+)/)||[])[1]||'',
+      format:(c.match(/FORMAT:\s*(.+)/)||[])[1]||'',
+      hook:(c.match(/HOOK:\s*(.+)/)||[])[1]||'',
+      why:(c.match(/WHY:\s*(.+)/)||[])[1]||'',
       id:'idea'+Date.now()+Math.random(),date:new Date().toISOString().slice(0,10),source:'ai'
     })).filter(i=>i.title);
     IDEAS=[...ideas,...IDEAS];
@@ -2353,6 +2569,74 @@ function showVertsPopup(title,raw,btnEl){
   card.insertAdjacentHTML('afterend',html);
 }
 
+
+// ═══════════════════════════════════════════════════
+// VIDEO SELECTION — select 1, many, by creator, or by date
+// to build a script brief that adapts trending topics for SupplyMate
+// ═══════════════════════════════════════════════════
+let selectedVideos=new Set();
+
+function videoSelKey(v){ return (v.id||'')+'::'+(v.creator&&v.creator.id||''); }
+
+function toggleVideoSel(key,checked,isRecent){
+  if(checked)selectedVideos.add(key);
+  else selectedVideos.delete(key);
+  updateSelBar();
+}
+
+function clearVideoSelection(){
+  selectedVideos.clear();
+  rRes();
+  rRecent();
+}
+
+function toggleSelectAllVideos(checked,isRecent){
+  const containerId=isRecent?'recentList':'rList';
+  const container=document.getElementById(containerId);
+  if(!container)return;
+  container.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.checked=checked;
+    cb.dispatchEvent(new Event('change'));
+  });
+}
+
+function updateSelBar(){
+  const n=selectedVideos.size;
+  const bar1=document.getElementById('selBar');
+  const bar2=document.getElementById('selBarRecent');
+  if(bar1){bar1.style.display=n>0?'block':'none';const c=document.getElementById('selCount2');if(c)c.textContent=n;}
+  if(bar2){bar2.style.display=n>0?'block':'none';const c=document.getElementById('selCountRecent');if(c)c.textContent=n;}
+}
+
+function getSelectedVideoObjects(){
+  const all=getAllV();
+  return all.filter(v=>selectedVideos.has(videoSelKey(v)));
+}
+
+function sendSelectionToScript(){
+  const vids=getSelectedVideoObjects();
+  if(!vids.length){toast('Select at least one video first','#f59e0b');return;}
+  sendVideosToScriptBrief(vids,vids.length>1?(vids.length+' selected videos'):vids[0].title);
+}
+
+function sendCreatorToScript(creatorName){
+  const all=getAllV().filter(v=>(v.creator&&v.creator.name)===creatorName);
+  if(!all.length){toast('No videos found for this creator','#f59e0b');return;}
+  sendVideosToScriptBrief(all,'Trending topics from '+creatorName);
+}
+
+function sendVideosToScriptBrief(vids,label){
+  // Build a combined brief: titles + niches + view counts so Groq can find the pattern
+  // across one or many videos, then adapt it to SupplyMate's B2B uniform procurement angle.
+  const brief=vids.slice(0,15).map(v=>'- "'+v.title+'" ('+fmt(v.views)+' views, '+v.mult.toFixed(1)+'× creator avg, niche: '+(v.creator&&v.creator.niche||'general')+')').join('\n');
+  go('scr');
+  scrTab('gen');
+  document.getElementById('sgTopic').value=label;
+  // Stash the full brief so sgRun can use it as extra context
+  window._pendingBrief=brief;
+  toast('✓ Loaded '+vids.length+' video(s) into Script Generator — click Generate Script');
+}
+
 function scrTab(name){
   ['lib','gen','my','clu','idea'].forEach(n=>{
     const p=document.getElementById('scrp-'+n);
@@ -2415,6 +2699,7 @@ rDB();
 rGrid();
 rExp();
 populateGridNiches();
+applyThemeIcon();
 document.getElementById('oDt').value=new Date().toISOString().slice(0,10);
 </script>
 </body>
