@@ -1707,6 +1707,16 @@ Free audit mein send karo apna last invoice. 24 ghante mein result.</div></div>
       <div class="col mt-8" style="gap:6px;"><label class="lbl">Voice/brand tone</label><textarea class="textarea" id="def-tone" rows="2" style="font-size:11px;" placeholder="How should ads sound?">Confident, data-backed, B2B professional. Hinglish OK for Meta. Short sentences. Lead with savings/savings proof.</textarea></div>
       <button class="btn-primary btn-sm mt-8" onclick="saveDefaults()">Save</button>
     </div>
+    <div class="card" style="border-color:var(--accent);">
+      <div class="card-title" style="margin-bottom:8px;">⭐ Team sync (recommended) — shared backend for your whole team</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Paste the URL of your deployed Google Apps Script Web App (see AdsStudio-AppsScript.gs setup guide). Every teammate who opens Ads Studio reads and writes My ads, Competitor monitors, Hook bank and Defaults from the same Google Sheet instead of just their own browser.</div>
+      <input class="input" id="k-team-sync-url" placeholder="https://script.google.com/macros/s/XXXX/exec" style="font-size:11px;">
+      <div style="display:flex;gap:6px;margin-top:8px;align-items:center;">
+        <button class="btn-primary btn-sm" onclick="saveTeamSyncUrl()">Save &amp; sync now</button>
+        <button class="btn-secondary btn-sm" onclick="testTeamSync()">Test connection</button>
+        <span class="api-badge" id="b-team-sync" style="border:1px solid var(--border);padding:2px 8px;border-radius:10px;">Not configured</span>
+      </div>
+    </div>
   </div>
 
   <!-- API Reference -->
@@ -1748,6 +1758,69 @@ Free audit mein send karo apna last invoice. 24 ghante mein result.</div></div>
 var ADS_LIB = [];
 var AM_DEFAULTS = {};
 
+// ═══ TEAM SYNC (shared Google Sheet backend via Apps Script) ═══
+function getSheetsApiUrl(){ try{return localStorage.getItem('sm_am_team_sync_url')||'';}catch(e){return '';} }
+function setSheetsApiUrl(u){ try{localStorage.setItem('sm_am_team_sync_url',u);}catch(e){} }
+
+function saveTeamSyncUrl(){
+  var url=(document.getElementById('k-team-sync-url')||{value:''}).value.trim();
+  if(!url){amToast('Paste your Apps Script Web App URL first','var(--amber)');return;}
+  setSheetsApiUrl(url);
+  var b=document.getElementById('b-team-sync'); if(b){b.textContent='Configured ✓';b.style.color='var(--accent)';}
+  amToast('Team sync saved — pulling shared data…');
+  sheetsApiPullAll(renderEverything);
+}
+function testTeamSync(){
+  var fld=(document.getElementById('k-team-sync-url')||{value:''}).value.trim();
+  var url=fld||getSheetsApiUrl();
+  if(!url){amToast('Enter a Web App URL first','var(--amber)');return;}
+  amToast('Testing connection…');
+  fetch(url+(url.indexOf('?')>-1?'&':'?')+'action=ping')
+    .then(function(r){return r.json();})
+    .then(function(res){
+      if(res && res.ok){amToast('Connected — Apps Script is reachable','var(--green)');}
+      else {amToast('Reached the URL but got an unexpected response','var(--amber)');}
+    })
+    .catch(function(){amToast('Could not reach that URL — check it is deployed with access "Anyone"','var(--red)');});
+}
+
+function sheetsApiPush(collection,data){
+  var url=getSheetsApiUrl(); if(!url) return;
+  fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'save',collection:collection,data:data})})
+    .then(function(r){return r.json();})
+    .then(function(res){ if(!res||!res.ok){amToast('Sync issue saving '+collection+' — kept locally','var(--amber)');} })
+    .catch(function(){amToast('Could not reach shared sheet — '+collection+' saved locally only','var(--amber)');});
+}
+
+function sheetsApiPullAll(cb){
+  var url=getSheetsApiUrl();
+  if(!url){ if(cb) cb(); return; }
+  fetch(url+(url.indexOf('?')>-1?'&':'?')+'action=load')
+    .then(function(r){return r.json();})
+    .then(function(res){
+      if(res){
+        if(res.adsLib) ADS_LIB=res.adsLib;
+        if(res.monitors) MONITOR_LIST=res.monitors;
+        if(res.hooks) HOOK_BANK=res.hooks;
+        if(res.defaults && res.defaults.length) AM_DEFAULTS=res.defaults[0];
+        var b=document.getElementById('b-team-sync'); if(b){b.textContent='Configured ✓';b.style.color='var(--accent)';}
+        var inp=document.getElementById('k-team-sync-url'); if(inp && !inp.value) inp.value=url;
+      }
+      if(cb) cb();
+    })
+    .catch(function(){ amToast('Could not load shared sheet — showing local data','var(--amber)'); if(cb) cb(); });
+}
+
+function renderEverything(){
+  adsLibRender();
+  launchQueueRender();
+  approveRender();
+  updateBudgetWidget();
+  if(typeof renderMonitorList==='function') renderMonitorList();
+  if(typeof renderHookBank==='function') renderHookBank();
+  initBadges();
+}
+
 (function init(){
   // Theme
   var t = localStorage.getItem('sm_am_theme') || localStorage.getItem('sm_cs_theme') || 'light';
@@ -1760,11 +1833,8 @@ var AM_DEFAULTS = {};
   if(!ADS_LIB.length) seedDemoAds();
   // Init badge + ui
   setTimeout(function(){
-    adsLibRender();
-    launchQueueRender();
-    approveRender();
-    updateBudgetWidget();
-    initBadges();
+    renderEverything();
+    sheetsApiPullAll(renderEverything);
   }, 100);
 })();
 
@@ -1939,7 +2009,7 @@ function tv(id){
 }
 
 // ── Ads Library ──
-function adsLibSave(){ try { localStorage.setItem('sm_am_ads', JSON.stringify(ADS_LIB)); } catch(e){} }
+function adsLibSave(){ try { localStorage.setItem('sm_am_ads', JSON.stringify(ADS_LIB)); } catch(e){} sheetsApiPush('adsLib',ADS_LIB); }
 
 function adsLibRender(){
   var el = document.getElementById('ads-lib-list');
@@ -2380,6 +2450,7 @@ function saveDefaults(){
   };
   AM_DEFAULTS = defs;
   try { localStorage.setItem('sm_am_defaults', JSON.stringify(defs)); } catch(e){}
+  sheetsApiPush('defaults',[defs]);
   amToast('Default settings saved');
 }
 
@@ -2503,7 +2574,7 @@ var MONITOR_LIST = [];
   ];
 })();
 
-function saveMonitors(){ try{ localStorage.setItem('sm_as_monitors', JSON.stringify(MONITOR_LIST)); }catch(e){} }
+function saveMonitors(){ try{ localStorage.setItem('sm_as_monitors', JSON.stringify(MONITOR_LIST)); }catch(e){} sheetsApiPush('monitors',MONITOR_LIST); }
 
 function addMonitor(){
   var url  = (document.getElementById('mon-url')||{value:''}).value.trim();
@@ -2611,7 +2682,7 @@ function seedHookBank(){
   saveHookBank();
 }
 
-function saveHookBank(){ try{ localStorage.setItem('sm_as_hooks', JSON.stringify(HOOK_BANK)); }catch(e){} }
+function saveHookBank(){ try{ localStorage.setItem('sm_as_hooks', JSON.stringify(HOOK_BANK)); }catch(e){} sheetsApiPush('hooks',HOOK_BANK); }
 
 function renderHookBank(){
   var el = document.getElementById('hook-bank-grid');
