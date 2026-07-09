@@ -2612,6 +2612,18 @@ static | July offer | Product reveal | Instagram | Curiosity | [caption] | Shop 
 
   <div id="set-storage" style="display:none;">
     <div class="page-head"><div class="eyebrow">API Settings — Storage</div><div class="page-title">Storage &amp; sync</div><div class="page-sub">Connect Google Sheets for data sync and Google Drive for asset library bidirectional sync.</div></div>
+    <div class="card" style="border-color:var(--green);">
+      <div class="card-title" style="color:var(--green);">⭐ Team sync (recommended) — shared backend for your whole team</div>
+      <div class="card-sub">Paste your Content Studio Apps Script URL (ends in /exec). Every save — calendar, posts library, hooks, scripts, ideas, voice profile, creator database, and analysis cache — pushes here and pulls back for everyone using this app.</div>
+      <div class="col" style="gap:8px;">
+        <input class="input" id="k-team-sync-url" placeholder="https://script.google.com/macros/s/XXXX/exec" style="font-size:11px;">
+        <div class="row ac" style="gap:8px;">
+          <button class="btn-primary btn-sm" onclick="saveTeamSyncUrl()">Save &amp; sync now</button>
+          <button class="btn-secondary btn-sm" onclick="testTeamSync()">Test connection</button>
+          <span class="api-badge unset" id="b-team-sync">Not configured</span>
+        </div>
+      </div>
+    </div>
     <div class="card"><div class="card-title">Google Sheets sync</div><div class="card-sub">Paste your Sheet URL. Every "Export to Sheet" button writes here; every "Import from Sheet" reads from it.</div><div class="col" style="gap:8px;"><div><label class="lbl">Sheet URL</label><input class="input" id="k-sheeturl" placeholder="https://docs.google.com/spreadsheets/d/…"></div><div class="row ac" style="gap:8px;"><label class="lbl" style="margin:0;">Sync:</label><select class="select" style="width:auto;font-size:11px;" id="sheet-sync-dir"><option>Export only</option><option>Import only</option><option>Bi-directional</option></select></div><button class="btn-primary btn-sm" style="width:fit-content;" onclick="csSetKey('sheeturl');csToast('Sheet URL saved')">Save</button></div></div>
     <div class="card"><div class="card-title">Google Drive asset sync</div><div class="card-sub">Connect a Drive folder. Assets sync bidirectionally with the Asset library in Edit stage.</div><div class="col" style="gap:8px;"><div><label class="lbl">Drive folder URL or ID</label><input class="input" id="k-drivefolder" placeholder="https://drive.google.com/drive/folders/…"></div><div class="row ac" style="gap:7px;"><button class="btn-primary btn-sm" onclick="csSetKey('drivefolder');csToast('Drive folder saved')">Save folder</button><button class="btn-secondary btn-sm" onclick="csToast('Connecting via OAuth…')">Connect Drive (OAuth)</button><span class="api-badge unset" id="b-drive">Not connected</span></div></div></div>
   </div>
@@ -3530,6 +3542,7 @@ function calRemovePost(dateStr, postId) {
 // ── Save state ──
 function calSave() {
   try { localStorage.setItem('sm_cs_calendar', JSON.stringify(CAL_POSTS)); } catch(e){}
+  sheetsApiPush('calendar', flattenCalPosts());
 }
 
 // ── Navigate months ──
@@ -3967,6 +3980,7 @@ var POSTS_LIB = [];
 
 function postsLibSave(){
   try { localStorage.setItem('sm_cs_posts', JSON.stringify(POSTS_LIB)); } catch(e){}
+  sheetsApiPush('postsLib', POSTS_LIB);
 }
 
 function postsLibAdd(post){
@@ -4650,8 +4664,8 @@ try { const s=JSON.parse(localStorage.getItem('sm_v2_res')||'{}'); Object.keys(s
 // ═══════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════
-function saveDB(){ localStorage.setItem('sm_db_v2', JSON.stringify(DB)); fiUNav(); }
-function saveRes(){ try{ localStorage.setItem('sm_v2_res', JSON.stringify(OR)); }catch(e){toast('Storage full — clear old results','#f59e0b');} }
+function saveDB(){ localStorage.setItem('sm_db_v2', JSON.stringify(DB)); fiUNav(); sheetsApiPush('creatorDb', DB); }
+function saveRes(){ try{ localStorage.setItem('sm_v2_res', JSON.stringify(OR)); }catch(e){toast('Storage full — clear old results','#f59e0b');} sheetsApiPush('creatorAnalysis', flattenCreatorAnalysis()); }
 function fiUNav(){ document.getElementById('NC').textContent = '✓ '+DB.length+' creators'; }
 function toast(m,c='#22c55e'){ const t=document.getElementById('toast'); t.textContent=m; t.style.background=c; t.style.display='block'; setTimeout(()=>t.style.display='none',2800); }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -5698,7 +5712,7 @@ if(!HOOKS){HOOKS=SEED_HOOKS.map((h,i)=>({...h,id:'h'+i,fav:false,used:0,added:ne
 let hkFavOnly=false;
 let hkImpRows=[];
 
-function saveHooks(){localStorage.setItem('sm_v2_hooks',JSON.stringify(HOOKS));}
+function saveHooks(){localStorage.setItem('sm_v2_hooks',JSON.stringify(HOOKS));sheetsApiPush('hooks',HOOKS);}
 
 function populateHookCats(){
   const sels=['hkCat','hkAddCat'];
@@ -5983,7 +5997,7 @@ function pickScriptHook(i){
 }
 
 let MY_SCRIPTS=JSON.parse(localStorage.getItem('sm_v2_scripts')||'[]');
-function saveMyScripts(){localStorage.setItem('sm_v2_scripts',JSON.stringify(MY_SCRIPTS));}
+function saveMyScripts(){localStorage.setItem('sm_v2_scripts',JSON.stringify(MY_SCRIPTS));sheetsApiPush('myScripts',MY_SCRIPTS);}
 
 function saveScript(){
   if(!lastScriptData){toast('Nothing to save','#f59e0b');return;}
@@ -6100,7 +6114,7 @@ async function runClustering(){
 // CONTENT IDEAS
 // ═══════════════════════════════════════════════════
 let IDEAS=JSON.parse(localStorage.getItem('sm_v2_ideas')||'[]');
-function saveIdeas(){localStorage.setItem('sm_v2_ideas',JSON.stringify(IDEAS));}
+function saveIdeas(){localStorage.setItem('sm_v2_ideas',JSON.stringify(IDEAS));sheetsApiPush('ideas',IDEAS);}
 
 async function genIdeas(){
   const all=getAllV();
@@ -6274,17 +6288,137 @@ function scrTab(name){
 }
 
 // ═══════════════════════════════════════════════════
+// TEAM SYNC — shared Google Sheet backend (Apps Script proxy)
+// ═══════════════════════════════════════════════════
+function getSheetsApiUrl(){ try{ return localStorage.getItem('sm_cs_teamsync_url')||''; }catch(e){ return ''; } }
+function setSheetsApiUrl(u){ try{ localStorage.setItem('sm_cs_teamsync_url', u); }catch(e){} }
+
+function saveTeamSyncUrl(){
+  var url=(document.getElementById('k-team-sync-url')||{value:''}).value.trim();
+  if(!url){ csToast('Paste your Apps Script /exec URL first','var(--amber)'); return; }
+  setSheetsApiUrl(url);
+  var b=document.getElementById('b-team-sync'); if(b){b.textContent='Set';b.className='api-badge set';}
+  csToast('Team sync saved — pushing local data…');
+  sheetsApiPushAll();
+  sheetsApiPullAll(renderEverything);
+}
+
+function testTeamSync(){
+  var fld=(document.getElementById('k-team-sync-url')||{value:''}).value.trim();
+  var url=fld||getSheetsApiUrl();
+  if(!url){ csToast('Enter a URL first','var(--amber)'); return; }
+  fetch(url+'?action=ping').then(function(r){return r.json();}).then(function(d){
+    if(d && d.ok){ csToast('✓ Connection works'); var inp=document.getElementById('k-team-sync-url'); if(inp && !inp.value) inp.value=url; }
+    else { csToast('Reached the URL but got an unexpected response','var(--amber)'); }
+  }).catch(function(e){ csToast('Could not reach: '+e.message,'var(--red)'); });
+}
+
+function sheetsApiPush(collection, data){
+  var url=getSheetsApiUrl();
+  if(!url) return;
+  fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({action:'save', collection:collection, data:data})
+  }).catch(function(){ /* silent — offline edits stay local until next successful push */ });
+}
+
+function getSettingsRow(){
+  var vp=''; try{ vp=localStorage.getItem('sm_v2_voiceprofile')||''; }catch(e){}
+  var fmt=''; try{ fmt=localStorage.getItem('sm_v2_simora_fmt')||''; }catch(e){}
+  var ch=''; try{ ch=localStorage.getItem('sm_v2_simora_char')||''; }catch(e){}
+  return {voiceProfile:vp, simoraFmt:fmt, simoraChar:ch};
+}
+function pushSettingsSync(){ sheetsApiPush('settings', [getSettingsRow()]); }
+
+function flattenCalPosts(){
+  var rows=[];
+  Object.keys(CAL_POSTS).forEach(function(date){
+    (CAL_POSTS[date]||[]).forEach(function(p){
+      rows.push({id:p.id, date:date, title:p.title, platform:p.platform, time:p.time, format:p.format});
+    });
+  });
+  return rows;
+}
+function unflattenCalPosts(rows){
+  var obj={};
+  (rows||[]).forEach(function(r){
+    if(!obj[r.date]) obj[r.date]=[];
+    obj[r.date].push({id:r.id, title:r.title, platform:r.platform, time:r.time, format:r.format});
+  });
+  return obj;
+}
+
+function flattenCreatorAnalysis(){
+  return Object.keys(OR).map(function(id){
+    var r=OR[id]||{};
+    return {creatorId:id, data:JSON.stringify(r), savedAt:r.savedAt||new Date().toISOString()};
+  });
+}
+function unflattenCreatorAnalysis(rows){
+  var obj={};
+  (rows||[]).forEach(function(r){
+    try{ obj[r.creatorId]=JSON.parse(r.data); }catch(e){}
+  });
+  return obj;
+}
+
+function sheetsApiPushAll(){
+  sheetsApiPush('calendar', flattenCalPosts());
+  sheetsApiPush('postsLib', POSTS_LIB);
+  sheetsApiPush('hooks', HOOKS);
+  sheetsApiPush('myScripts', MY_SCRIPTS);
+  sheetsApiPush('ideas', IDEAS);
+  pushSettingsSync();
+  sheetsApiPush('creatorDb', DB);
+  sheetsApiPush('creatorAnalysis', flattenCreatorAnalysis());
+}
+
+function sheetsApiPullAll(callback){
+  var url=getSheetsApiUrl();
+  if(!url){ if(callback) callback(); return; }
+  fetch(url+'?action=load').then(function(r){return r.json();}).then(function(d){
+    if(d.calendar) { CAL_POSTS = unflattenCalPosts(d.calendar); try{localStorage.setItem('sm_cs_calendar', JSON.stringify(CAL_POSTS));}catch(e){} }
+    if(d.postsLib) { POSTS_LIB = d.postsLib; try{localStorage.setItem('sm_cs_posts', JSON.stringify(POSTS_LIB));}catch(e){} }
+    if(d.hooks) { HOOKS = d.hooks; try{localStorage.setItem('sm_v2_hooks', JSON.stringify(HOOKS));}catch(e){} }
+    if(d.myScripts) { MY_SCRIPTS = d.myScripts; try{localStorage.setItem('sm_v2_scripts', JSON.stringify(MY_SCRIPTS));}catch(e){} }
+    if(d.ideas) { IDEAS = d.ideas; try{localStorage.setItem('sm_v2_ideas', JSON.stringify(IDEAS));}catch(e){} }
+    if(d.settings && d.settings.length){
+      var s=d.settings[0];
+      try{
+        if(s.voiceProfile) localStorage.setItem('sm_v2_voiceprofile', s.voiceProfile);
+        if(s.simoraFmt) localStorage.setItem('sm_v2_simora_fmt', s.simoraFmt);
+        if(s.simoraChar) localStorage.setItem('sm_v2_simora_char', s.simoraChar);
+      }catch(e){}
+    }
+    if(d.creatorDb && d.creatorDb.length) { DB = d.creatorDb; try{localStorage.setItem('sm_db_v2', JSON.stringify(DB));}catch(e){} }
+    if(d.creatorAnalysis) { OR = unflattenCreatorAnalysis(d.creatorAnalysis); try{localStorage.setItem('sm_v2_res', JSON.stringify(OR));}catch(e){} }
+    if(callback) callback();
+  }).catch(function(e){ csToast('Team sync pull failed: '+e.message,'var(--red)'); if(callback) callback(); });
+}
+
+function renderEverything(){
+  try{ calRender(); }catch(e){}
+  try{ postsLibRender(); postQueueRender(); }catch(e){}
+  try{ populateHookCats(); rHooks(); }catch(e){}
+  try{ rMyScripts(); }catch(e){}
+  try{ rIdeas(); }catch(e){}
+  try{ fiUSet(); }catch(e){}
+  try{ fiUNav(); fiRDB(); fiRGrid(); fiRExp(); }catch(e){}
+}
 // SETTINGS — Voice profile, Simora defaults, Sheet headers
 // ═══════════════════════════════════════════════════
 function saveVoiceProfile(){
   const v=document.getElementById('voiceProfile').value.trim();
   localStorage.setItem('sm_v2_voiceprofile',v||DEFAULT_VOICE_PROFILE);
+  pushSettingsSync();
   document.getElementById('vpSt').textContent='✓ Saved';
   setTimeout(()=>{document.getElementById('vpSt').textContent='';},2000);
 }
 function saveSimoraDefaults(){
   localStorage.setItem('sm_v2_simora_fmt',document.getElementById('simoraDefFmt').value);
   localStorage.setItem('sm_v2_simora_char',document.getElementById('simoraDefChar').value);
+  pushSettingsSync();
   toast('✓ Simora defaults saved');
 }
 
@@ -6325,6 +6459,16 @@ applyThemeIcon();
 document.getElementById('oDt').value=new Date().toISOString().slice(0,10);
 // Start finder on Outlier page
 setTimeout(function(){ fiGo('out'); }, 50);
+
+// Load team sync URL into settings field + pull shared data on page load
+(function initTeamSync(){
+  var savedUrl = getSheetsApiUrl();
+  var inp = document.getElementById('k-team-sync-url');
+  if(inp && savedUrl) inp.value = savedUrl;
+  var b = document.getElementById('b-team-sync');
+  if(b && savedUrl){ b.textContent='Set'; b.className='api-badge set'; }
+  if(savedUrl){ sheetsApiPullAll(renderEverything); }
+})();
 
 </script>
 </body>
