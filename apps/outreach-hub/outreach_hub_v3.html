@@ -287,10 +287,29 @@ a{color:var(--accent);text-decoration:none;}
   <div class="tb-right">
     <span class="tb-chip hot" id="chip-due" style="display:none"></span>
     <span class="tb-chip green" id="chip-hot" style="display:none"></span>
+    <span class="tb-chip" id="chip-active-user" onclick="openUserPicker()" title="Switch active user" style="cursor:pointer;">👤 —</span>
     <div class="icon-btn" onclick="ohToggleTheme()" title="Toggle theme">◑</div>
     <a href="ads_studio_v1.html" target="_blank"><div class="icon-btn" title="Ads Studio">AS</div></a>
     <a href="content_studio_v7.html" target="_blank"><div class="icon-btn" title="Content Studio">CS</div></a>
     <div class="icon-btn" onclick="ohNav(null,'settings','set-channels')" title="Settings">⚙</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-user-picker">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">Who are you?</div></div>
+    <div class="col" style="gap:9px;">
+      <div style="font-size:11px;color:var(--muted);">Pick your name — used to tag the leads, calls, meetings and clients you create, and to sync with the shared team sheet.</div>
+      <select class="select" id="up-name-select" onchange="onUserSelectChange()">
+        <option value="">— Select —</option>
+        <option value="Neeraj">Neeraj</option>
+        <option value="Mihir">Mihir</option>
+        <option value="AI Shanaya">AI Shanaya</option>
+        <option value="__new__">+ Add new name…</option>
+      </select>
+      <input class="input" id="up-name-new" style="display:none;" placeholder="Type your name">
+      <button class="btn-primary" onclick="confirmActiveUser()">Continue</button>
+    </div>
   </div>
 </div>
 
@@ -1055,15 +1074,14 @@ a{color:var(--accent);text-decoration:none;}
         <button class="btn-primary btn-sm" onclick="importFromGSheetURL()">Fetch &amp; import</button>
       </div>
     </div>
-    <div class="api-card">
-      <div class="api-name">Mode 4: Google Service Account (full sync)</div>
-      <div class="api-sub">Full read/write sync. Paste Service Account JSON key below. Leads sync bidirectionally — Outreach Hub writes call outcomes back to your sheet.</div>
-      <textarea class="textarea" id="k-gsheet-sa-json" rows="3" style="font-size:11px;font-family:var(--mono);" placeholder='{"type":"service_account","project_id":"…"}'></textarea>
-      <input class="input" id="k-gsheet-id" placeholder="Google Sheet ID (from URL)" style="font-size:11px;margin-top:6px;">
-      <div style="display:flex;gap:6px;margin-top:8px;">
-        <button class="btn-primary btn-sm" onclick="saveGSheetConfig()">Save config</button>
-        <button class="btn-secondary btn-sm" onclick="testGSheetSync()">Test sync</button>
-        <span class="api-badge unset" id="b-gsheet-config">Not configured</span>
+    <div class="api-card" style="border-color:var(--accent);">
+      <div class="api-name">⭐ Team sync (recommended) — shared backend for your whole team</div>
+      <div class="api-sub">Paste the URL of your deployed Google Apps Script Web App (see the OutreachHub-AppsScript.gs setup guide). Every teammate who opens Outreach Hub reads and writes Leads, Call log, Meetings, Clients, WhatsApp groups, Templates, Sequences and Automation campaigns from the same Google Sheet instead of just their own browser.</div>
+      <input class="input" id="k-team-sync-url" placeholder="https://script.google.com/macros/s/XXXX/exec" style="font-size:11px;margin-top:6px;">
+      <div style="display:flex;gap:6px;margin-top:8px;align-items:center;">
+        <button class="btn-primary btn-sm" onclick="saveTeamSyncUrl()">Save &amp; sync now</button>
+        <button class="btn-secondary btn-sm" onclick="testTeamSync()">Test connection</button>
+        <span class="api-badge unset" id="b-team-sync">Not configured</span>
       </div>
     </div>
   </div>
@@ -1476,6 +1494,124 @@ function initials(n){ return (n||'?').split(' ').slice(0,2).map(function(w){retu
 function today(){ return new Date().toISOString().split('T')[0]; }
 function fmtDate(d){ if(!d) return '—'; try{return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short'});}catch(e){return d;} }
 
+// ═══ TEAM SYNC (shared Google Sheet backend via Apps Script) ═══
+function getSheetsApiUrl(){ try{return localStorage.getItem('sm_oh_team_sync_url')||'';}catch(e){return '';} }
+function setSheetsApiUrl(u){ try{localStorage.setItem('sm_oh_team_sync_url',u);}catch(e){} }
+
+function saveTeamSyncUrl(){
+  var url=(document.getElementById('k-team-sync-url')||{value:''}).value.trim();
+  if(!url){ohToast('Paste your Apps Script Web App URL first','warn');return;}
+  setSheetsApiUrl(url);
+  var b=document.getElementById('b-team-sync'); if(b){b.textContent='Configured ✓';b.className='api-badge set';}
+  ohToast('Team sync saved — pulling shared data…','suc');
+  sheetsApiPullAll(renderEverything);
+}
+function testTeamSync(){
+  var fld=(document.getElementById('k-team-sync-url')||{value:''}).value.trim();
+  var url=fld||getSheetsApiUrl();
+  if(!url){ohToast('Enter a Web App URL first','warn');return;}
+  ohToast('Testing connection…');
+  fetch(url+(url.indexOf('?')>-1?'&':'?')+'action=ping')
+    .then(function(r){return r.json();})
+    .then(function(res){
+      if(res && res.ok){ohToast('Connected — Apps Script is reachable','suc');}
+      else {ohToast('Reached the URL but got an unexpected response','warn');}
+    })
+    .catch(function(){ohToast('Could not reach that URL — check it is deployed with access "Anyone"','err');});
+}
+
+function sheetsApiPush(collection,data){
+  var url=getSheetsApiUrl(); if(!url) return;
+  fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'save',collection:collection,data:data})})
+    .then(function(r){return r.json();})
+    .then(function(res){ if(!res||!res.ok){ohToast('Sync issue saving '+collection+' — kept locally','warn');} })
+    .catch(function(){ohToast('Could not reach shared sheet — '+collection+' saved locally only','warn');});
+}
+
+function sheetsApiPullAll(cb){
+  var url=getSheetsApiUrl();
+  if(!url){ if(cb) cb(); return; }
+  fetch(url+(url.indexOf('?')>-1?'&':'?')+'action=load')
+    .then(function(r){return r.json();})
+    .then(function(res){
+      if(res){
+        if(res.leads) LEADS=res.leads;
+        if(res.callLogs) CALL_LOGS=res.callLogs;
+        if(res.meetings) MEETINGS=res.meetings;
+        if(res.clients) CLIENTS=res.clients;
+        if(res.waGroups) WA_GROUPS=res.waGroups;
+        if(res.templates) TEMPLATES=res.templates;
+        if(res.sequences) SEQUENCES=res.sequences;
+        if(res.autoCampaigns) AUTO_CAMPAIGNS=res.autoCampaigns;
+        var b=document.getElementById('b-team-sync'); if(b){b.textContent='Configured ✓';b.className='api-badge set';}
+        var inp=document.getElementById('k-team-sync-url'); if(inp && !inp.value) inp.value=url;
+      }
+      if(cb) cb();
+    })
+    .catch(function(){ ohToast('Could not load shared sheet — showing local data','warn'); if(cb) cb(); });
+}
+
+function renderEverything(){
+  renderLeads(); renderAILeads(); renderMetaLeads();
+  renderCallHistory(); renderDailySheet();
+  renderMeetings(); renderOutcomes();
+  renderClients(); renderWAGroups();
+  renderTemplates(''); updateKPIs(); updateSidebarCounts();
+  renderTrackSources(); renderTrackCallers();
+  populateWAGroupSelect(); renderImprovements();
+  updateTrackInsight();
+  initBadges();
+  if(typeof renderSeqLibrary==='function'){
+    renderSeqLibrary();renderSeqTemplates();
+    updatePipelineSBCount();renderAutoDash();
+    populateWATemplates();populateAutoSeqSelect();
+    renderWACampHistory();renderAIBatchHistory();
+    if(typeof initV3Badges==='function') initV3Badges();
+  }
+}
+
+// ═══ ACTIVE USER (simple name picker — tags who created what) ═══
+var ACTIVE_USER=null;
+function getActiveUser(){ if(ACTIVE_USER) return ACTIVE_USER; try{ACTIVE_USER=localStorage.getItem('sm_oh_active_user')||'';}catch(e){} return ACTIVE_USER; }
+function setActiveUser(name){
+  ACTIVE_USER=name;
+  try{localStorage.setItem('sm_oh_active_user',name);}catch(e){}
+  var chip=document.getElementById('chip-active-user'); if(chip) chip.textContent='👤 '+name;
+  applyActiveUserEverywhere();
+}
+function ensureActiveUser(){
+  var u=getActiveUser();
+  if(u) setActiveUser(u); else openUserPicker();
+}
+function openUserPicker(){
+  var m=document.getElementById('modal-user-picker'); if(!m) return;
+  var sel=document.getElementById('up-name-select'); if(sel) sel.value='';
+  var newInp=document.getElementById('up-name-new'); if(newInp){newInp.style.display='none';newInp.value='';}
+  m.classList.add('open');
+}
+function onUserSelectChange(){
+  var sel=document.getElementById('up-name-select'); var newInp=document.getElementById('up-name-new');
+  if(sel && newInp) newInp.style.display=(sel.value==='__new__')?'block':'none';
+}
+function confirmActiveUser(){
+  var sel=document.getElementById('up-name-select'); var newInp=document.getElementById('up-name-new');
+  var name=(sel && sel.value==='__new__')?(newInp?newInp.value.trim():''):(sel?sel.value:'');
+  if(!name){ohToast('Pick or type a name','warn');return;}
+  setActiveUser(name);
+  var m=document.getElementById('modal-user-picker'); if(m) m.classList.remove('open');
+  ohToast('Signed in as '+name,'suc');
+}
+function applyActiveUserToField(id){
+  var u=getActiveUser(); if(!u) return;
+  var el=document.getElementById(id); if(!el) return;
+  var found=false;
+  for(var i=0;i<el.options.length;i++){ if(el.options[i].value===u||el.options[i].textContent===u){el.selectedIndex=i;found=true;break;} }
+  if(!found){ var o=document.createElement('option'); o.value=u; o.textContent=u; el.appendChild(o); el.value=u; }
+}
+function applyActiveUserEverywhere(){
+  ['al-caller','cl-caller','mt-assignee','ac-rm'].forEach(applyActiveUserToField);
+}
+
 // ════ INIT ════
 (function init(){
   var t=localStorage.getItem('sm_oh_theme')||localStorage.getItem('sm_cs_theme')||'light';
@@ -1493,25 +1629,19 @@ function fmtDate(d){ if(!d) return '—'; try{return new Date(d).toLocaleDateStr
   var inp=document.getElementById('cl-date'); if(inp) inp.value=today();
   var fdtIn=document.getElementById('al-followup'); if(fdtIn) fdtIn.value=today();
   setTimeout(function(){
-    renderLeads(); renderAILeads(); renderMetaLeads();
-    renderCallHistory(); renderDailySheet();
-    renderMeetings(); renderOutcomes();
-    renderClients(); renderWAGroups();
-    renderTemplates(''); updateKPIs(); updateSidebarCounts();
-    renderTrackSources(); renderTrackCallers();
-    populateWAGroupSelect(); renderImprovements();
-    updateTrackInsight();
-    initBadges();
+    renderEverything();
+    ensureActiveUser();
+    sheetsApiPullAll(renderEverything);
   },100);
 })();
 
 // ── Save ──
-function saveLeads(){try{localStorage.setItem('sm_oh2_leads',JSON.stringify(LEADS));}catch(e){}}
-function saveCallLogs(){try{localStorage.setItem('sm_oh2_calllogs',JSON.stringify(CALL_LOGS));}catch(e){}}
-function saveMeetings_(){try{localStorage.setItem('sm_oh2_meetings',JSON.stringify(MEETINGS));}catch(e){}}
-function saveClients_(){try{localStorage.setItem('sm_oh2_clients',JSON.stringify(CLIENTS));}catch(e){}}
-function saveWAGroups(){try{localStorage.setItem('sm_oh2_wagroups',JSON.stringify(WA_GROUPS));}catch(e){}}
-function saveTemplates_(){try{localStorage.setItem('sm_oh2_templates',JSON.stringify(TEMPLATES));}catch(e){}}
+function saveLeads(){try{localStorage.setItem('sm_oh2_leads',JSON.stringify(LEADS));}catch(e){} sheetsApiPush('leads',LEADS);}
+function saveCallLogs(){try{localStorage.setItem('sm_oh2_calllogs',JSON.stringify(CALL_LOGS));}catch(e){} sheetsApiPush('callLogs',CALL_LOGS);}
+function saveMeetings_(){try{localStorage.setItem('sm_oh2_meetings',JSON.stringify(MEETINGS));}catch(e){} sheetsApiPush('meetings',MEETINGS);}
+function saveClients_(){try{localStorage.setItem('sm_oh2_clients',JSON.stringify(CLIENTS));}catch(e){} sheetsApiPush('clients',CLIENTS);}
+function saveWAGroups(){try{localStorage.setItem('sm_oh2_wagroups',JSON.stringify(WA_GROUPS));}catch(e){} sheetsApiPush('waGroups',WA_GROUPS);}
+function saveTemplates_(){try{localStorage.setItem('sm_oh2_templates',JSON.stringify(TEMPLATES));}catch(e){} sheetsApiPush('templates',TEMPLATES);}
 
 // ── Seed ──
 function seedLeads(){
@@ -1625,6 +1755,8 @@ function tv(id){var i=document.getElementById(id);if(i)i.type=i.type==='password
 // ════ MODAL ════
 function openModal(id){var m=document.getElementById(id);if(m)m.classList.add('open');}
 function closeModal(id){var m=document.getElementById(id);if(m)m.classList.remove('open');}
+var _origOpenModal_=openModal;
+openModal=function(id){ _origOpenModal_(id); applyActiveUserEverywhere(); };
 document.addEventListener('click',function(e){if(e.target.classList.contains('modal-overlay'))closeModal(e.target.id);});
 
 // ════ SIDEBAR COUNTS ════
@@ -2634,8 +2766,8 @@ var PIPE_STAGES = [
   },200);
 })();
 
-function saveSequences(){try{localStorage.setItem('sm_oh3_sequences',JSON.stringify(SEQUENCES));}catch(e){}}
-function saveAutoCampaigns(){try{localStorage.setItem('sm_oh3_campaigns',JSON.stringify(AUTO_CAMPAIGNS));}catch(e){}}
+function saveSequences(){try{localStorage.setItem('sm_oh3_sequences',JSON.stringify(SEQUENCES));}catch(e){} sheetsApiPush('sequences',SEQUENCES);}
+function saveAutoCampaigns(){try{localStorage.setItem('sm_oh3_campaigns',JSON.stringify(AUTO_CAMPAIGNS));}catch(e){} sheetsApiPush('autoCampaigns',AUTO_CAMPAIGNS);}
 
 function seedSequences(){
   SEQUENCES=[
