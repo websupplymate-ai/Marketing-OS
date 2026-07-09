@@ -1803,6 +1803,10 @@ function sheetsApiPullAll(cb){
         if(res.monitors) MONITOR_LIST=res.monitors;
         if(res.hooks) HOOK_BANK=res.hooks;
         if(res.defaults && res.defaults.length) AM_DEFAULTS=res.defaults[0];
+        if(res.rayaiHistory) RAYAI_HISTORY=res.rayaiHistory;
+        if(res.landingPageAnalyses) LP_ANALYSES=res.landingPageAnalyses;
+        if(res.reviewMinerRuns) REVIEW_RUNS=res.reviewMinerRuns;
+        if(res.audienceProfiles) AUDIENCE_PROFILES=res.audienceProfiles;
         var b=document.getElementById('b-team-sync'); if(b){b.textContent='Configured ✓';b.style.color='var(--accent)';}
         var inp=document.getElementById('k-team-sync-url'); if(inp && !inp.value) inp.value=url;
       }
@@ -1810,6 +1814,19 @@ function sheetsApiPullAll(cb){
     })
     .catch(function(){ amToast('Could not load shared sheet — showing local data','var(--amber)'); if(cb) cb(); });
 }
+
+// ── Persistence for RayAI chat, Landing page analyses, Review-miner runs, Audience profiles ──
+var LP_ANALYSES=[]; var REVIEW_RUNS=[]; var AUDIENCE_PROFILES=[];
+(function loadExtraCollections(){
+  try{var r=localStorage.getItem('sm_am_rayai_history'); if(r) RAYAI_HISTORY=JSON.parse(r);}catch(e){}
+  try{var l=localStorage.getItem('sm_am_lp_analyses'); if(l) LP_ANALYSES=JSON.parse(l);}catch(e){}
+  try{var v=localStorage.getItem('sm_am_review_runs'); if(v) REVIEW_RUNS=JSON.parse(v);}catch(e){}
+  try{var a=localStorage.getItem('sm_am_audience_profiles'); if(a) AUDIENCE_PROFILES=JSON.parse(a);}catch(e){}
+})();
+function saveRayaiHistory(){ try{localStorage.setItem('sm_am_rayai_history',JSON.stringify(RAYAI_HISTORY));}catch(e){} sheetsApiPush('rayaiHistory',RAYAI_HISTORY); }
+function saveLPAnalyses(){ try{localStorage.setItem('sm_am_lp_analyses',JSON.stringify(LP_ANALYSES));}catch(e){} sheetsApiPush('landingPageAnalyses',LP_ANALYSES); }
+function saveReviewRuns(){ try{localStorage.setItem('sm_am_review_runs',JSON.stringify(REVIEW_RUNS));}catch(e){} sheetsApiPush('reviewMinerRuns',REVIEW_RUNS); }
+function saveAudienceProfiles(){ try{localStorage.setItem('sm_am_audience_profiles',JSON.stringify(AUDIENCE_PROFILES));}catch(e){} sheetsApiPush('audienceProfiles',AUDIENCE_PROFILES); }
 
 function renderEverything(){
   adsLibRender();
@@ -2808,6 +2825,8 @@ function analyseLandingPage(preloadUrl){
       +'<pre style="font-size:11px;color:var(--text-2);line-height:1.7;white-space:pre-wrap;font-family:var(--font);">'+text+'</pre>'
       +'<button class="btn-primary btn-sm mt-8" onclick="useInsightInAd(\'landing page findings from: '+url+'\')">→ Use findings in ad brief</button>'
       +'</div>';
+    LP_ANALYSES.push({id:'lpa_'+Date.now(), url:url, focus:focus, result:text, createdAt:new Date().toISOString()});
+    saveLPAnalyses();
   })
   .catch(function(e){ amToast('Error: '+e.message,'var(--red)'); })
   .finally(function(){ if(btn){btn.textContent='✦ Analyse page';btn.disabled=false;} });
@@ -2856,6 +2875,8 @@ function mineReviews(){
         +'<div style="font-size:10px;color:var(--muted);margin-top:8px;">Connect Apify ($49/month) for live review scraping from Google Business, Justdial, IndiaMART.</div>'
         +'<button class="btn-primary btn-sm mt-8" onclick="useReviewInAd(\''+brand+' review findings\')">→ Build ad from findings</button>'
         +'</div>';
+      REVIEW_RUNS.push({id:'rev_'+Date.now(), brand:brand, result:text, createdAt:new Date().toISOString()});
+      saveReviewRuns();
       amToast('Review mining complete for: '+brand);
     })
     .catch(function(e){ amToast('Error: '+e.message,'var(--red)'); })
@@ -2880,7 +2901,7 @@ function useReviewInAd(context){
 // ════════════════════════════════════════════
 // ASK RAYAI — Conversational Analytics
 // ════════════════════════════════════════════
-var RAYAI_HISTORY = [];
+RAYAI_HISTORY = RAYAI_HISTORY || [];
 
 function sendRayAI(){
   var inp = document.getElementById('rayai-input');
@@ -2907,6 +2928,7 @@ function askRayAI(question){
   +'\n\nBRAND CONTEXT: SupplyMate — B2B uniform procurement platform. Primary verticals: hospitals (60%), schools (30%), corporates (10%). India market.';
   var prompt = context + '\n\nUSER QUESTION: ' + question + '\n\nAnswer as a senior performance marketing consultant. Be specific, data-driven, and actionable. Max 150 words.';
   RAYAI_HISTORY.push({role:'user',content:question});
+  saveRayaiHistory();
   fetch('https://api.groq.com/openai/v1/chat/completions',{
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
@@ -2919,6 +2941,7 @@ function askRayAI(question){
   .then(function(data){
     var text=(data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'No response.';
     RAYAI_HISTORY.push({role:'assistant',content:text});
+    saveRayaiHistory();
     appendChatMsg('ai', text);
   })
   .catch(function(e){ appendChatMsg('ai','Error connecting to Groq: '+e.message); })
@@ -3052,6 +3075,8 @@ function buildAudience(){
       +'<button class="btn-primary btn-sm mt-8" onclick="amToast(\'Audience saved to library\')">Save to audience library</button>'
       +'<button class="btn-secondary btn-sm mt-8" onclick="amToast(\'Meta Custom Audience JSON exported\')">Export Meta JSON</button>'
       +'</div>';
+    AUDIENCE_PROFILES.push({id:'aud_'+Date.now(), brief:desc, result:JSON.stringify(parsed), createdAt:new Date().toISOString()});
+    saveAudienceProfiles();
     amToast('Audience profile built');
   })
   .catch(function(e){amToast('Error: '+e.message,'var(--red)');});
