@@ -3941,11 +3941,15 @@ function onPl() {
 }
 
 // ══ Ayrshare posting helper (stub — wires to Worker) ══
+function csMapAyrPlatform(p) {
+  p = String(p||'').toLowerCase();
+  var ok = ['instagram','youtube','linkedin','facebook','twitter','tiktok','pinterest','reddit','gmb','telegram'];
+  return ok.indexOf(p) !== -1 ? p : null;
+}
 function postViaAyrshare(postData, platforms, callback) {
-  var key = csGetKey('ayrshare') || '';
-  if(!key) { csToast('Set Ayrshare API key in API Settings → Publishing', 'var(--amber)'); return; }
-  // POST to Cloudflare Worker proxy → Worker calls api.ayrshare.com/api/post
-  var workerUrl = csGetKey('worker_url') || 'https://publish.web-supplymate.workers.dev';
+  // Key lives ONLY on the Worker (secret). Browser never sends it.
+  var workerUrl = csGetKey('worker_url') || '';
+  if(!workerUrl) { csToast('Set Cloudflare Worker URL in API Settings → Publishing first', 'var(--amber)'); return; }
   fetch(workerUrl + '/post', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
@@ -4214,13 +4218,28 @@ function postNow(id){
   var post = POSTS_LIB.find(function(p){ return p.id===id; });
   if(!post){ csToast('Post not found'); return; }
   var workerUrl = csGetKey('worker_url') || '';
-  var ayrKey = csGetKey('ayrshare') || '';
-  if(!workerUrl && !ayrKey){
-    csToast('Set Ayrshare key + Worker URL in API Settings → Publishing first','var(--amber)');
+  if(!workerUrl){
+    csToast('Set Cloudflare Worker URL in API Settings → Publishing first','var(--amber)');
+    return;
+  }
+  var plat = csMapAyrPlatform(post.platform);
+  if(!plat){
+    csToast(String(post.platform)+' is not wired for publishing yet (WhatsApp needs 360dialog, Shopify needs Admin API)','var(--amber)');
     return;
   }
   csToast('Publishing: '+post.title.slice(0,30)+'…');
-  postsLibSetStatus(id,'live');
+  postViaAyrshare(
+    { caption: post.content || post.title, mediaUrls: post.mediaUrls || [] },
+    [plat],
+    function(res){
+      if(res && (res.status === 'success' || res.id)){
+        postsLibSetStatus(id,'live');
+        csToast('✓ Published: '+post.title.slice(0,30));
+      } else {
+        csToast('Publish failed: '+((res && (res.message || res.status)) || 'unknown error'),'var(--red)');
+      }
+    }
+  );
 }
 
 
@@ -4288,9 +4307,8 @@ function bulkPost(){
   var checks = document.querySelectorAll('.queue-check:checked');
   if(!checks.length){ csToast('Select at least one post','var(--amber)'); return; }
   var workerUrl = csGetKey('worker_url') || '';
-  var ayrKey = csGetKey('ayrshare') || '';
-  if(!workerUrl && !ayrKey){
-    csToast('Set Ayrshare key + Worker URL in API Settings → Publishing','var(--amber)');
+  if(!workerUrl){
+    csToast('Set Cloudflare Worker URL in API Settings → Publishing','var(--amber)');
     return;
   }
   var count = checks.length;
@@ -4300,13 +4318,26 @@ function bulkPost(){
     if(!item) return;
     var titleEl = item.querySelector('.queue-title');
     var title = titleEl ? titleEl.textContent : 'Post';
-    var statusEl = item.querySelector('.q-status');
-    if(statusEl){ statusEl.textContent='live'; statusEl.className='q-status live'; }
-    // Update library
-    POSTS_LIB.forEach(function(p){ if(p.title===title) p.status='live'; });
+    var post = POSTS_LIB.find(function(p){ return p.title===title; });
+    if(!post){ csToast('Skipped (not in library): '+title.slice(0,30),'var(--amber)'); return; }
+    var plat = csMapAyrPlatform(post.platform);
+    if(!plat){ csToast('Skipped '+title.slice(0,25)+' — '+String(post.platform)+' not wired yet','var(--amber)'); return; }
+    postViaAyrshare(
+      { caption: post.content || post.title, mediaUrls: post.mediaUrls || [] },
+      [plat],
+      function(res){
+        if(res && (res.status === 'success' || res.id)){
+          post.status='live';
+          var statusEl = item.querySelector('.q-status');
+          if(statusEl){ statusEl.textContent='live'; statusEl.className='q-status live'; }
+          postsLibSave();
+          csToast('✓ Published: '+title.slice(0,30));
+        } else {
+          csToast('Failed: '+title.slice(0,25)+' — '+((res && (res.message || res.status)) || 'unknown'),'var(--red)');
+        }
+      }
+    );
   });
-  postsLibSave();
-  setTimeout(function(){ csToast('✓ ' + count + ' post' + (count>1?'s':'')+' marked live'); }, 1500);
 }
 
 // ════════════════════════════════════════
@@ -5115,6 +5146,7 @@ function uBtns(){
 }
 
 async function doSel(){
+  if(!getK()){toast('Set your YouTube API key in Settings first','#dc2626');return;}
   const toRun=[...sel].map(id=>DB.find(c=>c.id===id)).filter(c=>c&&c.yt);
   if(!toRun.length){toast('Select YouTube creators first','#f59e0b');return;}
   stop=false; running=true; uBtns();
@@ -5130,6 +5162,7 @@ async function doSel(){
 }
 
 async function doAll(){
+  if(!getK()){toast('Set your YouTube API key in Settings first','#dc2626');return;}
   const ytC=DB.filter(c=>c.yt);
   stop=false; running=true; uBtns();
   const pw=document.getElementById('pW'), pf=document.getElementById('pF'), ps=document.getElementById('pSt');
@@ -6175,10 +6208,10 @@ function deleteIdea(id){IDEAS=IDEAS.filter(i=>i.id!==id);saveIdeas();rIdeas();}
 // ═══════════════════════════════════════════════════
 
 function sendOutlierToScript(title){
-  go('scr');
+  fiGo('scr');
   scrTab('gen');
   document.getElementById('sgTopic').value=title;
-  toast('Outlier loaded into Script Generator');
+  toast('Generating script from outlier…'); if(typeof sgRun==='function') sgRun();
 }
 
 async function analyseHookVerts(title,btnEl){
@@ -6200,7 +6233,7 @@ function showVertsPopup(title,raw,btnEl){
   const lines=raw.split('\n').filter(Boolean);
   const html='<div class="vertspop" style="background:#07090f;border:1px solid #5b5fef;border-radius:7px;padding:10px;margin:-3px 0 8px 0;font-size:10px;color:#94a3b8;line-height:1.6">'+
     lines.map(l=>esc(l)).join('<br>')+
-    '<div style="margin-top:6px"><button class="btnh" onclick="scrTab(\'gen\');go(\'scr\');document.getElementById(\'sgTopic\').value='+JSON.stringify(title)+'">→ Use in Script Generator</button></div>'+
+    '<div style="margin-top:6px"><button class="btnh" onclick="scrTab(\'gen\');fiGo(\'scr\');document.getElementById(\'sgTopic\').value='+JSON.stringify(title)+'">→ Use in Script Generator</button></div>'+
     '</div>';
   card.insertAdjacentHTML('afterend',html);
 }
@@ -6265,12 +6298,12 @@ function sendVideosToScriptBrief(vids,label){
   // Build a combined brief: titles + niches + view counts so Groq can find the pattern
   // across one or many videos, then adapt it to SupplyMate's B2B uniform procurement angle.
   const brief=vids.slice(0,15).map(v=>'- "'+v.title+'" ('+fmt(v.views)+' views, '+v.mult.toFixed(1)+'× creator avg, niche: '+(v.creator&&v.creator.niche||'general')+')').join('\n');
-  go('scr');
+  fiGo('scr');
   scrTab('gen');
   document.getElementById('sgTopic').value=label;
   // Stash the full brief so sgRun can use it as extra context
   window._pendingBrief=brief;
-  toast('✓ Loaded '+vids.length+' video(s) into Script Generator — click Generate Script');
+  toast('Generating script from '+vids.length+' video(s)…'); if(typeof sgRun==='function') sgRun();
 }
 
 function scrTab(name){
