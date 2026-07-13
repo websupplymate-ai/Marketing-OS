@@ -1842,7 +1842,7 @@ static | July offer | Product reveal | Instagram | Curiosity | [caption] | Shop 
           <div style="font-size:12px;font-weight:600;color:var(--text);">Script output</div>
           <div class="row ac" style="gap:5px;">
             <span class="score good" id="cs-hook-score">Hook: 8/10</span>
-            <button class="btn-secondary btn-sm" onclick="csToast('Regenerated')">↻ Regen</button>
+            <button class="btn-secondary btn-sm" onclick="csGenerate()">↻ Regen</button>
           </div>
         </div>
         <div class="script-editor">
@@ -2906,13 +2906,17 @@ function csGenerate(){
   .then(function(data){
     var text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
     if(!text){ csToast('Groq returned empty — check key','var(--red)'); return; }
-    // Parse sections
+    // Parse sections — FIX: tolerant of markdown (**HOOK**), timestamps ((0s-3s)) and heading markers
+    var clean = text.replace(/\*\*/g,'').replace(/__/g,'').replace(/^#+\s*/gm,'').replace(/^\s*[-*]\s+/gm,'');
     function extractSection(label, fallback){
-      var regex = new RegExp(label+':\\s*([\\s\\S]*?)(?=\\n[A-Z]+:|$)', 'i');
-      var m = text.match(regex);
-      return m ? m[1].trim() : fallback;
+      var regex = new RegExp('(?:^|\\n)\\s*'+label+'\\b[^\\n:]*:?[ \\t]*([\\s\\S]*?)(?=\\n\\s*(?:HOOK|BODY|CTA|CAPTION)\\b[^\\n:]*:|$)','i');
+      var m = clean.match(regex);
+      var out = m ? m[1].trim() : fallback;
+      // strip a leading timestamp like "(0s-3s)" / "(0-3s)"
+      return out.replace(/^\(?\s*\d+\s*s?\s*[-–]\s*\d+\s*s?\s*\)?\s*/i,'').trim();
     }
-    var hook_out = extractSection('HOOK', text.split('\n')[0]);
+    var firstLine = (text.split('\n').find(function(l){return l.trim();})||'').replace(/\*\*/g,'');
+    var hook_out = extractSection('HOOK', firstLine);
     var body_out = extractSection('BODY', '');
     var cta_out  = extractSection('CTA', '');
     var cap_out  = extractSection('CAPTION', '');
@@ -6208,10 +6212,14 @@ function deleteIdea(id){IDEAS=IDEAS.filter(i=>i.id!==id);saveIdeas();rIdeas();}
 // ═══════════════════════════════════════════════════
 
 function sendOutlierToScript(title){
-  fiGo('scr');
-  scrTab('gen');
-  document.getElementById('sgTopic').value=title;
-  toast('Generating script from outlier…'); if(typeof sgRun==='function') sgRun();
+  // FIX: route to the visible Create → Script writer panel, prefill topic, then generate
+  var sbItem = document.querySelector('.sb-item[onclick*="create-script"]');
+  if(sbItem && typeof csNav==='function'){ csNav(sbItem,'create','create-script'); }
+  else if(typeof csSwitchStage==='function'){ csSwitchStage(document.querySelector('[data-stage=create]')); }
+  var t = document.getElementById('cs-topic');
+  if(t){ t.value = title; }
+  csToast('Generating script from outlier…');
+  if(typeof csGenerate==='function') csGenerate();
 }
 
 async function analyseHookVerts(title,btnEl){
