@@ -286,6 +286,8 @@ button { font-family: var(--font); }
         <span style="color:var(--green);">● edited</span>
         <span class="badge gray">✥ drag a slot onto another slot to swap — works across days</span>
         <span style="margin-left:auto;" class="row">
+          <input type="file" id="cal-import" accept=".csv" style="display:none;" onchange="calImport()">
+          <button class="btn-secondary btn-sm" onclick="$('cal-import').click()">⬆ Import calendar CSV</button>
           <select class="select" id="cal-filter" style="width:auto;" onchange="renderCal()">
             <option value="all">All 90 days</option>
             <option value="p1">Ramp 1/day (Aug 1–14)</option>
@@ -342,6 +344,7 @@ button { font-family: var(--font); }
     <div class="subtab" id="st-create-improv" onclick="sub('create','improv')">Script Improviser</div>
     <div class="subtab" id="st-create-caption" onclick="sub('create','caption')">Caption Generator</div>
     <div class="subtab" id="st-create-ideas" onclick="sub('create','ideas')">Content Ideas</div>
+    <div class="subtab" id="st-create-prompts" onclick="sub('create','prompts')">Prompts</div>
   </div>
 
   <div class="subview active" id="sv-create-today">
@@ -385,6 +388,7 @@ button { font-family: var(--font); }
       <div class="card">
         <div class="card-title">Caption generator</div>
         <div class="card-sub">Hinglish-first for IG/WhatsApp reels, English for LinkedIn — per KB tone rules.</div>
+        <div class="field"><label>Post / script</label><select class="select" id="cap-script" onchange="capPickScript()"><option value="">— choose script 1–51 (or paste below) —</option></select></div>
         <div class="field"><label>Pillar</label><select class="select" id="cap-pillar"></select></div>
         <div class="field"><label>Script / topic</label><textarea class="textarea" id="cap-src" placeholder="Paste the script or describe the video…"></textarea></div>
         <div class="field"><label>Platforms</label>
@@ -413,6 +417,7 @@ button { font-family: var(--font); }
       <div class="card">
         <div class="card-title">Content ideas</div>
         <div class="card-sub">Generates angles inside a pillar's proven structure from the KB — formats and shapes that already work, not random topics. Ideas naming real companies/numbers are flagged for verification before scripting.</div>
+        <div class="field"><label>Around an existing post (optional)</label><select class="select" id="idea-script" onchange="ideaPickScript()"><option value="">— none, pillar-level ideas —</option></select></div>
         <div class="field"><label>Pillar</label><select class="select" id="idea-pillar"></select></div>
         <div class="field"><label>Direction (optional)</label><input class="input" id="idea-dir" placeholder="e.g. school uniforms angle, monsoon season, festive"></div>
         <button class="btn" id="idea-btn" onclick="ideaRun()">✨ Generate 5 ideas</button>
@@ -425,6 +430,37 @@ button { font-family: var(--font); }
           <button class="btn-secondary btn-sm" onclick="ideaSave()">Save to idea bank</button>
         </div>
         <div id="idea-bank" style="margin-top:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subview" id="sv-create-prompts">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Prompt builder</div>
+        <div class="card-sub">Detailed, ready-to-use prompts written from the lens of a 20+ year digital &amp; performance marketer and copywriter — always built around a selected post.</div>
+        <div class="field"><label>Post / script (required)</label><select class="select" id="pr-script" onchange="prPickScript()"><option value="">— choose script 1–51 —</option></select></div>
+        <div class="field"><label>Prompt type</label>
+          <select class="select" id="pr-type">
+            <option value="caption">Caption (all platforms)</option>
+            <option value="videojson">Video generation — JSON (10s sections)</option>
+            <option value="stock">Stock footage — search terms</option>
+            <option value="broll">B-roll — shot list</option>
+            <option value="aroll">A-roll — talking-head direction</option>
+            <option value="carousel">Carousel — slide by slide</option>
+            <option value="static">Static post — single image</option>
+          </select>
+        </div>
+        <div class="field"><label>Extra direction (optional)</label><input class="input" id="pr-dir" placeholder="e.g. monsoon angle, security-agency audience, festive palette"></div>
+        <button class="btn" id="pr-btn" onclick="prRun()">✨ Build prompt</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Prompt</div>
+        <div class="ai-out" id="pr-out">Pick a script and prompt type.</div>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn-secondary btn-sm" onclick="copyEl('pr-out')">Copy</button>
+          <button class="btn-secondary btn-sm" onclick="prSave()">Save (goes to idea bank &amp; sheet)</button>
+        </div>
       </div>
     </div>
   </div>
@@ -525,6 +561,7 @@ button { font-family: var(--font); }
     <div class="subtab active" id="st-post-new" onclick="sub('post','new')">Schedule Post</div>
     <div class="subtab" id="st-post-queue" onclick="sub('post','queue')">Queue</div>
     <div class="subtab" id="st-post-cal" onclick="sub('post','cal')">Content Calendar</div>
+    <div class="subtab" id="st-post-pub" onclick="sub('post','pub')">Published</div>
   </div>
 
   <div class="subview active" id="sv-post-new">
@@ -579,6 +616,8 @@ button { font-family: var(--font); }
         <option value="">All statuses</option><option value="draft">Draft</option><option value="review">Review</option><option value="approved">Approved</option><option value="published">Published</option>
       </select>
       <span class="badge gray" id="q-count"></span>
+      <input type="file" id="q-import" accept=".csv" style="display:none;" onchange="qImport()">
+      <button class="btn-secondary btn-sm" style="margin-left:auto;" onclick="$('q-import').click()">⬆ Import posts CSV</button>
     </div>
     <div id="q-list"></div>
   </div>
@@ -592,6 +631,13 @@ button { font-family: var(--font); }
         <span class="hint" style="margin-left:12px;"><span class="mc-tag prod" style="padding:1px 6px;">shoot</span> production · <span class="mc-tag slot" style="padding:1px 6px;">slot</span> planned live slot · <span class="mc-tag post" style="padding:1px 6px;">post</span> scheduled post · drag a post to another day to reschedule · click a post to edit</span>
       </div>
       <div class="mcal" id="mcal-grid"></div>
+    </div>
+  </div>
+  <div class="subview" id="sv-post-pub">
+    <div class="card">
+      <div class="card-title">Published so far</div>
+      <div class="card-sub">Everything marked Published, newest first — with the channel pages it went to and the Drive file it's stored in.</div>
+      <div id="pub-list"></div>
     </div>
   </div>
 </div>
@@ -1098,6 +1144,7 @@ function sub(page, view){
   $('sv-' + page + '-' + view).classList.add('active');
   if(page === 'plan' && view === 'buffer') renderBuffer();
   if(page === 'post' && view === 'cal') renderMcal();
+  if(page === 'post' && view === 'pub') renderPub();
 }
 
 // ── THEME ──
@@ -1178,7 +1225,7 @@ function openDay(n){
         (s.script ? '<div class="script-sec"><div class="ss-label">Hook</div><div class="ss-text">' + esc(s.hook) + '</div></div>' : '<div class="hint">' + esc(s.note || 'Write fresh near the posting date.') + '</div>') +
         '<div class="row" style="margin-top:8px;">' +
         '<button class="btn-secondary btn-sm" onclick="openScript(' + s.id + ')">Full script</button>' +
-        (s.script ? '<button class="btn btn-sm" onclick="sendToImproviser(' + s.id + ')">✨ Improvise</button>' : '') + '</div></div>';
+        (s.script ? '<button class="btn btn-sm" onclick="sendToImproviser(' + s.id + ')">🎬 Create</button>' : '') + '</div></div>';
     });
   } else {
     html += '<div class="hint">Approved scripts cover posting days 1–31; later days are scripted closer to their date (News Analysis / outlier-based slots by design).</div>';
@@ -1235,7 +1282,7 @@ function openScript(id){
       '<div class="script-sec"><div class="ss-label">CTA</div><div class="ss-text">' + esc(s.cta) + '</div></div>' +
       (s.visual ? '<div class="script-sec"><div class="ss-label">Visual direction</div><div class="ss-text">' + esc(s.visual) + '</div></div>' : '');
     html += '<div class="row" style="margin-top:12px;">' +
-      '<button class="btn btn-sm" onclick="sendToImproviser(' + s.id + ')">✨ Improvise this script</button>' +
+      '<button class="btn btn-sm" onclick="sendToImproviser(' + s.id + ')">🎬 Create from this script</button>' +
       '<button class="btn-secondary btn-sm" onclick="copyScript(' + s.id + ')">Copy</button></div>';
   }
   $('sm-body').innerHTML = html;
@@ -1361,7 +1408,7 @@ function renderToday(){
         html += '<div class="script-sec"><div class="ss-label">Hook</div><div class="ss-text">' + esc(sc.hook) + '</div></div>' +
           '<div class="row" style="margin-top:8px;">' +
           '<button class="btn-secondary btn-sm" onclick="openScript(' + sc.id + ')">Full script #' + sc.id + '</button>' +
-          '<button class="btn btn-sm" onclick="sendToImproviser(' + sc.id + ')">✨ Improvise</button>' +
+          '<button class="btn btn-sm" onclick="sendToImproviser(' + sc.id + ')">🎬 Create</button>' +
           '<button class="btn-secondary btn-sm" onclick="prodTick(\'' + key + '\')">' + (S.prodDone[key] ? 'Un-mark' : 'Mark produced') + '</button></div>';
       } else if(sc){
         html += '<div class="hint">' + esc(sc.note || 'Write fresh near the date.') + '</div>' +
@@ -1384,6 +1431,10 @@ function fillPillarSelects(){
   ['imp-pillar','cap-pillar','idea-pillar','np-pillar'].forEach(id => { $(id).innerHTML = opts; });
   $('imp-script-sel').innerHTML = '<option value="">— choose script 1–51 —</option>' +
     SCRIPTS.map(s => '<option value="' + s.id + '">#' + s.id + ' · ' + esc(s.pillar) + (s.script ? '' : ' (write fresh)') + '</option>').join('');
+  const scOpts = SCRIPTS.map(s => '<option value="' + s.id + '">#' + s.id + ' · ' + esc(s.pillar) + ' · ' + esc((s.hook || s.note || '').slice(0, 45)) + '…</option>').join('');
+  $('cap-script').innerHTML = '<option value="">— choose script 1–51 (or paste below) —</option>' + scOpts;
+  $('idea-script').innerHTML = '<option value="">— none, pillar-level ideas —</option>' + scOpts;
+  $('pr-script').innerHTML = '<option value="">— choose script 1–51 —</option>' + scOpts;
   $('np-script').innerHTML = '<option value="">— none —</option>' +
     SCRIPTS.filter(s => s.script).map(s => '<option value="' + s.id + '">#' + s.id + ' · ' + esc(s.hook).slice(0, 60) + '…</option>').join('');
 }
@@ -1512,6 +1563,40 @@ async function flowRun(){
     else out.textContent = '';
   }
   btn.disabled = false; btn.textContent = '🎬 Flow JSON (10s sections)';
+}
+function scById(sel){ return SCRIPTS.find(x => x.id === parseInt($(sel).value)); }
+function capPickScript(){ const s = scById('cap-script'); if(!s) return; $('cap-pillar').value = s.pillar; $('cap-src').value = s.script ? 'HOOK: ' + s.hook + '\n\nSCRIPT: ' + s.script + '\n\nCTA: ' + s.cta : (s.note || ''); }
+function ideaPickScript(){ const s = scById('idea-script'); if(!s) return; $('idea-pillar').value = s.pillar; }
+function prPickScript(){ /* pillar tracked internally via script */ }
+const PR_TYPES = {
+  caption: 'a complete caption set: Instagram (Hinglish, hook-y first line, 8-12 hashtags), LinkedIn (English, professional-plain, max 3 hashtags), WhatsApp (1-2 Hinglish lines). Label each platform.',
+  videojson: 'a JSON array splitting the script into ~10-second sections: [{"section","start","end","vo","visual_prompt"}] — vo is the exact script line, visual_prompt is a detailed English prompt for an AI video generator (setting, subject, camera movement, lighting, mood, style). Return ONLY the JSON.',
+  stock: 'a stock-footage sourcing list: 8-12 precise search phrases (for Pexels/Storyblocks/Envato), each with: the search phrase, what moment of the script it covers, and what to look for in the clip (framing, subject, movement). Order them by script timeline.',
+  broll: 'a numbered B-roll shot list (10-15 shots): for each — shot description, framing (CU/MS/WS), movement, location/prop needs at a uniform factory or office, and which script line it plays under.',
+  aroll: 'A-roll direction for the founder on camera: line-by-line delivery notes (tone, pace, emphasis words, pauses), wardrobe and framing suggestion, energy arc across the video, and 3 retake tips specific to this script.',
+  carousel: 'a slide-by-slide carousel plan (7-10 slides): for each slide — headline text (short, punchy), supporting line, visual description for the designer, and the swipe-hook logic connecting slides. End with the CTA slide and a caption.',
+  static: 'a single static-post plan: the on-image headline (max 8 words), sub-line, exact visual composition prompt for an AI image generator or designer (subject, layout, colors matching a professional Indian B2B uniform brand, typography feel), plus the post caption.'
+};
+function prRun(){
+  const s = scById('pr-script');
+  if(!s){ toast('Pick a post/script first — prompts are always built around one', true); return; }
+  const type = $('pr-type').value, dir = $('pr-dir').value.trim();
+  const persona = 'You are a digital marketer and performance marketer with 20+ years of experience across every wave of marketing — direct response, brand, social, short-video — and a senior copywriter. You produce prompts and plans that are specific, actionable and conversion-aware, never generic.\n\n' + TONE_RULES;
+  const source = s.script ? 'HOOK: ' + s.hook + '\nSCRIPT: ' + s.script + '\nCTA: ' + s.cta + (s.visual ? '\nVISUAL NOTE: ' + s.visual : '') : 'PLACEHOLDER SLOT — ' + (s.note || 'no script yet') + '. Build the prompt for the pillar\'s standard format instead.';
+  const kb = kbSectionFor(s.pillar);
+  aiButton('pr-btn','pr-out', () => groqCall(persona + (kb ? '\n\nPILLAR KB SECTION:\n' + kb : ''),
+    'Post: script #' + s.id + ', pillar "' + s.pillar + '" (' + s.bucket + ').\n\nSOURCE:\n' + source +
+    (dir ? '\n\nEXTRA DIRECTION: ' + dir : '') +
+    '\n\nProduce ' + PR_TYPES[type] + '\nUse only facts from the source — mark anything needing verification as [VERIFY BEFORE USE].', 1600));
+}
+function prSave(){
+  const txt = $('pr-out').textContent.trim();
+  if(!txt || txt.startsWith('Pick a script') || txt.startsWith('⚠')){ toast('Nothing to save yet', true); return; }
+  const s = scById('pr-script');
+  const label = $('pr-type').options[$('pr-type').selectedIndex].text;
+  S.ideas.unshift({ t: Date.now(), pillar: s ? s.pillar : '', txt: '[PROMPT — ' + label + (s ? ' — script #' + s.id : '') + ']\n' + txt });
+  if(S.ideas.length > 60) S.ideas.pop();
+  saveS('ideas'); renderIdeas(); toast('Saved — synced via Ideas & Improvs');
 }
 function capRun(){
   const src = $('cap-src').value.trim();
@@ -2061,6 +2146,17 @@ function qmSave(){
   toast('Post updated');
 }
 
+function renderPub(){
+  const pub = S.queue.filter(q => q.status === 'published').sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
+  $('pub-list').innerHTML = pub.length ? pub.map(q =>
+    '<div class="q-item"><div style="min-width:120px;"><b class="mono" style="font-size:11px;">' + esc(q.date) + ' ' + esc(q.time) + '</b>' +
+    (q.publishedAt ? '<div class="hint" style="margin-top:2px;">✓ ' + new Date(q.publishedAt).toLocaleDateString() + '</div>' : '') + '</div>' +
+    '<div style="flex:1;"><b style="font-size:12.5px;">' + esc(q.title) + '</b>' +
+    '<div class="row" style="margin-top:4px;gap:5px;"><span class="badge ' + (pillarBucket(q.pillar) === 'Promo' ? 'promo' : 'aud') + '">' + esc(q.pillar) + '</span>' + platLinks(q) +
+    (q.media ? '<a class="chan-chip" href="' + esc(q.media) + '" target="_blank" rel="noopener" style="text-decoration:none;">📎 Drive file</a>' : '') + '</div></div></div>').join('') :
+    '<div class="empty"><div class="e-icon">📭</div>Nothing published yet — posts you mark Published in the queue appear here.</div>';
+}
+
 /* ═══════════════ 5 · TRACK ═══════════════ */
 function renderTrack(){
   const pub = S.queue.filter(q => q.status === 'published');
@@ -2101,6 +2197,43 @@ function improveRun(){
     'Current real state (JSON):\n' + JSON.stringify(st, null, 1) +
     (extra ? '\n\nOperator notes: ' + extra : '') +
     '\n\nGive: 1) BUFFER HEALTH — is production pace safe vs the ramp, exact numbers; 2) EXECUTION GAP — published vs planned, what to fix this week; 3) MIX CHECK — planned mix vs 70/30 target; 4) THREE ACTIONS for the next 7 days, each one line, specific. If platform analytics aren\'t connected, say which recommendation would improve once they are.', 1000));
+}
+
+// CSV imports — same column layouts as the sheet tabs
+function readCsvFile(inputId, cb){
+  const f = $(inputId).files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = () => { $(inputId).value = ''; cb(bulkRows(String(r.result))); };
+  r.readAsText(f);
+}
+function calImport(){
+  readCsvFile('cal-import', rows => {
+    let n = 0;
+    for(const c of rows){
+      const d = parseInt(c[0]);
+      if(!d || !CAL.find(x => x.d === d) || !c[2]) continue;
+      S.calOv[d] = { slots: [c[2], c[3] || c[2], c[4] || c[2]] };
+      n++;
+    }
+    saveS('calOv'); renderCal(); renderBuffer();
+    toast(n ? n + ' days imported as edits' : 'No valid rows — expected the 90-Day Calendar tab format', !n);
+  });
+}
+function qImport(){
+  readCsvFile('q-import', rows => {
+    let n = 0;
+    for(const c of rows){
+      if(!c[0] || !c[3]) continue; // needs Title + Date
+      S.queue.push({ id: Date.now() + n, title: c[0], pillar: c[1] || PILLARS[0].name, scriptId: parseInt(c[2]) || null,
+        date: c[3], time: c[4] || '18:00', channels: (c[5] || 'Instagram Reel').split(' + '),
+        status: ['draft','review','approved','published'].includes(c[6]) ? c[6] : 'draft',
+        publishedAt: c[7] || null, caption: c[8] || '', media: c[9] || '' });
+      n++;
+    }
+    saveS('queue'); renderQueue(); renderMcal();
+    toast(n ? n + ' posts imported to queue' : 'No valid rows — expected the Post Queue tab format', !n);
+  });
 }
 
 /* ═══════════════ 7 · SETTINGS ═══════════════ */
