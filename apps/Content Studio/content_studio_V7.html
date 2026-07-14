@@ -364,6 +364,7 @@ button { font-family: var(--font); }
         <div class="row">
           <button class="btn" id="imp-run-btn" onclick="impRun()">✨ Improvise script</button>
           <button class="btn-secondary" id="imp-hooks-btn" onclick="impHooks()">3 hook variations</button>
+          <button class="btn-secondary" id="imp-flow-btn" onclick="flowRun()">🎬 Flow JSON (10s sections)</button>
         </div>
       </div>
       <div class="card">
@@ -545,14 +546,19 @@ button { font-family: var(--font); }
             <label style="display:flex;gap:5px;align-items:center;font-size:12px;"><input type="checkbox" id="np-wa"> WhatsApp</label>
           </div>
         </div>
-        <div class="field"><label>Caption / notes</label><textarea class="textarea" id="np-caption" placeholder="Caption text or production notes…"></textarea></div>
+        <div class="field"><label>Caption / notes</label><textarea class="textarea" id="np-caption" placeholder="Caption text or production notes…"></textarea>
+          <div class="row" style="margin-top:6px;"><button class="btn-secondary btn-sm" id="np-cap-btn" onclick="npGenCaption()">✨ Generate caption</button><span class="hint">Uses the title, pillar, linked script and ticked channels.</span></div>
+        </div>
         <div class="field"><label>Media — picture or reel</label>
           <div class="row" style="margin-bottom:6px;">
             <input type="file" id="np-media-file" accept="image/*,video/*" style="font-size:12px;">
+            <select class="select" id="np-media-type" style="max-width:130px;">
+              <option value="auto">Auto-detect</option><option value="photo">Photo</option><option value="video">Video</option><option value="carousel">Carousel</option>
+            </select>
             <button class="btn-secondary btn-sm" id="np-upload-btn" onclick="uploadMedia()">⬆ Upload to Drive</button>
           </div>
           <input class="input" id="np-media-link" placeholder="Drive link appears here after upload (or paste any link)">
-          <div class="hint" id="np-media-st">Uploads go through your Apps Script webhook into a "Content Studio V8 Uploads" Drive folder — free, no extra API. Set the webhook in Settings → Google Sheets first. Keep files under ~20 MB; for bigger reels, upload to Drive yourself and paste the link.</div>
+          <div class="hint" id="np-media-st">Uploads go through your Apps Script webhook into your marketing Drive → creative → photo / video / carousel. Filename: productionDate_postingDate_pillar_hook. Keep files under ~20 MB; for bigger reels, upload to Drive yourself and paste the link.</div>
         </div>
         <button class="btn" onclick="npAdd()">＋ Add to queue as draft</button>
       </div>
@@ -711,6 +717,7 @@ button { font-family: var(--font); }
           <button class="btn-secondary btn-sm" onclick="csvOutliers()">⬇ Outliers</button>
           <button class="btn-secondary btn-sm" onclick="csvIdeasImprov()">⬇ Ideas &amp; improvs</button>
           <button class="btn-secondary btn-sm" onclick="csvAnalytics()">⬇ Analytics</button>
+          <button class="btn-secondary btn-sm" onclick="csvFlows()">⬇ Flow prompts</button>
         </div>
         <div class="hint">Import into the sheet with File → Import → Replace data on the matching tab. Exact column layout of the delivered workbook.</div>
       </div>
@@ -1006,12 +1013,39 @@ let S = {
   ideas: lsGet('v8_ideas', []),
   impSaves: lsGet('v8_impsaves', []),
   captions: lsGet('v8_captions', []),
+  flows: lsGet('v8_flows', []),
   results: lsGet('v8_results', {}),    // {creatorKey: result}
 };
 let DB = lsGet('v8_db', null);
 if(!DB){ DB = SEED.map((c,i)=>({ ...c, id:'s'+i, src:'sheet' })); lsSet('v8_db', DB); }
 function saveDB(){ lsSet('v8_db', DB); }
-function saveS(k){ const map = {calOv:'v8_calov', prodDone:'v8_proddone', queue:'v8_queue', ideas:'v8_ideas', impSaves:'v8_impsaves', captions:'v8_captions', results:'v8_results'}; lsSet(map[k], S[k]); }
+function saveS(k){ const map = {calOv:'v8_calov', prodDone:'v8_proddone', queue:'v8_queue', ideas:'v8_ideas', impSaves:'v8_impsaves', captions:'v8_captions', flows:'v8_flows', results:'v8_results'}; lsSet(map[k], S[k]); scheduleAutoSync(); }
+
+// ── AUTO-SYNC: any saved change pushes a full backup to the sheet ~8s later ──
+let autoSyncT = null, autoSyncBusy = false;
+function scheduleAutoSync(){
+  if(!rawGet('sm_cs_sheet_webhook')) return;
+  clearTimeout(autoSyncT);
+  autoSyncT = setTimeout(doAutoSync, 8000);
+}
+async function doAutoSync(){
+  if(autoSyncBusy){ scheduleAutoSync(); return; }
+  const hook = rawGet('sm_cs_sheet_webhook');
+  if(!hook) return;
+  autoSyncBusy = true;
+  const chip = $('tb-sheet');
+  try {
+    chip.textContent = 'Sheet: syncing…';
+    await fetch(hook, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(fullBackupPayload()) });
+    const t = new Date();
+    chip.textContent = 'Sheet: synced ' + String(t.getHours()).padStart(2,'0') + ':' + String(t.getMinutes()).padStart(2,'0');
+    chip.className = 'tb-chip live';
+  } catch(e){
+    chip.textContent = 'Sheet: sync failed';
+    chip.className = 'tb-chip warn';
+  }
+  autoSyncBusy = false;
+}
 
 // ── KEY BRIDGES (raw strings shared with other Marketing OS apps) ──
 function rawGet(k){ return localStorage.getItem(k) || ''; }
@@ -1439,13 +1473,13 @@ function impHooks(){
 function impSave(){
   const txt = $('imp-out').textContent.trim();
   if(!txt || txt === 'Output appears here.' || txt.startsWith('⚠')){ toast('Nothing to save yet', true); return; }
-  S.impSaves.unshift({ t: Date.now(), pillar: $('imp-pillar').value, txt });
+  S.impSaves.unshift({ t: Date.now(), pillar: $('imp-pillar').value, scriptId: parseInt($('imp-script-sel').value) || null, txt });
   if(S.impSaves.length > 40) S.impSaves.pop();
   saveS('impSaves'); renderImpSaves(); toast('Version saved');
 }
 function renderImpSaves(){
   $('imp-saves').innerHTML = S.impSaves.map((v, i) =>
-    '<div class="script-block"><h4><span class="badge gray">' + new Date(v.t).toLocaleString() + '</span><span class="badge aud">' + esc(v.pillar) + '</span></h4>' +
+    '<div class="script-block"><h4><span class="badge gray">' + new Date(v.t).toLocaleString() + '</span><span class="badge aud">' + esc(v.pillar) + '</span>' + (v.scriptId ? '<span class="badge green">script #' + v.scriptId + '</span>' : '') + '</h4>' +
     '<div class="ss-text" style="font-size:11.5px;max-height:90px;overflow:hidden;">' + esc(v.txt.slice(0, 300)) + '…</div>' +
     '<div class="row" style="margin-top:6px;"><button class="btn-secondary btn-sm" onclick="impRestore(' + i + ')">Load to output</button>' +
     '<button class="btn-danger btn-sm" onclick="impDel(' + i + ')">Delete</button></div></div>').join('');
@@ -1453,6 +1487,32 @@ function renderImpSaves(){
 function impRestore(i){ $('imp-out').textContent = S.impSaves[i].txt; toast('Loaded'); }
 function impDel(i){ S.impSaves.splice(i, 1); saveS('impSaves'); renderImpSaves(); }
 
+async function flowRun(){
+  const hook = $('imp-hook').value.trim(), body = $('imp-body').value.trim(), cta = $('imp-cta').value.trim();
+  if(!body){ toast('Load or paste a script first', true); return; }
+  const pillar = $('imp-pillar').value, scriptId = parseInt($('imp-script-sel').value) || null;
+  const btn = $('imp-flow-btn'), out = $('imp-out');
+  btn.disabled = true; btn.innerHTML = '<span class="spin">◌</span> Sectioning…';
+  out.textContent = 'Breaking the script into 10-second sections…';
+  try {
+    const raw = await groqCall(
+      'You are a video pre-production assistant for SupplyMate short videos. You split scripts into shooting sections for AI video generation (Google Flow). Respond with ONLY a valid JSON array — no markdown fences, no commentary. Keep every fact and the original language (Hinglish stays Hinglish) exactly as written.',
+      'Split this short-video script into sections of roughly 10 seconds of spoken time each (usually 20-30 words of VO per section; typically 3-6 sections total).\n\nHOOK: ' + hook + '\nSCRIPT: ' + body + '\nCTA: ' + cta +
+      '\n\nReturn ONLY a JSON array where each element is:\n{"section": 1, "start": "0:00", "end": "0:10", "vo": "exact voice-over line from the script for this section", "visual_prompt": "detailed English prompt for the AI video generator: setting, subject, camera movement, mood, style — consistent with an Indian B2B uniform brand aesthetic"}', 1600);
+    let clean = raw.replace(/```json|```/g, '').trim();
+    const arr = JSON.parse(clean.slice(clean.indexOf('['), clean.lastIndexOf(']') + 1));
+    if(!Array.isArray(arr) || !arr.length) throw new Error('Empty section list');
+    S.flows.unshift({ t: Date.now(), scriptId, pillar, sections: arr });
+    if(S.flows.length > 60) S.flows.pop();
+    saveS('flows');
+    out.textContent = JSON.stringify(arr, null, 2);
+    toast(arr.length + ' sections ready — saved to Flow Prompts (Copy button to paste into Flow)');
+  } catch(e){
+    if(e.message !== 'no key'){ out.textContent = '⚠ Could not build valid Flow JSON: ' + e.message + ' — run it again.'; toast('Flow JSON failed: ' + e.message, true); }
+    else out.textContent = '';
+  }
+  btn.disabled = false; btn.textContent = '🎬 Flow JSON (10s sections)';
+}
 function capRun(){
   const src = $('cap-src').value.trim();
   if(!src){ toast('Paste the script or describe the video first', true); return; }
@@ -1770,6 +1830,36 @@ function dbExport(){
 }
 
 /* ═══════════════ 4 · POST ═══════════════ */
+function npGenCaption(){
+  const title = $('np-title').value.trim();
+  const pillar = $('np-pillar').value;
+  const sc = SCRIPTS.find(x => x.id === parseInt($('np-script').value));
+  if(!title && !sc){ toast('Give the post a title or link a script first', true); return; }
+  const plats = [];
+  if($('np-ig').checked) plats.push('Instagram (Hinglish, hook-y first line, 8-12 relevant hashtags at the end)');
+  if($('np-li').checked) plats.push('LinkedIn (English, professional but plain, max 3 hashtags)');
+  if($('np-wa').checked) plats.push('WhatsApp status/broadcast (Hinglish, 1-2 lines, direct)');
+  if(!plats.length) plats.push('Instagram (Hinglish, hook-y first line, 8-12 relevant hashtags at the end)');
+  const src2 = (title ? 'TITLE: ' + title + '\n' : '') + (sc ? 'HOOK: ' + sc.hook + '\nSCRIPT: ' + sc.script + '\nCTA: ' + sc.cta : '');
+  const btn = $('np-cap-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin">◌</span> Writing…';
+  groqCall(sysPrompt(pillar),
+    'Write captions for this video, one per platform. Use only facts present in the source — invent nothing.\n\nSOURCE:\n' + src2 +
+    '\n\nPLATFORMS:\n- ' + plats.join('\n- ') + '\n\nLabel each caption with its platform name in caps.', 900)
+    .then(txt => { $('np-caption').value = txt; toast('Caption drafted — edit as needed'); })
+    .catch(e => { if(e.message !== 'no key') toast('Caption failed: ' + e.message, true); })
+    .finally(() => { btn.disabled = false; btn.textContent = '✨ Generate caption'; });
+}
+function slug(s, max){ return String(s || '').replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-').slice(0, max || 40); }
+function mediaFilename(f){
+  const sc = SCRIPTS.find(x => x.id === parseInt($('np-script').value));
+  const postDate = $('np-date').value || new Date().toISOString().slice(0, 10);
+  const pillar = slug($('np-pillar').value, 28);
+  const ext = (f.name.match(/\.[A-Za-z0-9]+$/) || [''])[0];
+  const prodDate = sc ? slug(sc.prodDate, 12) : 'na';
+  const hook = sc ? slug(sc.hook, 40) : slug($('np-title').value, 40) || 'untitled';
+  return prodDate + '_' + postDate + '_' + pillar + '_' + hook + ext;
+}
 async function uploadMedia(){
   const f = $('np-media-file').files[0];
   if(!f){ toast('Choose a picture or reel first', true); return; }
@@ -1786,12 +1876,14 @@ async function uploadMedia(){
       r.readAsDataURL(f);
     });
     $('np-media-st').textContent = 'Sending to your Drive via Apps Script… (' + Math.round(f.size / 1024) + ' KB)';
+    let mtype = $('np-media-type').value;
+    if(mtype === 'auto') mtype = (f.type || '').startsWith('video') ? 'video' : 'photo';
     const resp = await fetch(hook, { method: 'POST', headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'upload', filename: f.name, mimeType: f.type || 'application/octet-stream', data: b64 }) });
+      body: JSON.stringify({ action: 'upload', filename: mediaFilename(f), mediaType: mtype, mimeType: f.type || 'application/octet-stream', data: b64 }) });
     const d = await resp.json();
     if(!d.ok || !d.url) throw new Error(d.error || 'Upload failed — is the latest sync script deployed?');
     $('np-media-link').value = d.url;
-    $('np-media-st').textContent = 'Saved to Drive folder "Content Studio V8 Uploads" ✓';
+    $('np-media-st').textContent = 'Saved to Drive → creative → ' + (d.folder || 'uploads') + ' as ' + (d.name || '') + ' ✓';
     toast('Uploaded to Drive');
   } catch(e){
     $('np-media-st').textContent = '⚠ ' + e.message;
@@ -2093,7 +2185,8 @@ function analyticsRows(){
     ['Saved ideas', st.savedIdeas],
     ['Saved captions', S.captions.length],
     ['Saved improvised versions', S.impSaves.length],
-    ['Saved outlier scans', Object.keys(S.results).length]
+    ['Saved outlier scans', Object.keys(S.results).length],
+    ['Saved Flow prompt sets', S.flows.length]
   ];
   Object.keys(st.queueByStatus).forEach(k => rows.push(['Queue — ' + k, st.queueByStatus[k]]));
   Object.keys(st.publishedByPillar).forEach(k => rows.push(['Published — ' + k, st.publishedByPillar[k]]));
@@ -2110,8 +2203,22 @@ function fullBackupPayload(){
     ideas: S.ideas,
     impSaves: S.impSaves,
     outliers: outlierRows(),
+    flows: flowRows(),
     analytics: analyticsRows()
   };
+}
+function flowRows(){
+  const rows = [];
+  S.flows.forEach(f => f.sections.forEach(s => rows.push({
+    t: new Date(f.t).toISOString(), scriptId: f.scriptId || '', pillar: f.pillar,
+    section: s.section, start: s.start, end: s.end, vo: s.vo, prompt: s.visual_prompt
+  })));
+  return rows;
+}
+function csvFlows(){
+  const head = ['Saved At','Script #','Pillar','Section','Start','End','VO','Visual Prompt'];
+  const rows = flowRows().map(r => csvRow([r.t, r.scriptId, r.pillar, r.section, r.start, r.end, r.vo, r.prompt]));
+  dl('flow_prompts.csv', [csvRow(head)].concat(rows).join('\n'), 'text/csv');
 }
 function csvScripts(){
   const head = ['#','Pillar','Bucket','Sector','Prod Day','Prod Date','Posting Day','Hook','Script','CTA','Visual','Note'];
@@ -2159,7 +2266,7 @@ function exportState(){
 }
 function resetLocal(){
   if(!confirm('Reset calendar edits, production ticks, queue, ideas and saved scans? API keys are kept.')) return;
-  ['v8_calov','v8_proddone','v8_queue','v8_ideas','v8_impsaves','v8_captions','v8_results','v8_db'].forEach(k => localStorage.removeItem(LS + k));
+  ['v8_calov','v8_proddone','v8_queue','v8_ideas','v8_impsaves','v8_captions','v8_flows','v8_results','v8_db'].forEach(k => localStorage.removeItem(LS + k));
   location.reload();
 }
 
