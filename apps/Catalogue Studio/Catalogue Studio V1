@@ -1,0 +1,2386 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SupplyMate Catalogue Studio V1</title>
+<style>
+/* ─────────────────────────────────────────────
+   SUPPLYMATE CATALOGUE STUDIO V1 — Marketing OS Design System
+   Green accent · Inter · IBM Plex Mono · light/dark
+───────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --green:      #059669; --green-d: #047857; --green-tint: #ECFDF5; --green-mid: #A7F3D0;
+  --blue:       #2563EB; --blue-tint: #EFF6FF; --blue-mid: #BFDBFE;
+  --amber:      #D97706; --amber-tint: #FFFBEB; --amber-mid: #FDE68A;
+  --red:        #DC2626; --red-tint: #FEF2F2; --red-mid: #FECACA;
+  --purple:     #7C3AED; --purple-tint: #F5F3FF; --purple-mid: #DDD6FE;
+  --slate:      #64748B;
+  --bg:         #FAFAFA; --bg-elevated:#FFFFFF; --bg-sunken:  #F1F5F9;
+  --border:     #E2E8F0; --border-mid: #CBD5E1;
+  --text:       #0F172A; --text-2: #334155; --muted: #64748B; --muted-2: #94A3B8;
+  --radius: 8px; --radius-lg: 12px; --radius-sm: 5px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --shadow: 0 4px 16px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.04);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.06);
+  --font: 'Inter', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --sidebar-w: 224px; --topbar-h: 52px;
+}
+html[data-theme="dark"] {
+  --green: #10B981; --green-d: #059669; --green-tint: #064E3B; --green-mid: #065F46;
+  --blue: #3B82F6; --blue-tint: #1E293B; --blue-mid: #1D4ED8;
+  --amber: #F59E0B; --amber-tint: #451A03; --amber-mid: #78350F;
+  --red: #EF4444; --red-tint: #450A0A; --red-mid: #7F1D1D;
+  --purple: #A78BFA; --purple-tint: #2E1065; --purple-mid: #4C1D95;
+  --bg: #0D1117; --bg-elevated: #161B22; --bg-sunken: #0A0D13;
+  --border: #21262D; --border-mid: #30363D;
+  --text: #E6EDF3; --text-2: #C9D1D9; --muted: #8B949E; --muted-2: #6E7681;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.3); --shadow: 0 4px 16px rgba(0,0,0,.4);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.5);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 13px; line-height: 1.5; height: 100%; overflow: hidden; -webkit-font-smoothing: antialiased; }
+.mono { font-family: var(--mono); }
+a { color: var(--green); text-decoration: none; } a:hover { text-decoration: underline; }
+::selection { background: var(--green-tint); color: var(--green); }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-2); }
+button { font-family: var(--font); }
+
+.topbar { height: var(--topbar-h); background: var(--bg-elevated); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 12px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; box-shadow: var(--shadow-sm); }
+.tb-wordmark { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 7px; user-select: none; white-space: nowrap; }
+.tb-wordmark-icon { width: 26px; height: 26px; background: var(--green); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; letter-spacing: -.5px; flex-shrink: 0; }
+.tb-divider { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+.tb-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; }
+.tb-breadcrumb strong { color: var(--text); font-weight: 600; }
+.tb-right { margin-left: auto; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.tb-chip { padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); color: var(--muted); background: var(--bg); white-space: nowrap; }
+.tb-chip.live { background: var(--green-tint); color: var(--green); border-color: var(--green-mid); }
+.tb-chip.warn { background: var(--amber-tint); color: var(--amber); border-color: var(--amber-mid); font-family: var(--mono); }
+.icon-btn { width: 32px; height: 32px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: var(--muted); transition: border-color .15s, color .15s; flex-shrink: 0; }
+.icon-btn:hover { border-color: var(--green); color: var(--green); }
+
+.app-shell { display: flex; height: calc(100vh - var(--topbar-h)); margin-top: var(--topbar-h); }
+.main { flex: 1; overflow-y: auto; padding: 20px 24px 60px; }
+.page { display: none; max-width: 1280px; margin: 0 auto; }
+.page.active { display: block; }
+
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--bg-elevated); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; padding: 10px 0; }
+.sb-item { display: flex; align-items: center; gap: 10px; padding: 8px 16px; cursor: pointer; user-select: none; color: var(--text-2); font-size: 13px; font-weight: 500; border-left: 3px solid transparent; transition: background .12s; }
+.sb-item:hover { background: var(--bg-sunken); }
+.sb-item.active { background: var(--green-tint); color: var(--green); border-left-color: var(--green); font-weight: 600; }
+.sb-item .sb-num { font-family: var(--mono); font-size: 10px; color: var(--muted-2); width: 14px; }
+.sb-item.active .sb-num { color: var(--green); }
+.sb-item .sb-icon { width: 18px; text-align: center; font-size: 14px; }
+.sb-count { margin-left: auto; font-family: var(--mono); font-size: 10px; color: var(--muted-2); }
+.sb-item.active .sb-count { color: var(--green); }
+.sb-footer { margin-top: auto; padding: 12px 16px; font-size: 10px; color: var(--muted-2); border-top: 1px solid var(--border); line-height: 1.7; }
+
+.card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow-sm); }
+.card-title { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.card-sub { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.page-h { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+.page-sub { font-size: 12.5px; color: var(--muted); margin-bottom: 16px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 1000px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius-sm); border: 1px solid var(--green); background: var(--green); color: #fff; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background .15s; }
+.btn:hover { background: var(--green-d); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-mid); background: var(--bg-elevated); color: var(--text-2); font-size: 12.5px; font-weight: 500; cursor: pointer; transition: border-color .15s, color .15s; }
+.btn-secondary:hover { border-color: var(--green); color: var(--green); }
+.btn-secondary:disabled { opacity: .55; cursor: not-allowed; }
+.btn-danger { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius-sm); border: 1px solid var(--red-mid); background: var(--red-tint); color: var(--red); font-size: 12.5px; font-weight: 500; cursor: pointer; }
+.btn-sm { padding: 4px 10px; font-size: 11.5px; }
+
+.input, .select, .textarea { width: 100%; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-mid); background: var(--bg-elevated); color: var(--text); font-size: 12.5px; font-family: var(--font); outline: none; transition: border-color .15s; }
+.input:focus, .select:focus, .textarea:focus { border-color: var(--green); }
+.textarea { min-height: 90px; resize: vertical; line-height: 1.55; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 10.5px; font-weight: 600; white-space: nowrap; }
+.badge.green { background: var(--green-tint); color: var(--green); border: 1px solid var(--green-mid); }
+.badge.gray { background: var(--bg-sunken); color: var(--muted); border: 1px solid var(--border); }
+.badge.red { background: var(--red-tint); color: var(--red); border: 1px solid var(--red-mid); }
+.badge.amber { background: var(--amber-tint); color: var(--amber); border: 1px solid var(--amber-mid); }
+.badge.blue { background: var(--blue-tint); color: var(--blue); border: 1px solid var(--blue-mid); }
+.badge.purple { background: var(--purple-tint); color: var(--purple); border: 1px solid var(--purple-mid); }
+
+.kpi { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+.kpi .k-label { font-size: 10.5px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.kpi .k-value { font-size: 24px; font-weight: 700; font-family: var(--mono); margin-top: 2px; }
+.kpi .k-note { font-size: 11px; color: var(--muted-2); margin-top: 2px; }
+.kpi.accent .k-value { color: var(--green); }
+
+/* ── Dropzone ── */
+.dropzone { border: 2px dashed var(--border-mid); border-radius: var(--radius-lg); padding: 32px 20px; text-align: center; cursor: pointer; transition: border-color .15s, background .15s; background: var(--bg-sunken); }
+.dropzone:hover, .dropzone.over { border-color: var(--green); background: var(--green-tint); }
+.dz-icon { font-size: 26px; margin-bottom: 6px; }
+.dz-title { font-size: 13px; font-weight: 600; }
+.dz-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+
+/* ── Asset tiles (faces / backdrops) ── */
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.tile { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg-sunken); position: relative; }
+.tile.sel { border-color: var(--green); box-shadow: 0 0 0 2px var(--green-mid); }
+.tile img { width: 100%; height: 110px; object-fit: cover; display: block; }
+.tile-meta { padding: 6px 8px; font-size: 11px; }
+.tile-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile-note { color: var(--muted); font-size: 10px; }
+.tile-x { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 4px; background: rgba(0,0,0,.6); color: #fff; border: none; cursor: pointer; font-size: 12px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+
+/* ── Cast ── */
+.cast { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 10px; }
+.cast-card { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg-elevated); position: relative; box-shadow: var(--shadow-sm); }
+.cast-card img { width: 100%; height: 132px; object-fit: cover; object-position: center 22%; display: block; background: var(--bg-sunken); }
+.cast-body { padding: 8px; display: grid; gap: 5px; }
+.cast-body .input, .cast-body .select { padding: 4px 6px; font-size: 11px; }
+.cast-uses { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,.68); color: #fff; font-size: 9.5px; font-weight: 600; padding: 2px 7px; border-radius: 10px; font-family: var(--mono); }
+.gen-row { display: grid; grid-template-columns: 1fr 90px 1.3fr auto; gap: 8px; align-items: end; }
+@media (max-width: 760px) { .gen-row { grid-template-columns: 1fr 1fr; } }
+
+/* ── Subtabs ── */
+.subtabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 18px; overflow-x: auto; }
+.subtab { padding: 8px 14px; font-size: 12.5px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; user-select: none; }
+.subtab:hover { color: var(--text); }
+.subtab.active { color: var(--green); border-bottom-color: var(--green); font-weight: 600; }
+.subview { display: none; } .subview.active { display: block; }
+
+/* ── Code dictionaries ── */
+.dict { width: 100%; border-collapse: collapse; font-size: 12px; }
+.dict th { text-align: left; padding: 6px 8px; font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--border-mid); background: var(--bg-sunken); }
+.dict td { padding: 3px 4px; border-bottom: 1px solid var(--border); }
+.dict input, .dict select { width: 100%; padding: 4px 6px; font-size: 11.5px; border: 1px solid transparent; background: transparent; color: var(--text); border-radius: 3px; font-family: var(--font); outline: none; }
+.dict input:focus, .dict select:focus { border-color: var(--green); background: var(--bg-elevated); }
+.dict input.code { font-family: var(--mono); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.dict .x { width: 26px; text-align: center; }
+.dict .x button { background: none; border: none; color: var(--muted-2); cursor: pointer; font-size: 13px; padding: 2px 5px; }
+.dict .x button:hover { color: var(--red); }
+.dict-wrap { max-height: 300px; overflow: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+.swatch { width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border-mid); display: inline-block; vertical-align: middle; flex-shrink: 0; }
+.clash { background: var(--red-tint); }
+
+/* ── Generated codes ── */
+.gen-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.gen-tbl th { text-align: left; padding: 7px 9px; font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--border-mid); background: var(--bg-sunken); position: sticky; top: 0; z-index: 2; }
+.gen-tbl td { padding: 5px 9px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.gen-tbl tr:hover td { background: var(--bg-sunken); }
+.gen-tbl .sku { font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: .04em; white-space: nowrap; }
+.gen-tbl select { padding: 3px 5px; font-size: 11px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg-elevated); color: var(--text); font-family: var(--font); max-width: 130px; }
+.gen-wrap { max-height: 480px; overflow: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+.seg { color: var(--muted-2); }
+.also { position: relative; }
+.also summary { cursor: pointer; font-size: 11px; color: var(--muted); list-style: none; padding: 3px 6px; border: 1px solid var(--border); border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+.also summary::-webkit-details-marker { display: none; }
+.also[open] summary { border-color: var(--green); color: var(--green); }
+.also-list { position: absolute; z-index: 20; right: 0; margin-top: 4px; background: var(--bg-elevated); border: 1px solid var(--border-mid); border-radius: var(--radius); box-shadow: var(--shadow-lg); padding: 8px; min-width: 190px; }
+.also-list label { display: flex; align-items: center; gap: 7px; font-size: 11.5px; padding: 3px 2px; cursor: pointer; white-space: nowrap; }
+.also-list input { accent-color: var(--green); }
+
+/* ── Queue ── */
+.qrow { display: grid; grid-template-columns: 56px 1fr 130px 120px 110px 90px; gap: 10px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 12px; }
+.qrow:hover { background: var(--bg-sunken); }
+.qhead { font-size: 10.5px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; background: var(--bg-sunken); border-bottom: 1px solid var(--border-mid); }
+.qthumb { width: 46px; height: 46px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); display: block; }
+.qname { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qsub { font-size: 10.5px; color: var(--muted-2); font-family: var(--mono); }
+.qwrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: auto; max-height: 520px; background: var(--bg-elevated); }
+@media (max-width: 900px) { .qrow { grid-template-columns: 46px 1fr 100px; } .qrow > :nth-child(n+4) { display: none; } }
+
+/* ── Review ── */
+.rgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.rcard { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-elevated); box-shadow: var(--shadow-sm); }
+.rcard.approved { border-color: var(--green); }
+.rcard.rejected { opacity: .5; }
+.ba { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); }
+.ba figure { background: var(--bg-sunken); position: relative; }
+.ba img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+.ba figcaption { position: absolute; top: 4px; left: 4px; font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; background: rgba(0,0,0,.65); color: #fff; padding: 2px 5px; border-radius: 3px; }
+.rmeta { padding: 8px 10px; }
+.rname { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ractions { display: flex; gap: 5px; padding: 0 10px 10px; }
+
+/* ── Misc ── */
+.note { border-left: 3px solid var(--amber); background: var(--amber-tint); color: var(--text-2); padding: 9px 12px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 12px; margin-bottom: 12px; }
+.note.green { border-left-color: var(--green); background: var(--green-tint); }
+.note.red { border-left-color: var(--red); background: var(--red-tint); }
+.note strong { font-weight: 600; }
+.empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+.empty-icon { font-size: 30px; margin-bottom: 8px; opacity: .5; }
+.empty-title { font-size: 13px; font-weight: 600; color: var(--text-2); margin-bottom: 3px; }
+pre.code { background: var(--bg-sunken); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; font-family: var(--mono); font-size: 11px; line-height: 1.6; overflow-x: auto; white-space: pre; color: var(--text-2); }
+.bar { height: 5px; background: var(--bg-sunken); border-radius: 10px; overflow: hidden; margin-top: 6px; }
+.bar > div { height: 100%; background: var(--green); width: 0%; transition: width .3s; }
+.toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 9px 16px; border-radius: 20px; font-size: 12.5px; font-weight: 500; z-index: 500; box-shadow: var(--shadow-lg); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+.slider { width: 100%; accent-color: var(--green); }
+.chk { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; user-select: none; }
+.chk input { accent-color: var(--green); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-wordmark"><span class="tb-wordmark-icon">SM</span> Catalogue Studio</div>
+  <div class="tb-divider"></div>
+  <div class="tb-breadcrumb">Marketing OS <span>/</span> <strong id="crumb">Setup</strong></div>
+  <div class="tb-right">
+    <span class="tb-chip" id="chipStore">0 in batch</span>
+    <span class="tb-chip warn" id="chipCost">₹0 est.</span>
+    <button class="icon-btn" id="themeBtn" title="Toggle theme">◐</button>
+  </div>
+</div>
+
+<div class="app-shell">
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-item active" data-page="setup"><span class="sb-num">1</span><span class="sb-icon">⚙</span>Setup</div>
+    <div class="sb-item" data-page="intake"><span class="sb-num">2</span><span class="sb-icon">⬆</span>Intake<span class="sb-count" id="cIntake">0</span></div>
+    <div class="sb-item" data-page="process"><span class="sb-num">3</span><span class="sb-icon">▶</span>Process<span class="sb-count" id="cProcess">0</span></div>
+    <div class="sb-item" data-page="review"><span class="sb-num">4</span><span class="sb-icon">◍</span>Review<span class="sb-count" id="cReview">0</span></div>
+    <div class="sb-item" data-page="export"><span class="sb-num">5</span><span class="sb-icon">⬇</span>Export<span class="sb-count" id="cExport">0</span></div>
+    <div class="sb-footer">
+      Catalogue Studio V1<br>
+      Your own photography only.<br>
+      <span class="mono" id="storeState">memory</span>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- ══════════ 1. SETUP ══════════ -->
+    <section class="page active" id="page-setup">
+      <div class="page-h">Setup</div>
+      <div class="page-sub">Define your model identities, backdrops, and processing endpoint once. Everything after this is batch work.</div>
+
+      <div class="subtabs">
+        <div class="subtab active" data-sv="studio">Studio</div>
+        <div class="subtab" data-sv="sku">SKU codes</div>
+        <div class="subtab" data-sv="master">Product master</div>
+      </div>
+
+      <div class="subview active" id="sv-studio">
+      <div class="note"><strong>Source rule:</strong> only load photographs SupplyMate shot or commissioned. This tool has no capability to strip watermarks and will not process third-party catalogue images.</div>
+
+      <div class="card">
+        <div class="card-title">Processing endpoint</div>
+        <div class="card-sub">Your Cloudflare Worker proxy. The API key lives as a Worker secret, never in this file.</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Worker endpoint URL</label>
+            <input class="input" id="cfgEndpoint" placeholder="https://marketing-os.web-supplymate.workers.dev/api/image">
+          </div>
+          <div class="field">
+            <label>Provider</label>
+            <select class="select" id="cfgProvider">
+              <option value="replicate">Replicate — face swap (recommended)</option>
+              <option value="fal">fal.ai — face swap</option>
+              <option value="custom">Custom endpoint</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn-secondary btn-sm" id="testEndpoint">Test connection</button>
+          <span id="endpointState" class="badge gray">Not tested</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content:space-between;margin-bottom:4px">
+          <div class="card-title">Cast</div>
+          <div class="row">
+            <span class="badge gray" id="castCount">0 in the cast</span>
+            <select class="select" id="castFilter" style="width:auto;padding:4px 8px;font-size:11.5px"></select>
+          </div>
+        </div>
+        <div class="card-sub">Your permanent roster of synthetic models. Name each one, assign an industry, and the same face carries across every image in that industry — so the catalogue reads as one shoot rather than 140 strangers.</div>
+        <div class="note green" style="margin-bottom:12px">Synthetic faces only. Never a photograph of a real person who hasn't agreed to it — that's the one line that turns this from your own work into someone else's likeness.</div>
+
+        <div class="gen-row" style="margin-bottom:12px">
+          <div class="field" style="margin:0">
+            <label>Gender</label>
+            <select class="select" id="genGender"><option>man</option><option>woman</option></select>
+          </div>
+          <div class="field" style="margin:0">
+            <label>Age</label>
+            <input class="input" id="genAge" type="number" value="30" min="18" max="70">
+          </div>
+          <div class="field" style="margin:0">
+            <label>Industry</label>
+            <select class="select" id="genVertical"></select>
+          </div>
+          <button class="btn" id="genFace">Generate</button>
+        </div>
+
+        <div class="dropzone" id="dzFaces" style="padding:16px">
+          <div class="dz-icon">☺</div>
+          <div class="dz-title">Or upload a reference face</div>
+          <div class="dz-sub">Front-facing, evenly lit, one face per image</div>
+        </div>
+
+        <div class="cast" id="faceTiles" style="margin-top:12px"></div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content:space-between;margin-bottom:4px">
+          <div class="card-title">Backdrops</div>
+          <div class="row">
+            <span class="badge gray" id="bdCount">0 loaded</span>
+            <select class="select" id="bdFilter" style="width:auto;padding:4px 8px;font-size:11.5px"></select>
+          </div>
+        </div>
+        <div class="card-sub">Grouped by industry. Load as many scenes per industry as you like — intake lets you pick which of them a batch draws from.</div>
+        <div class="dropzone" id="dzBackdrops" style="padding:20px">
+          <div class="dz-icon">▤</div>
+          <div class="dz-title">Add backdrops</div>
+          <div class="dz-sub">Any resolution — they get scaled to cover the output frame</div>
+        </div>
+        <div id="bdTiles" style="margin-top:12px"></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Output format</div>
+          <div class="card-sub">Applied to every exported image.</div>
+          <div class="field">
+            <label>Aspect ratio</label>
+            <select class="select" id="cfgAspect">
+              <option value="1:1">1:1 square — Shopify main</option>
+              <option value="4:5">4:5 portrait — Meta feed</option>
+              <option value="3:4">3:4 portrait — catalogue</option>
+              <option value="9:16">9:16 — Reels / Stories</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Longest edge (px)</label>
+            <input class="input" id="cfgSize" type="number" value="2048" min="512" max="4096" step="128">
+          </div>
+          <div class="field">
+            <label>Format</label>
+            <select class="select" id="cfgFormat">
+              <option value="image/jpeg">JPEG — smaller, faster storefront</option>
+              <option value="image/png">PNG — larger, lossless</option>
+            </select>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Watermark</div>
+          <div class="card-sub">Your mark on your images. Optional but worth doing before these go public.</div>
+          <div class="dropzone" id="dzLogo" style="padding:16px">
+            <div class="dz-icon">◈</div>
+            <div class="dz-title">Add SupplyMate logo</div>
+            <div class="dz-sub">Transparent PNG works best</div>
+          </div>
+          <div id="logoPreview" style="margin-top:10px"></div>
+          <div class="field" style="margin-top:10px">
+            <label>Position</label>
+            <select class="select" id="cfgWmPos">
+              <option value="br">Bottom right</option>
+              <option value="bl">Bottom left</option>
+              <option value="tr">Top right</option>
+              <option value="tl">Top left</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Opacity — <span class="mono" id="wmOpVal">55%</span></label>
+            <input class="slider" id="cfgWmOp" type="range" min="10" max="100" value="55">
+          </div>
+          <div class="field">
+            <label>Size — <span class="mono" id="wmSzVal">14%</span> of width</label>
+            <input class="slider" id="cfgWmSz" type="range" min="5" max="35" value="14">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Worker proxy code</div>
+        <div class="card-sub">Deploy this alongside your existing Worker. Set the key with <span class="mono">wrangler secret put REPLICATE_API_TOKEN</span>.</div>
+        <button class="btn-secondary btn-sm" id="copyWorker" style="margin-bottom:10px">Copy Worker code</button>
+        <pre class="code" id="workerCode"></pre>
+      </div>
+      </div><!-- /sv-studio -->
+
+      <div class="subview" id="sv-sku">
+        <div class="card">
+          <div class="card-title">Code shape</div>
+          <div class="card-sub">Fixed at 23 characters. Letters and digits never share a segment, so nobody has to decide between O and 0.</div>
+          <pre class="code" style="font-size:12px;line-height:1.8">WW - SEC - SHI - 0042 - FIT - NVY
+│    │     │     │      │     └─ Base colour   3 letters
+│    │     │     │      └─────── Fit           3 letters
+│    │     │     └────────────── Serial        4 digits, padded
+│    │     └──────────────────── Product type  3 letters
+│    └────────────────────────── Industry      3 letters
+└─────────────────────────────── Group         2 letters</pre>
+          <div class="note green" style="margin-top:12px;margin-bottom:0"><strong>Group, industry, type and serial identify the design. Fit and colour are its variations,</strong> so they sit together at the tail and colour ends the code. Serial runs within group + industry + type, so security shirts number 0001 upward rather than 0731 upward.</div>
+        </div>
+
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:8px">
+            <div><div class="card-title">Fits</div><div class="card-sub" style="margin:0">Cut variations of the same design.</div></div>
+            <button class="btn-secondary btn-sm" data-addrow="fits">Add</button>
+          </div>
+          <div class="dict-wrap" style="max-height:150px">
+            <table class="dict"><thead><tr><th style="width:74px">Code</th><th>Label</th><th class="x"></th></tr></thead>
+            <tbody id="dictFits"></tbody></table>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="row" style="justify-content:space-between;margin-bottom:8px">
+              <div><div class="card-title">Industries</div><div class="card-sub" style="margin:0">Locked list. Never free-text.</div></div>
+              <button class="btn-secondary btn-sm" data-addrow="industries">Add</button>
+            </div>
+            <div class="dict-wrap">
+              <table class="dict"><thead><tr><th style="width:74px">Code</th><th>Label</th><th style="width:70px">Group</th><th class="x"></th></tr></thead>
+              <tbody id="dictIndustries"></tbody></table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="row" style="justify-content:space-between;margin-bottom:8px">
+              <div><div class="card-title">Colours</div><div class="card-sub" style="margin:0">The swatch is what the floor actually matches on.</div></div>
+              <button class="btn-secondary btn-sm" data-addrow="colours">Add</button>
+            </div>
+            <div class="dict-wrap">
+              <table class="dict"><thead><tr><th style="width:40px"></th><th style="width:74px">Code</th><th>Label</th><th class="x"></th></tr></thead>
+              <tbody id="dictColours"></tbody></table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:8px">
+            <div><div class="card-title">Product types</div><div class="card-sub" style="margin:0">Match words are what the parser looks for in a product name — comma separated, longest wins.</div></div>
+            <button class="btn-secondary btn-sm" data-addrow="types">Add</button>
+          </div>
+          <div class="dict-wrap">
+            <table class="dict"><thead><tr><th style="width:74px">Code</th><th style="width:180px">Label</th><th>Match words</th><th class="x"></th></tr></thead>
+            <tbody id="dictTypes"></tbody></table>
+          </div>
+          <div id="clashWarn" style="margin-top:10px"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Generate</div>
+          <div class="card-sub">Paste product names, one per line. The parser reads type and colour from each name; anything it can't read is flagged for you to set by hand.</div>
+          <div class="note" style="margin-bottom:10px"><strong>Colour means the base colour of the garment.</strong> Where a name lists several — "Black &amp; Yellow Lining Vest Coat" — the parser takes the first as the body and ignores contrast trims.</div>
+          <div class="row" style="margin-bottom:10px">
+            <div class="field" style="margin:0;min-width:200px">
+              <label>Industry for this batch</label>
+              <select class="select" id="skuIndustry"></select>
+            </div>
+            <div class="field" style="margin:0;min-width:130px">
+              <label>Default fit</label>
+              <select class="select" id="skuFit"></select>
+            </div>
+            <div class="field" style="margin:0;min-width:150px">
+              <label>Continue serials from</label>
+              <select class="select" id="skuSerialMode">
+                <option value="continue">Existing codes</option>
+                <option value="restart">Restart at 0001</option>
+              </select>
+            </div>
+          </div>
+          <textarea class="textarea" id="skuInput" placeholder="White Security Guard Shirt For Men&#10;Black Security Guard Shirt For Men&#10;Male Navy Blue Security Guard Trouser With Three Loops"></textarea>
+          <div class="row" style="margin-top:10px">
+            <button class="btn" id="skuGenerate">Generate codes</button>
+            <button class="btn-secondary btn-sm" id="skuClear">Clear all</button>
+          </div>
+        </div>
+
+        <div class="card" id="skuResultCard" style="display:none">
+          <div class="row" style="justify-content:space-between;margin-bottom:10px">
+            <div><div class="card-title">Generated</div><div class="card-sub" style="margin:0" id="skuSummary"></div></div>
+            <div class="row">
+              <button class="btn-secondary btn-sm" id="skuFactory">Factory sheet</button>
+              <button class="btn-secondary btn-sm" id="skuCsv">Export CSV</button>
+            </div>
+          </div>
+          <div id="skuFlags"></div>
+          <div class="gen-wrap">
+            <table class="gen-tbl">
+              <thead><tr><th style="width:215px">Code</th><th>Product name</th><th style="width:130px">Type</th><th style="width:105px">Fit</th><th style="width:140px">Base colour</th><th style="width:130px">Also sold to</th></tr></thead>
+              <tbody id="skuRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div><!-- /sv-sku -->
+
+      <div class="subview" id="sv-master">
+        <div class="card">
+          <div class="card-title">Google Sheet</div>
+          <div class="card-sub">The sheet is the master record; this app is the working surface. Pull reads it in, push writes it back — same Apps Script pattern as Content Studio V8.</div>
+          <div class="field">
+            <label>Apps Script web app URL</label>
+            <input class="input" id="mSheetUrl" placeholder="https://script.google.com/macros/s/…/exec">
+          </div>
+          <div class="row">
+            <button class="btn" id="mPull">Pull from Sheet</button>
+            <button class="btn-secondary" id="mPush">Push to Sheet</button>
+            <span class="badge gray" id="mState">Not connected</span>
+          </div>
+          <div class="bar" style="margin-top:10px"><div id="mBar"></div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Columns</div>
+          <div class="card-sub">Tab name: <span class="mono">Product Master</span>. Headers on row 2, data from row 3 — matching your Content Studio sheet.</div>
+          <pre class="code">SKU · Product Name · Group · Primary Industry · Also Sold To
+Product Type · Fit · Base Colour · Fabric Composition · GSM
+Description · Price · MOQ · Image Drive Link · Status · Updated At</pre>
+          <div class="note" style="margin-top:10px;margin-bottom:0"><strong>SKU is the key.</strong> Pull matches on it — existing rows update, new ones are added, and nothing in the sheet is deleted by a pull. Push rewrites the tab from what's in the app.</div>
+        </div>
+
+        <div class="card" id="mListCard" style="display:none">
+          <div class="row" style="justify-content:space-between;margin-bottom:10px">
+            <div><div class="card-title">Products</div><div class="card-sub" style="margin:0" id="mCount"></div></div>
+            <div class="row">
+              <input class="input" id="mSearch" placeholder="Search SKU or name" style="width:220px;padding:5px 9px;font-size:11.5px">
+              <button class="btn-secondary btn-sm" id="mCsv">Export CSV</button>
+            </div>
+          </div>
+          <div class="gen-wrap">
+            <table class="gen-tbl">
+              <thead><tr><th style="width:215px">SKU</th><th>Name</th><th style="width:120px">Fabric</th><th style="width:60px">GSM</th><th style="width:80px">Price</th><th style="width:70px">Image</th></tr></thead>
+              <tbody id="mRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Apps Script</div>
+          <div class="card-sub">Paste into the sheet's Apps Script editor, deploy as a web app (execute as you, access to anyone), then paste the /exec URL above.</div>
+          <button class="btn-secondary btn-sm" id="copyMaster" style="margin-bottom:10px">Copy Apps Script</button>
+          <pre class="code" id="masterCode"></pre>
+        </div>
+      </div><!-- /sv-master -->
+    </section>
+
+    <!-- ══════════ 2. INTAKE ══════════ -->
+    <section class="page" id="page-intake">
+      <div class="page-h">Intake</div>
+      <div class="page-sub">Load one vertical at a time — 10 to 15 images per batch keeps the queue reviewable.</div>
+
+      <div class="card">
+        <div class="card-title">Batch settings</div>
+        <div class="card-sub">The SKU drives everything. Set it from the dropdowns, or type a full code and the dropdowns follow.</div>
+
+        <div class="grid-3" style="margin-bottom:10px">
+          <div class="field" style="margin:0">
+            <label>Industry</label>
+            <select class="select" id="inIndustry"></select>
+          </div>
+          <div class="field" style="margin:0">
+            <label>Product type</label>
+            <select class="select" id="inType"></select>
+          </div>
+          <div class="field" style="margin:0">
+            <label>Fit</label>
+            <select class="select" id="inFit"></select>
+          </div>
+        </div>
+        <div class="grid-3" style="margin-bottom:10px">
+          <div class="field" style="margin:0">
+            <label>Base colour</label>
+            <select class="select" id="inColour"></select>
+          </div>
+          <div class="field" style="margin:0">
+            <label>Serial starts at</label>
+            <input class="input mono" id="inSerial" type="number" value="1" min="1" max="9999">
+          </div>
+          <div class="field" style="margin:0">
+            <label>Identity</label>
+            <select class="select" id="inFace"></select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>SKU — type a full code to set the dropdowns</label>
+          <div class="row" style="flex-wrap:nowrap">
+            <input class="input mono" id="inSku" style="font-size:15px;font-weight:600;letter-spacing:.08em" placeholder="WW-SEC-SHI-0001-FIT-NVY">
+            <span class="badge gray" id="inSkuState">—</span>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:0">
+          <label>Backdrops this batch draws from</label>
+          <div id="inBdPool" class="row" style="gap:8px"></div>
+          <div class="row" style="margin-top:8px">
+            <select class="select" id="inBdMode" style="width:auto;padding:5px 9px;font-size:11.5px">
+              <option value="cycle">Rotate through selected</option>
+              <option value="random">Pick at random</option>
+              <option value="first">Use the first only</option>
+            </select>
+            <span class="card-sub" style="margin:0">Select several to mix scenes across one batch.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="dropzone" id="dzProducts">
+          <div class="dz-icon">⬆</div>
+          <div class="dz-title">Drop product photographs here</div>
+          <div class="dz-sub">JPG, PNG or WebP · your own shots only · 10–15 at a time</div>
+        </div>
+      </div>
+
+      <div class="card" id="intakeListCard">
+        <div class="row" style="justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div class="card-title">Batch</div>
+            <div class="card-sub" style="margin:0">Every row carries its own SKU. Edit any of them directly.</div>
+          </div>
+          <div class="row">
+            <select class="select" id="bulkFace" style="width:auto;padding:4px 8px;font-size:11.5px">
+              <option value="">Set identity for all…</option>
+            </select>
+            <button class="btn-secondary btn-sm" id="clearBatch">Clear batch</button>
+            <button class="btn btn-sm" id="sendToProcess">Send to processing</button>
+          </div>
+        </div>
+        <div class="qwrap">
+          <div class="qrow qhead">
+            <div></div><div>Product</div><div>SKU</div><div>Identity</div><div>Backdrop</div><div></div>
+          </div>
+          <div id="intakeList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ 3. PROCESS ══════════ -->
+    <section class="page" id="page-process">
+      <div class="page-h">Process</div>
+      <div class="page-sub">Face swap, cutout, backdrop, crop, watermark — run as one pass per image.</div>
+
+      <div class="grid-3" style="margin-bottom:14px">
+        <div class="kpi"><div class="k-label">Queued</div><div class="k-value" id="kQueued">0</div><div class="k-note">waiting to run</div></div>
+        <div class="kpi accent"><div class="k-label">Done</div><div class="k-value" id="kDone">0</div><div class="k-note">ready for review</div></div>
+        <div class="kpi"><div class="k-label">Failed</div><div class="k-value" id="kFailed">0</div><div class="k-note">retry individually</div></div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div style="flex:1;min-width:220px">
+            <div class="card-title">Pipeline</div>
+            <div class="card-sub" id="runStatus">Idle</div>
+            <div class="bar"><div id="runBar"></div></div>
+          </div>
+          <div class="row">
+            <button class="btn-secondary btn-sm" id="stopRun" disabled>Stop</button>
+            <button class="btn" id="startRun">Run batch</button>
+          </div>
+        </div>
+        <div class="row" style="margin-top:14px;gap:18px">
+          <label class="chk"><input type="checkbox" id="stepSwap" checked> Face swap</label>
+          <label class="chk"><input type="checkbox" id="stepCut" checked> Cut out subject</label>
+          <label class="chk"><input type="checkbox" id="stepBd" checked> Place on backdrop</label>
+          <label class="chk"><input type="checkbox" id="stepWm"> Apply watermark</label>
+        </div>
+        <div class="field" style="margin-top:14px;max-width:340px">
+          <label>Cutout method</label>
+          <select class="select" id="cfgCutout">
+            <option value="quick">Quick — plain background, runs locally and free</option>
+            <option value="api">AI — any background, costs per image</option>
+          </select>
+        </div>
+        <div class="field" style="max-width:340px" id="tolField">
+          <label>Edge tolerance — <span class="mono" id="tolVal">32</span></label>
+          <input class="slider" id="cfgTol" type="range" min="5" max="90" value="32">
+          <div class="card-sub" style="margin:4px 0 0">Raise it if background remains, lower it if the garment gets eaten.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Queue</div>
+        <div class="qwrap">
+          <div class="qrow qhead"><div></div><div>Product</div><div>SKU</div><div>Identity</div><div>Status</div><div></div></div>
+          <div id="processList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ 4. REVIEW ══════════ -->
+    <section class="page" id="page-review">
+      <div class="page-h">Review</div>
+      <div class="page-sub">Before and after, side by side. Approve what ships, send the rest back.</div>
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div class="row">
+            <button class="btn-secondary btn-sm" id="approveAll">Approve all</button>
+            <button class="btn-secondary btn-sm" id="filterToggle">Show all</button>
+          </div>
+          <div class="row">
+            <span class="badge green" id="rApproved">0 approved</span>
+            <span class="badge gray" id="rPending">0 pending</span>
+          </div>
+        </div>
+      </div>
+      <div class="rgrid" id="reviewGrid"></div>
+    </section>
+
+    <!-- ══════════ 5. EXPORT ══════════ -->
+    <section class="page" id="page-export">
+      <div class="page-h">Export</div>
+      <div class="page-sub">Approved images, renamed to your SKU convention, plus a Shopify product CSV.</div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Images</div>
+          <div class="card-sub">Downloads one at a time. Your browser may ask to allow multiple files — say yes.</div>
+          <div class="row">
+            <button class="btn" id="dlImages">Download approved images</button>
+            <span class="badge gray" id="dlCount">0 ready</span>
+          </div>
+          <div class="bar" style="margin-top:10px"><div id="dlBar"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Shopify CSV</div>
+          <div class="card-sub">Product rows with handles, SKUs and image alt text. Image Src stays blank until you've uploaded the files — Shopify fills it on match, or paste your CDN paths in.</div>
+          <div class="field">
+            <label>Vendor</label>
+            <input class="input" id="csvVendor" value="SupplyMate">
+          </div>
+          <div class="field">
+            <label>Default price (₹)</label>
+            <input class="input" id="csvPrice" type="number" value="0" step="1">
+          </div>
+          <button class="btn-secondary" id="dlCsv">Download CSV</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Google Drive</div>
+        <div class="card-sub">Uploads each approved image to Drive and writes the link straight into the product master. Push to Sheet afterwards to save it.</div>
+        <div class="row">
+          <button class="btn" id="dlDrive">Send approved to Drive</button>
+          <span class="badge gray" id="driveState">Not started</span>
+        </div>
+        <div class="bar" style="margin-top:10px"><div id="driveBar"></div></div>
+        <div class="card-sub" style="margin:8px 0 0">Uses the same Apps Script URL as the product master. Files land in a Drive folder named <span class="mono">Catalogue Studio Images</span>, shared as link-viewable.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Batch log</div>
+        <div class="card-sub">What ran, what passed, what needs a reshoot.</div>
+        <div id="exportLog"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ═══════════ STORAGE ═══════════
+   IndexedDB when available (images are far too large for localStorage),
+   in-memory otherwise so the app still runs in a sandboxed preview. */
+const Store = (() => {
+  let db = null, ok = false;
+  const mem = new Map();
+  async function init() {
+    try {
+      db = await new Promise((res, rej) => {
+        const r = indexedDB.open('sm_catalogue_v1', 1);
+        r.onupgradeneeded = e => { const d = e.target.result; if (!d.objectStoreNames.contains('kv')) d.createObjectStore('kv'); };
+        r.onsuccess = e => res(e.target.result);
+        r.onerror = () => rej(r.error);
+        setTimeout(() => rej(new Error('timeout')), 3000);
+      });
+      ok = true;
+    } catch { ok = false; }
+    const el = document.getElementById('storeState');
+    if (el) el.textContent = ok ? 'persisted' : 'session only';
+    return ok;
+  }
+  function tx(mode) { return db.transaction('kv', mode).objectStore('kv'); }
+  async function get(k) {
+    if (!ok) return mem.get(k) ?? null;
+    try { return await new Promise((res, rej) => { const r = tx('readonly').get(k); r.onsuccess = () => res(r.result ?? null); r.onerror = () => rej(r.error); }); }
+    catch { return mem.get(k) ?? null; }
+  }
+  async function set(k, v) {
+    mem.set(k, v);
+    if (!ok) return;
+    try { await new Promise((res, rej) => { const r = tx('readwrite').put(v, k); r.onsuccess = res; r.onerror = () => rej(r.error); }); } catch {}
+  }
+  return { init, get, set };
+})();
+
+/* ═══════════ STATE ═══════════ */
+const S = {
+  cfg: {
+    endpoint: '', provider: 'replicate', aspect: '1:1', size: 2048, format: 'image/jpeg',
+    wmPos: 'br', wmOp: 55, wmSz: 14, cutout: 'quick', tol: 32, sheetUrl: ''
+  },
+  faces: [],      // {id,name,src}
+  backdrops: [],  // {id,name,src,vertical}
+  logo: null,
+  items: [],      // product records
+  reviewFilter: 'pending',
+  sku: { industries: [], types: [], colours: [], fits: [], rows: [] },
+  master: []
+};
+
+const DEF_FITS = [
+  { code: 'FIT', label: 'Fit' },
+  { code: 'COM', label: 'Comfort' },
+  { code: 'REL', label: 'Relax' }
+];
+
+/* ═══════════ SKU DEFAULTS ═══════════ */
+const DEF_INDUSTRIES = [
+  { code: 'GEN', label: 'General — all industries', group: 'WW' },
+  { code: 'COR', label: 'Corporate',            group: 'WW' },
+  { code: 'HSP', label: 'Hospital',             group: 'WW' },
+  { code: 'HKP', label: 'Housekeeping / FM',    group: 'WW' },
+  { code: 'IND', label: 'Industrial',           group: 'WW' },
+  { code: 'RES', label: 'Restaurant',           group: 'WW' },
+  { code: 'SEC', label: 'Security',             group: 'WW' },
+  { code: 'PRE', label: 'Pre School',           group: 'SW' },
+  { code: 'SCH', label: 'School',               group: 'SW' }
+];
+
+const DEF_TYPES = [
+  { code: 'CHC', label: 'Chef Coat',        match: 'chef coat' },
+  { code: 'CHJ', label: 'Chef Jacket',      match: 'chef jacket' },
+  { code: 'POL', label: 'Polo T-Shirt',     match: 'polo t-shirt,polo t shirt,polo' },
+  { code: 'TSH', label: 'T-Shirt',          match: 't-shirt,t shirt,tee' },
+  { code: 'SHI', label: 'Shirt',            match: 'shirt' },
+  { code: 'TRO', label: 'Trouser',          match: 'trouser' },
+  { code: 'PNT', label: 'Belted Pant',      match: 'belted pant' },
+  { code: 'ELP', label: 'Full Elastic Pant',match: 'full elastic pant,full elastic pajama,loose pajama,loose bottoms' },
+  { code: 'HEP', label: 'Half Elastic Pant',match: 'half elastic pant' },
+  { code: 'CRG', label: 'Cargo Pant',       match: 'cargo pant,cargo' },
+  { code: 'CPR', label: 'Capri',            match: 'capri' },
+  { code: 'JEA', label: 'Denim',            match: 'denim' },
+  { code: 'APR', label: 'Apron',            match: 'apron' },
+  { code: 'BLZ', label: 'Blazer',           match: 'blazer' },
+  { code: 'WCT', label: 'Waist Coat',       match: 'waist coat,waistcoat,vest coat' },
+  { code: 'VST', label: 'Safety Vest',      match: 'safety vest,high visibility vest,visibility vest,vest' },
+  { code: 'KOT', label: 'Koti',             match: 'koti' },
+  { code: 'NEH', label: 'Nehru Jacket',     match: 'nehru jacket' },
+  { code: 'JKT', label: 'Jacket',           match: 'jacket' },
+  { code: 'HOD', label: 'Hoodie',           match: 'hoodie' },
+  { code: 'SWT', label: 'Sweater',          match: 'sweater' },
+  { code: 'LBC', label: 'Lab Coat',         match: 'lab coat' },
+  { code: 'SCR', label: 'Scrub Set',        match: 'scrub,ot uniform' },
+  { code: 'SGW', label: 'Surgical Gown',    match: 'surgical gown,ot gown' },
+  { code: 'TUN', label: 'Tunic',            match: 'tunic' },
+  { code: 'TOP', label: 'Top',              match: 'top' },
+  { code: 'KUR', label: 'Kurti',            match: 'kurti' },
+  { code: 'KTA', label: 'Kurta',            match: 'kurta' },
+  { code: 'SAL', label: 'Salwar',           match: 'salwar' },
+  { code: 'DUP', label: 'Dupatta',          match: 'dupatta' },
+  { code: 'PLZ', label: 'Plazo',            match: 'plazo,palazzo' },
+  { code: 'SKT', label: 'Skirt',            match: 'skirt' },
+  { code: 'SRT', label: 'Shorts',           match: 'shorts' },
+  { code: 'DRS', label: 'Dress',            match: 'dress' },
+  { code: 'DNG', label: 'Dungaree',         match: 'dungaree,overall,bib overall' },
+  { code: 'CVA', label: 'Coverall',         match: 'coverall' },
+  { code: 'GWN', label: 'Gown',             match: 'gown,robe' },
+  { code: 'CPE', label: 'Cutting Cape',     match: 'cutting sheet,cutting cape,cape' },
+  { code: 'TSU', label: 'Track Suit Upper', match: 'track suit upper' },
+  { code: 'TSL', label: 'Track Suit Lower', match: 'track suit lower,lower' },
+  { code: 'CAP', label: 'Cap',              match: 'skull cap,bandana,cap' },
+  { code: 'SCF', label: 'Scarf',            match: 'scarf,neckerchief' },
+  { code: 'TIE', label: 'Tie',              match: 'tie' },
+  { code: 'BOW', label: 'Neck Bow',         match: 'neck bow,bow' },
+  { code: 'TWL', label: 'Towel',            match: 'towel,napkin' },
+  { code: 'BED', label: 'Bed Linen',        match: 'bed sheet,pillow cover' },
+  { code: 'SUS', label: 'Suspender',        match: 'suspender' }
+];
+
+const DEF_COLOURS = [
+  { code: 'BLK', label: 'Black',        hex: '#111111', match: 'black' },
+  { code: 'WHT', label: 'White',        hex: '#FFFFFF', match: 'white,ivory' },
+  { code: 'NVY', label: 'Navy Blue',    hex: '#1B2A4A', match: 'navy' },
+  { code: 'RBL', label: 'Royal Blue',   hex: '#1E4FBF', match: 'royal blue' },
+  { code: 'SBL', label: 'Sky Blue',     hex: '#7EC4E8', match: 'sky blue,light blue,iceberg' },
+  { code: 'IBL', label: 'Ink Blue',     hex: '#26365E', match: 'ink blue,indigo,space blue,oxford blue' },
+  { code: 'TBL', label: 'Teal Blue',    hex: '#1F7A85', match: 'teal,turquoise' },
+  { code: 'BLU', label: 'Blue',         hex: '#2B6CB0', match: 'blue' },
+  { code: 'GRY', label: 'Grey',         hex: '#8A8F98', match: 'grey,gray' },
+  { code: 'LGY', label: 'Light Grey',   hex: '#C6CAD0', match: 'light grey,light gray' },
+  { code: 'DGY', label: 'Dark Grey',    hex: '#4A4F57', match: 'dark grey,charcoal,seal grey' },
+  { code: 'WGY', label: 'Worsted Grey', hex: '#6B6F76', match: 'worsted grey,xanadu' },
+  { code: 'RED', label: 'Red',          hex: '#C62828', match: 'red' },
+  { code: 'MRN', label: 'Maroon',       hex: '#6E1B2A', match: 'maroon' },
+  { code: 'WIN', label: 'Wine',         hex: '#5C1F35', match: 'wine' },
+  { code: 'PNK', label: 'Pink',         hex: '#E88BA8', match: 'pink' },
+  { code: 'MAG', label: 'Magenta',      hex: '#A81E67', match: 'magenta,fuchsia,gajri' },
+  { code: 'ORG', label: 'Orange',       hex: '#E8720C', match: 'orange,saffron,peach' },
+  { code: 'YEL', label: 'Yellow',       hex: '#F2C516', match: 'yellow' },
+  { code: 'MUS', label: 'Mustard',      hex: '#C99A1E', match: 'mustard' },
+  { code: 'GRN', label: 'Green',        hex: '#2E8B4A', match: 'green' },
+  { code: 'BGN', label: 'Bottle Green', hex: '#14532D', match: 'bottle green,timber green,emerald' },
+  { code: 'AGN', label: 'Army Green',   hex: '#4A5D23', match: 'army green,sage' },
+  { code: 'PIS', label: 'Pista Green',  hex: '#A8C686', match: 'pista,lyril,sea green' },
+  { code: 'BEI', label: 'Beige',        hex: '#D8C7A8', match: 'beige,cream,tan' },
+  { code: 'KHK', label: 'Khaki',        hex: '#A08B5B', match: 'khaki' },
+  { code: 'BRN', label: 'Brown',        hex: '#6B4423', match: 'brown' },
+  { code: 'PUR', label: 'Purple',       hex: '#6B3FA0', match: 'purple,orchid,lilac' }
+];
+const uid = () => Math.random().toString(36).slice(2, 9);
+
+/* Pick the cast member for a vertical: exact match first, then Any, then whoever exists. */
+function castFor(vertical) {
+  return S.faces.find(f => f.vertical === vertical)
+      || S.faces.find(f => f.vertical === 'Any')
+      || S.faces[0]
+      || null;
+}
+
+/* ═══════════ HELPERS ═══════════ */
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2400);
+}
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function fileToDataURL(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = () => rej(new Error('Could not read ' + file.name));
+    r.readAsDataURL(file);
+  });
+}
+function loadImg(src) {
+  return new Promise((res, rej) => {
+    const i = new Image();
+    i.crossOrigin = 'anonymous';
+    i.onload = () => res(i);
+    i.onerror = () => rej(new Error('Image failed to decode'));
+    i.src = src;
+  });
+}
+function aspectDims(ratio, longest) {
+  const [a, b] = ratio.split(':').map(Number);
+  return a >= b ? { w: longest, h: Math.round(longest * b / a) } : { w: Math.round(longest * a / b), h: longest };
+}
+
+/* ═══════════ IMAGE OPS ═══════════ */
+
+/* Flood-fill from the frame edges. Works well on plain-wall phone shots,
+   which is what most of the existing library is. */
+async function quickCutout(src, tol) {
+  const img = await loadImg(src);
+  const c = document.createElement('canvas');
+  c.width = img.naturalWidth; c.height = img.naturalHeight;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0);
+  const d = ctx.getImageData(0, 0, c.width, c.height), px = d.data, W = c.width, H = c.height;
+  const seen = new Uint8Array(W * H), stack = [];
+  const seeds = [[0, 0], [W - 1, 0], [0, H - 1], [W - 1, H - 1], [W >> 1, 0], [W >> 1, H - 1], [0, H >> 1], [W - 1, H >> 1]];
+  const ref = seeds.map(([x, y]) => { const i = (y * W + x) * 4; return [px[i], px[i + 1], px[i + 2]]; });
+  const near = (r, g, b) => ref.some(([R, G, B]) => Math.abs(r - R) + Math.abs(g - G) + Math.abs(b - B) < tol * 3);
+  for (const [x, y] of seeds) stack.push(y * W + x);
+  while (stack.length) {
+    const p = stack.pop();
+    if (p < 0 || p >= W * H || seen[p]) continue;
+    const i = p * 4;
+    if (!near(px[i], px[i + 1], px[i + 2])) continue;
+    seen[p] = 1; px[i + 3] = 0;
+    const x = p % W;
+    if (x > 0) stack.push(p - 1);
+    if (x < W - 1) stack.push(p + 1);
+    stack.push(p - W, p + W);
+  }
+  // Soften the cut edge so the composite doesn't look pasted on.
+  for (let p = 0; p < W * H; p++) {
+    if (px[p * 4 + 3] === 0) continue;
+    let open = 0;
+    const x = p % W, y = (p / W) | 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+      if (seen[ny * W + nx]) open++;
+    }
+    if (open > 0) px[p * 4 + 3] = Math.max(0, 255 - open * 42);
+  }
+  ctx.putImageData(d, 0, 0);
+  return c.toDataURL('image/png');
+}
+
+/* Compose: backdrop (cover) → subject (contain, bottom-anchored) → watermark */
+async function compose(subjectSrc, backdropSrc, opts) {
+  const { w, h } = aspectDims(opts.aspect, opts.size);
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+
+  if (backdropSrc) {
+    const bd = await loadImg(backdropSrc);
+    const s = Math.max(w / bd.naturalWidth, h / bd.naturalHeight);
+    const dw = bd.naturalWidth * s, dh = bd.naturalHeight * s;
+    ctx.drawImage(bd, (w - dw) / 2, (h - dh) / 2, dw, dh);
+  } else {
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, w, h);
+  }
+
+  const sub = await loadImg(subjectSrc);
+  const pad = 0.90;
+  const s2 = Math.min(w * pad / sub.naturalWidth, h * pad / sub.naturalHeight);
+  const sw = sub.naturalWidth * s2, sh = sub.naturalHeight * s2;
+  ctx.drawImage(sub, (w - sw) / 2, h - sh - h * 0.02, sw, sh);
+
+  if (opts.logo) {
+    const lg = await loadImg(opts.logo);
+    const lw = w * (opts.wmSz / 100), lh = lg.naturalHeight * (lw / lg.naturalWidth);
+    const m = w * 0.035;
+    const pos = { br: [w - lw - m, h - lh - m], bl: [m, h - lh - m], tr: [w - lw - m, m], tl: [m, m] }[opts.wmPos];
+    ctx.globalAlpha = opts.wmOp / 100;
+    ctx.drawImage(lg, pos[0], pos[1], lw, lh);
+    ctx.globalAlpha = 1;
+  }
+  return c.toDataURL(opts.format, 0.92);
+}
+
+/* Crop-and-fit without a backdrop swap */
+async function fitOnly(src, opts) {
+  const { w, h } = aspectDims(opts.aspect, opts.size);
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, w, h);
+  const img = await loadImg(src);
+  const s = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+  const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
+  ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+  if (opts.logo) {
+    const lg = await loadImg(opts.logo);
+    const lw = w * (opts.wmSz / 100), lh = lg.naturalHeight * (lw / lg.naturalWidth);
+    const m = w * 0.035;
+    const pos = { br: [w - lw - m, h - lh - m], bl: [m, h - lh - m], tr: [w - lw - m, m], tl: [m, m] }[opts.wmPos];
+    ctx.globalAlpha = opts.wmOp / 100;
+    ctx.drawImage(lg, pos[0], pos[1], lw, lh);
+    ctx.globalAlpha = 1;
+  }
+  return c.toDataURL(opts.format, 0.92);
+}
+
+/* ═══════════ API ═══════════ */
+async function callApi(op, payload) {
+  if (!S.cfg.endpoint) throw new Error('No endpoint set — add your Worker URL in Setup');
+  const r = await fetch(S.cfg.endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ op, provider: S.cfg.provider, ...payload })
+  });
+  if (!r.ok) {
+    let detail = '';
+    try { detail = (await r.json()).error || ''; } catch {}
+    throw new Error(`Endpoint returned ${r.status}${detail ? ' — ' + detail : ''}`);
+  }
+  const j = await r.json();
+  const out = j.image || j.output || j.url;
+  if (!out) throw new Error('Endpoint returned no image');
+  if (typeof out === 'string' && out.startsWith('http')) {
+    const b = await (await fetch(out)).blob();
+    return await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(b); });
+  }
+  return out;
+}
+
+/* ═══════════ RENDER ═══════════ */
+function renderFaces() {
+  const el = $('faceTiles');
+  if (!el) return;
+  const filter = $('castFilter') ? $('castFilter').value : '';
+  const list = filter ? S.faces.filter(f => f.vertical === filter) : S.faces;
+  if ($('castCount')) {
+    $('castCount').textContent = filter
+      ? `${list.length} of ${S.faces.length} in ${industryLabel(filter)}`
+      : `${S.faces.length} in the cast`;
+  }
+  if (!S.faces.length) {
+    el.innerHTML = '<div class="empty" style="padding:20px;grid-column:1/-1"><div class="empty-title">No cast yet</div><div style="font-size:11.5px">Generate or upload at least one identity before running a batch.</div></div>';
+    return;
+  }
+  if (!list.length) {
+    el.innerHTML = `<div class="empty" style="padding:20px;grid-column:1/-1"><div class="empty-title">Nobody cast for ${esc(industryLabel(filter))}</div><div style="font-size:11.5px">Generate one, or retag an existing identity.</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(f => {
+    const uses = S.items.filter(i => i.faceId === f.id).length;
+    return `
+    <div class="cast-card">
+      <button class="tile-x" data-del="face" data-id="${f.id}">×</button>
+      ${uses ? `<span class="cast-uses">${uses}</span>` : ''}
+      <img src="${f.src}" alt="${esc(f.name)}">
+      <div class="cast-body">
+        <input class="input" value="${esc(f.name)}" data-fname="${f.id}" placeholder="Name">
+        <select class="select" data-fvert="${f.id}">${industryOptions(f.vertical, true)}</select>
+        <div class="tile-note mono">${esc(f.gender || '—')} · ${f.age || '—'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderBackdrops() {
+  const el = $('bdTiles');
+  if (!el) return;
+  const filter = $('bdFilter') ? $('bdFilter').value : '';
+  if ($('bdCount')) {
+    const n = filter ? S.backdrops.filter(b => b.vertical === filter).length : S.backdrops.length;
+    $('bdCount').textContent = filter ? `${n} in ${industryLabel(filter)}` : `${S.backdrops.length} loaded`;
+  }
+  if (!S.backdrops.length) {
+    el.innerHTML = '<div class="empty" style="padding:20px"><div class="empty-title">No backdrops yet</div><div style="font-size:11.5px">Upload them, then tag each to an industry.</div></div>';
+    return;
+  }
+  // Grouped by industry so a vertical's scenes sit together.
+  const order = S.sku.industries.map(i => i.code).concat(['']);
+  const groups = {};
+  S.backdrops.forEach(b => { (groups[b.vertical || ''] = groups[b.vertical || ''] || []).push(b); });
+  const shown = order.filter(code => groups[code] && (!filter || code === filter));
+  if (!shown.length) {
+    el.innerHTML = `<div class="empty" style="padding:20px"><div class="empty-title">No backdrops for ${esc(industryLabel(filter))}</div><div style="font-size:11.5px">Upload one and tag it, or use an untagged backdrop as a fallback.</div></div>`;
+    return;
+  }
+  el.innerHTML = shown.map(code => `
+    <div style="margin-bottom:14px">
+      <div class="row" style="margin-bottom:6px">
+        <span class="badge ${code ? 'green' : 'gray'}">${code ? esc(industryLabel(code)) : 'Untagged'}</span>
+        <span class="tile-note mono">${groups[code].length}</span>
+      </div>
+      <div class="tiles">
+        ${groups[code].map(b => `
+          <div class="tile">
+            <button class="tile-x" data-del="bd" data-id="${b.id}">×</button>
+            <img src="${b.src}" alt="">
+            <div class="tile-meta">
+              <div class="tile-name">${esc(b.name)}</div>
+              <select class="select" style="margin-top:4px;padding:3px 5px;font-size:10.5px" data-bdvert="${b.id}">
+                ${industryOptions(b.vertical, true)}
+              </select>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function renderLogo() {
+  $('logoPreview').innerHTML = S.logo
+    ? `<div class="row"><img src="${S.logo}" style="max-height:40px;max-width:150px;background:var(--bg-sunken);border-radius:4px;padding:4px"><button class="btn-secondary btn-sm" id="rmLogo">Remove</button></div>`
+    : '<div class="card-sub" style="margin:0">No logo loaded.</div>';
+  const b = $('rmLogo');
+  if (b) b.onclick = async () => { S.logo = null; await persist(); renderLogo(); };
+}
+
+function itemRow(it, mode) {
+  const faceOpts = S.faces.map(f => `<option value="${f.id}" ${it.faceId === f.id ? 'selected' : ''}>${esc(f.name)} · ${esc(f.vertical)}</option>`).join('');
+  const bdOpts = ['<option value="">— none —</option>'].concat(
+    S.backdrops.map(b => `<option value="${b.id}" ${it.bdId === b.id ? 'selected' : ''}>${esc(b.name)}</option>`)).join('');
+  const statusMap = {
+    pending: ['gray', 'Queued'], running: ['amber', 'Running'],
+    done: ['green', 'Done'], error: ['red', 'Failed']
+  };
+  const [cls, label] = statusMap[it.status] || statusMap.pending;
+  if (mode === 'intake') {
+    return `<div class="qrow" data-id="${it.id}">
+      <img class="qthumb" src="${it.src}" alt="">
+      <div><input class="input" style="padding:4px 7px" value="${esc(it.title)}" data-title="${it.id}"></div>
+      <div><input class="input mono" style="padding:4px 7px;font-size:11px" value="${esc(it.sku)}" data-sku="${it.id}"></div>
+      <div><select class="select" style="padding:4px 7px" data-face="${it.id}">${faceOpts || '<option>— none —</option>'}</select></div>
+      <div><select class="select" style="padding:4px 7px" data-bd="${it.id}">${bdOpts}</select></div>
+      <div><button class="btn-secondary btn-sm" data-rm="${it.id}">Remove</button></div>
+    </div>`;
+  }
+  const face = S.faces.find(f => f.id === it.faceId);
+  return `<div class="qrow" data-id="${it.id}">
+    <img class="qthumb" src="${it.out || it.src}" alt="">
+    <div><div class="qname">${esc(it.title)}</div><div class="qsub">${esc(it.vertical)}</div></div>
+    <div class="mono" style="font-size:11px">${esc(it.sku)}</div>
+    <div>${face ? esc(face.name) : '<span class="badge gray">none</span>'}</div>
+    <div><span class="badge ${cls}">${label}</span>${it.error ? `<div class="qsub" style="color:var(--red);white-space:normal">${esc(it.error)}</div>` : ''}</div>
+    <div><button class="btn-secondary btn-sm" data-retry="${it.id}">Retry</button></div>
+  </div>`;
+}
+
+/* ── Intake batch controls ── */
+const batch = { pool: [] };
+
+function renderBatchControls() {
+  if (!$('inType')) return;
+  const keep = f => $(f) ? $(f).value : '';
+  const kT = keep('inType'), kF = keep('inFit'), kC = keep('inColour'), kFace = keep('inFace');
+
+  $('inType').innerHTML = S.sku.types
+    .map(t => `<option value="${t.code}" ${kT === t.code ? 'selected' : ''}>${esc(t.label)} — ${t.code}</option>`).join('');
+  $('inFit').innerHTML = S.sku.fits
+    .map(t => `<option value="${t.code}" ${kF === t.code ? 'selected' : ''}>${esc(t.label)} — ${t.code}</option>`).join('');
+  $('inColour').innerHTML = S.sku.colours
+    .map(t => `<option value="${t.code}" ${kC === t.code ? 'selected' : ''}>${esc(t.label)} — ${t.code}</option>`).join('');
+  $('inFace').innerHTML = '<option value="">— auto by industry —</option>' + S.faces
+    .map(f => `<option value="${f.id}" ${kFace === f.id ? 'selected' : ''}>${esc(f.name)}</option>`).join('');
+
+  renderBdPool();
+  syncSkuField();
+}
+
+/* Backdrops available to this batch, limited to the selected industry plus untagged fallbacks. */
+function renderBdPool() {
+  const ind = $('inIndustry').value;
+  const avail = S.backdrops.filter(b => !b.vertical || b.vertical === ind);
+  batch.pool = batch.pool.filter(id => avail.some(b => b.id === id));
+  $('inBdPool').innerHTML = avail.length
+    ? avail.map(b => `
+        <label class="tile ${batch.pool.includes(b.id) ? 'sel' : ''}" style="width:88px;cursor:pointer;margin:0">
+          <input type="checkbox" data-bdpool="${b.id}" ${batch.pool.includes(b.id) ? 'checked' : ''} style="position:absolute;top:4px;left:4px;accent-color:var(--green);z-index:2">
+          <img src="${b.src}" alt="" style="height:60px">
+          <div class="tile-meta" style="padding:4px 6px"><div class="tile-name" style="font-size:10px">${esc(b.name)}</div></div>
+        </label>`).join('')
+    : `<div class="card-sub" style="margin:0">No backdrops tagged ${esc(industryLabel(ind))} or left untagged. Add some in Setup, or the batch falls back to a plain white frame.</div>`;
+}
+
+function currentSku(serial) {
+  const ind = $('inIndustry').value;
+  return buildCode({ ind, type: $('inType').value, fit: $('inFit').value,
+                     colour: $('inColour').value, serial: serial ?? (+$('inSerial').value || 1) });
+}
+function syncSkuField() {
+  $('inSku').value = currentSku();
+  $('inSkuState').className = 'badge green';
+  $('inSkuState').textContent = 'valid';
+}
+/* Typing a full code fills the dropdowns rather than the other way round. */
+function skuFieldTyped() {
+  const p = parseCode($('inSku').value);
+  if (!p) {
+    $('inSkuState').className = 'badge red';
+    $('inSkuState').textContent = 'not a valid code';
+    return;
+  }
+  $('inIndustry').value = p.ind; $('inType').value = p.type;
+  $('inFit').value = p.fit; $('inColour').value = p.colour;
+  $('inSerial').value = p.serial;
+  $('inSkuState').className = 'badge green';
+  $('inSkuState').textContent = 'read into dropdowns';
+  renderBdPool();
+}
+
+function renderIntake() {
+  const list = S.items.filter(i => i.stage === 'intake');
+  $('intakeList').innerHTML = list.length ? list.map(i => itemRow(i, 'intake')).join('')
+    : '<div class="empty"><div class="empty-icon">▢</div><div class="empty-title">Batch is empty</div><div style="font-size:12px">Drop photographs above to start.</div></div>';
+  $('bulkFace').innerHTML = '<option value="">Set identity for all…</option>' +
+    S.faces.map(f => `<option value="${f.id}">${esc(f.name)} — ${esc(industryLabel(f.vertical))}</option>`).join('');
+}
+function renderProcess() {
+  const list = S.items.filter(i => i.stage === 'process');
+  $('processList').innerHTML = list.length ? list.map(i => itemRow(i, 'process')).join('')
+    : '<div class="empty"><div class="empty-icon">▢</div><div class="empty-title">Nothing queued</div><div style="font-size:12px">Send a batch over from Intake.</div></div>';
+  $('kQueued').textContent = list.filter(i => i.status === 'pending').length;
+  $('kDone').textContent = list.filter(i => i.status === 'done').length;
+  $('kFailed').textContent = list.filter(i => i.status === 'error').length;
+}
+function renderReview() {
+  const done = S.items.filter(i => i.status === 'done');
+  const show = S.reviewFilter === 'pending' ? done.filter(i => i.approved === undefined) : done;
+  $('reviewGrid').innerHTML = show.length ? show.map(i => `
+    <div class="rcard ${i.approved === true ? 'approved' : i.approved === false ? 'rejected' : ''}">
+      <div class="ba">
+        <figure><figcaption>Before</figcaption><img src="${i.src}" alt=""></figure>
+        <figure><figcaption>After</figcaption><img src="${i.out}" alt=""></figure>
+      </div>
+      <div class="rmeta"><div class="rname">${esc(i.title)}</div><div class="qsub">${esc(i.sku)} · ${esc(i.vertical)}</div></div>
+      <div class="ractions">
+        <button class="btn btn-sm" style="flex:1" data-ok="${i.id}">Approve</button>
+        <button class="btn-secondary btn-sm" style="flex:1" data-no="${i.id}">Reshoot</button>
+      </div>
+    </div>`).join('')
+    : '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">◍</div><div class="empty-title">Nothing to review</div><div style="font-size:12px">Processed images land here.</div></div>';
+  $('rApproved').textContent = done.filter(i => i.approved === true).length + ' approved';
+  $('rPending').textContent = done.filter(i => i.approved === undefined).length + ' pending';
+}
+function renderExport() {
+  const ok = S.items.filter(i => i.approved === true);
+  $('dlCount').textContent = ok.length + ' ready';
+  const rej = S.items.filter(i => i.approved === false);
+  const err = S.items.filter(i => i.status === 'error');
+  $('exportLog').innerHTML = `
+    <div class="row" style="gap:8px;margin-bottom:10px">
+      <span class="badge green">${ok.length} approved</span>
+      <span class="badge amber">${rej.length} flagged for reshoot</span>
+      <span class="badge red">${err.length} failed</span>
+    </div>` + (rej.length || err.length
+      ? `<div class="qwrap" style="max-height:240px"><div class="qrow qhead"><div></div><div>Product</div><div>SKU</div><div>Identity</div><div>Outcome</div><div></div></div>` +
+        rej.concat(err).map(i => `<div class="qrow"><img class="qthumb" src="${i.src}"><div><div class="qname">${esc(i.title)}</div></div><div class="mono" style="font-size:11px">${esc(i.sku)}</div><div></div><div><span class="badge ${i.status === 'error' ? 'red' : 'amber'}">${i.status === 'error' ? 'Failed' : 'Reshoot'}</span></div><div></div></div>`).join('') + '</div>'
+      : '<div class="card-sub" style="margin:0">Clean batch — nothing flagged.</div>');
+}
+function renderCounts() {
+  $('cIntake').textContent = S.items.filter(i => i.stage === 'intake').length;
+  $('cProcess').textContent = S.items.filter(i => i.stage === 'process' && i.status !== 'done').length;
+  $('cReview').textContent = S.items.filter(i => i.status === 'done' && i.approved === undefined).length;
+  $('cExport').textContent = S.items.filter(i => i.approved === true).length;
+  $('chipStore').textContent = S.items.length + ' in batch';
+  const billable = S.items.filter(i => i.stage === 'process' && i.status !== 'done').length;
+  $('chipCost').textContent = '≈ ₹' + (billable * 3) + ' est.';
+}
+function renderAll() { renderFaces(); renderBackdrops(); renderLogo(); renderBatchControls(); renderIntake(); renderProcess(); renderReview(); renderExport(); renderCounts(); }
+
+/* ═══════════ PERSIST ═══════════ */
+async function persist() {
+  await Store.set('cfg', S.cfg);
+  await Store.set('faces', S.faces);
+  await Store.set('backdrops', S.backdrops);
+  await Store.set('logo', S.logo);
+  await Store.set('items', S.items);
+  await Store.set('sku', S.sku);
+  await Store.set('master', S.master);
+}
+async function restore() {
+  const c = await Store.get('cfg'); if (c) Object.assign(S.cfg, c);
+  S.faces = (await Store.get('faces')) || [];
+  S.backdrops = (await Store.get('backdrops')) || [];
+  S.logo = await Store.get('logo');
+  S.items = (await Store.get('items')) || [];
+  S.master = (await Store.get('master')) || [];
+  const sk = await Store.get('sku');
+  S.sku = sk && sk.industries && sk.industries.length ? sk : {
+    industries: JSON.parse(JSON.stringify(DEF_INDUSTRIES)),
+    types: JSON.parse(JSON.stringify(DEF_TYPES)),
+    colours: JSON.parse(JSON.stringify(DEF_COLOURS)),
+    fits: JSON.parse(JSON.stringify(DEF_FITS)),
+    rows: []
+  };
+  if (!S.sku.fits || !S.sku.fits.length) S.sku.fits = JSON.parse(JSON.stringify(DEF_FITS));
+  S.sku.rows = S.sku.rows || [];
+  $('cfgEndpoint').value = S.cfg.endpoint; $('cfgProvider').value = S.cfg.provider;
+  $('cfgAspect').value = S.cfg.aspect; $('cfgSize').value = S.cfg.size; $('cfgFormat').value = S.cfg.format;
+  $('cfgWmPos').value = S.cfg.wmPos; $('cfgWmOp').value = S.cfg.wmOp; $('cfgWmSz').value = S.cfg.wmSz;
+  $('cfgCutout').value = S.cfg.cutout; $('cfgTol').value = S.cfg.tol;
+  $('mSheetUrl').value = S.cfg.sheetUrl || '';
+  $('wmOpVal').textContent = S.cfg.wmOp + '%'; $('wmSzVal').textContent = S.cfg.wmSz + '%'; $('tolVal').textContent = S.cfg.tol;
+  $('tolField').style.display = S.cfg.cutout === 'quick' ? '' : 'none';
+}
+
+/* ═══════════ DROPZONES ═══════════ */
+function wireDrop(id, accept, onFiles) {
+  const dz = $(id);
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = accept; input.multiple = true; input.style.display = 'none';
+  document.body.appendChild(input);
+  dz.onclick = () => input.click();
+  input.onchange = () => { if (input.files.length) onFiles([...input.files]); input.value = ''; };
+  dz.ondragover = e => { e.preventDefault(); dz.classList.add('over'); };
+  dz.ondragleave = () => dz.classList.remove('over');
+  dz.ondrop = e => {
+    e.preventDefault(); dz.classList.remove('over');
+    const f = [...e.dataTransfer.files].filter(x => x.type.startsWith('image/'));
+    if (f.length) onFiles(f);
+  };
+}
+
+/* ═══════════ PIPELINE ═══════════ */
+let running = false;
+async function runBatch() {
+  const queue = S.items.filter(i => i.stage === 'process' && i.status !== 'done');
+  if (!queue.length) return toast('Nothing queued to run');
+  if ($('stepSwap').checked && !S.faces.length) return toast('Add a model identity in Setup first');
+  running = true;
+  $('startRun').disabled = true; $('stopRun').disabled = false;
+  let n = 0;
+  for (const it of queue) {
+    if (!running) break;
+    it.status = 'running'; it.error = ''; renderProcess();
+    $('runStatus').textContent = `Processing ${it.title} — ${n + 1} of ${queue.length}`;
+    try {
+      let work = it.src;
+      if ($('stepSwap').checked) {
+        const face = S.faces.find(f => f.id === it.faceId) || S.faces[0];
+        work = await callApi('faceswap', { source: face.src, target: work });
+      }
+      if ($('stepCut').checked) {
+        work = S.cfg.cutout === 'api'
+          ? await callApi('cutout', { image: work })
+          : await quickCutout(work, S.cfg.tol);
+      }
+      const opts = {
+        aspect: S.cfg.aspect, size: +S.cfg.size, format: S.cfg.format,
+        logo: $('stepWm').checked ? S.logo : null, wmPos: S.cfg.wmPos, wmOp: S.cfg.wmOp, wmSz: S.cfg.wmSz
+      };
+      const bd = S.backdrops.find(b => b.id === it.bdId);
+      it.out = ($('stepBd').checked && bd) ? await compose(work, bd.src, opts) : await fitOnly(work, opts);
+      it.status = 'done'; it.approved = undefined;
+    } catch (e) {
+      it.status = 'error'; it.error = e.message;
+    }
+    n++;
+    $('runBar').style.width = Math.round(n / queue.length * 100) + '%';
+    renderProcess(); renderCounts();
+  }
+  running = false;
+  $('startRun').disabled = false; $('stopRun').disabled = true;
+  $('runStatus').textContent = `Finished — ${S.items.filter(i => i.status === 'done').length} done, ${S.items.filter(i => i.status === 'error').length} failed`;
+  await persist(); renderAll();
+  toast('Batch complete');
+}
+
+/* ═══════════ EXPORT ═══════════ */
+function download(name, href) {
+  const a = document.createElement('a');
+  a.href = href; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+async function downloadImages() {
+  const ok = S.items.filter(i => i.approved === true);
+  if (!ok.length) return toast('Approve some images first');
+  const ext = S.cfg.format === 'image/png' ? 'png' : 'jpg';
+  for (let i = 0; i < ok.length; i++) {
+    download(`${ok[i].sku}.${ext}`, ok[i].out);
+    $('dlBar').style.width = Math.round((i + 1) / ok.length * 100) + '%';
+    await new Promise(r => setTimeout(r, 320));
+  }
+  toast(`${ok.length} images downloaded`);
+}
+function buildCsv() {
+  const ok = S.items.filter(i => i.approved === true);
+  if (!ok.length) { toast('Approve some images first'); return; }
+  const vendor = $('csvVendor').value || 'SupplyMate';
+  const price = $('csvPrice').value || '0';
+  const ext = S.cfg.format === 'image/png' ? 'png' : 'jpg';
+  const head = ['Handle', 'Title', 'Body (HTML)', 'Vendor', 'Type', 'Tags', 'Published',
+    'Option1 Name', 'Option1 Value', 'Variant SKU', 'Variant Inventory Policy',
+    'Variant Fulfillment Service', 'Variant Price', 'Variant Requires Shipping',
+    'Variant Taxable', 'Image Src', 'Image Position', 'Image Alt Text', 'Status'];
+  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const rows = ok.map(i => {
+    const handle = i.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || i.sku.toLowerCase();
+    return [handle, i.title, '', vendor, i.vertical, `${i.vertical},uniform`, 'TRUE',
+      'Title', 'Default Title', i.sku, 'deny', 'manual', price, 'TRUE', 'TRUE',
+      `${i.sku}.${ext}`, '1', `${i.title} — ${i.vertical} uniform by ${vendor}`, 'draft'].map(q).join(',');
+  });
+  const csv = head.map(q).join(',') + '\n' + rows.join('\n');
+  download('supplymate_products.csv', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv));
+  toast('CSV downloaded');
+}
+
+/* ═══════════ SKU MODULE ═══════════ */
+
+const PAD = n => String(n).padStart(4, '0');
+const words = s => (s || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean);
+
+/* Types: longest match wins, so "chef coat" beats "coat".
+   Colours: earliest match wins, so "Black & Yellow Vest Coat" reads as black. */
+function detect(name, dict, preferEarliest) {
+  const low = ' ' + name.toLowerCase().replace(/[^a-z0-9]+/g, ' ') + ' ';
+  let best = null, bestLen = 0, bestPos = Infinity;
+  for (const entry of dict) {
+    for (const w of words(entry.match)) {
+      const base = w.replace(/[^a-z0-9]+/g, ' ');
+      for (const form of [base, base + 's', base + 'es']) {
+        const pos = low.indexOf(' ' + form + ' ');
+        if (pos === -1) continue;
+        const better = preferEarliest
+          ? (pos < bestPos || (pos === bestPos && w.length > bestLen))
+          : (w.length > bestLen);
+        if (better) { best = entry; bestLen = w.length; bestPos = pos; }
+        break;
+      }
+    }
+  }
+  return best;
+}
+
+/* Two codes that differ by a single character in the same segment are a floor-error waiting
+   to happen. Flag them so they can be edited before 780 labels get printed. */
+function findClashes(dict) {
+  const out = [];
+  for (let i = 0; i < dict.length; i++) {
+    for (let j = i + 1; j < dict.length; j++) {
+      const a = (dict[i].code || '').toUpperCase(), b = (dict[j].code || '').toUpperCase();
+      if (a.length !== b.length || !a) continue;
+      let diff = 0, pos = -1;
+      for (let k = 0; k < a.length; k++) if (a[k] !== b[k]) { diff++; pos = k; }
+      if (diff === 1) {
+        const pair = [a[pos], b[pos]].sort().join('');
+        const risky = ['DO', 'CG', 'EF', 'MN', 'OQ', 'PR', 'UV', 'IJ', 'BR', 'CO', 'DP'];
+        out.push({ a, b, risky: risky.includes(pair) });
+      }
+    }
+  }
+  return out;
+}
+
+function nextSerial(group, ind, type) {
+  const prefix = `${group}-${ind}-${type}-`;
+  const used = S.sku.rows
+    .filter(r => r.code.startsWith(prefix))
+    .map(r => parseInt(r.code.slice(prefix.length, prefix.length + 4), 10))
+    .filter(n => !isNaN(n));
+  return used.length ? Math.max(...used) + 1 : 1;
+}
+
+function buildCode(r) {
+  const ind = S.sku.industries.find(i => i.code === r.ind);
+  return `${ind ? ind.group : '??'}-${r.ind || '???'}-${r.type || '???'}-${PAD(r.serial)}-${r.fit || '???'}-${r.colour || '???'}`;
+}
+
+/* Reverse of buildCode — lets the intake field accept a typed SKU and fill the dropdowns. */
+function parseCode(code) {
+  const p = (code || '').toUpperCase().trim().split('-');
+  if (p.length !== 6) return null;
+  const [group, ind, type, serial, fit, colour] = p;
+  const industry = S.sku.industries.find(i => i.code === ind);
+  if (!industry || industry.group !== group) return null;
+  if (!S.sku.types.some(t => t.code === type)) return null;
+  if (!S.sku.fits.some(f => f.code === fit)) return null;
+  if (!S.sku.colours.some(c => c.code === colour)) return null;
+  if (!/^\d{4}$/.test(serial)) return null;
+  return { ind, type, serial: parseInt(serial, 10), fit, colour };
+}
+
+/* Every industry-aware dropdown in the app reads from here, so the SKU
+   dictionaries are the single source of truth across Catalogue Studio. */
+function industryOptions(selected, includeAny) {
+  return (includeAny ? '<option value="">— any —</option>' : '')
+    + S.sku.industries.map(i =>
+        `<option value="${i.code}" ${selected === i.code ? 'selected' : ''}>${esc(i.label)}</option>`).join('');
+}
+function industryLabel(code) {
+  const i = S.sku.industries.find(x => x.code === code);
+  return i ? i.label : '—';
+}
+
+function renderDicts() {
+  const groups = ['WW', 'SW'];
+  $('dictIndustries').innerHTML = S.sku.industries.map((r, i) => `
+    <tr><td><input class="code" maxlength="3" value="${esc(r.code)}" data-d="industries" data-i="${i}" data-f="code"></td>
+    <td><input value="${esc(r.label)}" data-d="industries" data-i="${i}" data-f="label"></td>
+    <td><select data-d="industries" data-i="${i}" data-f="group">${groups.map(g => `<option ${r.group === g ? 'selected' : ''}>${g}</option>`).join('')}</select></td>
+    <td class="x"><button data-drop="industries" data-i="${i}">×</button></td></tr>`).join('');
+
+  $('dictColours').innerHTML = S.sku.colours.map((r, i) => `
+    <tr><td><input type="color" value="${r.hex}" data-d="colours" data-i="${i}" data-f="hex" style="width:26px;height:24px;padding:0;border:none;cursor:pointer"></td>
+    <td><input class="code" maxlength="3" value="${esc(r.code)}" data-d="colours" data-i="${i}" data-f="code"></td>
+    <td><input value="${esc(r.label)}" data-d="colours" data-i="${i}" data-f="label"></td>
+    <td class="x"><button data-drop="colours" data-i="${i}">×</button></td></tr>`).join('');
+
+  $('dictTypes').innerHTML = S.sku.types.map((r, i) => `
+    <tr><td><input class="code" maxlength="3" value="${esc(r.code)}" data-d="types" data-i="${i}" data-f="code"></td>
+    <td><input value="${esc(r.label)}" data-d="types" data-i="${i}" data-f="label"></td>
+    <td><input value="${esc(r.match)}" data-d="types" data-i="${i}" data-f="match"></td>
+    <td class="x"><button data-drop="types" data-i="${i}">×</button></td></tr>`).join('');
+
+  $('dictFits').innerHTML = S.sku.fits.map((r, i) => `
+    <tr><td><input class="code" maxlength="3" value="${esc(r.code)}" data-d="fits" data-i="${i}" data-f="code"></td>
+    <td><input value="${esc(r.label)}" data-d="fits" data-i="${i}" data-f="label"></td>
+    <td class="x"><button data-drop="fits" data-i="${i}">×</button></td></tr>`).join('');
+
+  const clashes = [...findClashes(S.sku.types), ...findClashes(S.sku.colours), ...findClashes(S.sku.industries), ...findClashes(S.sku.fits)];
+  const risky = clashes.filter(c => c.risky);
+  $('clashWarn').innerHTML = risky.length
+    ? `<div class="note red" style="margin:0"><strong>${risky.length} risky code pair${risky.length > 1 ? 's' : ''}.</strong> These differ by one character that's easy to misread on a printed card: ${risky.map(c => `<span class="mono">${c.a}/${c.b}</span>`).join(', ')}. Change one letter in each pair.</div>`
+    : clashes.length
+      ? `<div class="note" style="margin:0">${clashes.length} pair${clashes.length > 1 ? 's' : ''} differ by a single character, but by clearly distinct letters: ${clashes.map(c => `<span class="mono">${c.a}/${c.b}</span>`).join(', ')}. Fine for print, worth knowing.</div>`
+      : '<div class="note green" style="margin:0">No confusable code pairs. Every code differs from every other by at least two characters.</div>';
+
+  $('skuIndustry').innerHTML = S.sku.industries
+    .map(i => `<option value="${i.code}">${esc(i.label)} — ${i.group}-${i.code}</option>`).join('');
+  $('skuFit').innerHTML = S.sku.fits.map(f => `<option value="${f.code}">${esc(f.label)}</option>`).join('');
+
+  // Every industry-aware control in Catalogue Studio repopulates from the dictionary.
+  const keepInd = $('inIndustry') ? $('inIndustry').value : '';
+  if ($('inIndustry')) { $('inIndustry').innerHTML = industryOptions(keepInd); }
+  const keepCast = $('castFilter') ? $('castFilter').value : '';
+  if ($('castFilter')) { $('castFilter').innerHTML = industryOptions(keepCast, true); }
+  const keepBd = $('bdFilter') ? $('bdFilter').value : '';
+  if ($('bdFilter')) { $('bdFilter').innerHTML = industryOptions(keepBd, true); }
+  if ($('genVertical')) {
+    const keepGen = $('genVertical').value;
+    $('genVertical').innerHTML = industryOptions(keepGen, true);
+  }
+  renderFaces(); renderBackdrops();
+}
+
+function renderSkuRows() {
+  const rows = S.sku.rows;
+  $('skuResultCard').style.display = rows.length ? '' : 'none';
+  if (!rows.length) return;
+
+  const missing = rows.filter(r => !r.type || !r.colour).length;
+  const dupes = {};
+  rows.forEach(r => { dupes[r.code] = (dupes[r.code] || 0) + 1; });
+  const dupCount = Object.values(dupes).filter(n => n > 1).length;
+
+  /* Same garment, different industry — the white-shirt problem. Two rows sharing
+     type + fit + colour under different industries are almost certainly one product. */
+  const sig = {};
+  rows.forEach((r, i) => {
+    if (!r.type || !r.colour || r.ind === 'GEN') return;
+    const k = `${r.type}|${r.fit}|${r.colour}`;
+    (sig[k] = sig[k] || []).push(i);
+  });
+  const twins = Object.entries(sig)
+    .filter(([, ix]) => new Set(ix.map(i => rows[i].ind)).size > 1)
+    .map(([k, ix]) => ({ k, ix }));
+
+  $('skuSummary').textContent = `${rows.length} codes across ${new Set(rows.map(r => r.ind)).size} industries`;
+  $('skuFlags').innerHTML = [
+    missing ? `<div class="note" style="margin-bottom:8px"><strong>${missing} row${missing > 1 ? 's' : ''} incomplete.</strong> The parser couldn't read a type or colour from the name — set them below, or add a match word to the dictionary.</div>` : '',
+    dupCount ? `<div class="note red" style="margin-bottom:8px"><strong>${dupCount} duplicate code${dupCount > 1 ? 's' : ''}.</strong> Two products resolved identically. Either they're the same garment listed twice, or one needs its own serial.</div>` : '',
+    twins.length ? `<div class="note" style="margin-bottom:8px"><strong>${twins.length} garment${twins.length > 1 ? 's appear' : ' appears'} under more than one industry.</strong> ${twins.slice(0, 4).map(t => `<span class="mono">${esc(t.k.replace(/\|/g, '-'))}</span>`).join(', ')}${twins.length > 4 ? '…' : ''} — if these are physically the same piece, move one to <span class="mono">GEN</span> and add the others under Also sold to. <button class="btn-secondary btn-sm" id="mergeTwins" style="margin-left:6px">Merge to GEN</button></div>` : ''
+  ].join('');
+
+  const typeOpts = c => '<option value="">— set —</option>' + S.sku.types
+    .map(t => `<option value="${t.code}" ${c === t.code ? 'selected' : ''}>${esc(t.label)}</option>`).join('');
+  const colOpts = c => '<option value="">— set —</option>' + S.sku.colours
+    .map(t => `<option value="${t.code}" ${c === t.code ? 'selected' : ''}>${esc(t.label)}</option>`).join('');
+  const fitOpts = c => S.sku.fits
+    .map(t => `<option value="${t.code}" ${c === t.code ? 'selected' : ''}>${esc(t.label)}</option>`).join('');
+
+  $('skuRows').innerHTML = rows.map((r, i) => {
+    const col = S.sku.colours.find(c => c.code === r.colour);
+    const bad = !r.type || !r.colour || dupes[r.code] > 1;
+    const also = r.also || [];
+    return `<tr${bad ? ' class="clash"' : ''}>
+      <td class="sku">${esc(r.code)}</td>
+      <td>${esc(r.name)}</td>
+      <td><select data-srow="${i}" data-sf="type">${typeOpts(r.type)}</select></td>
+      <td><select data-srow="${i}" data-sf="fit">${fitOpts(r.fit)}</select></td>
+      <td><div class="row" style="gap:6px;flex-wrap:nowrap">
+        <span class="swatch" style="background:${col ? col.hex : 'transparent'}"></span>
+        <select data-srow="${i}" data-sf="colour">${colOpts(r.colour)}</select>
+      </div></td>
+      <td><details class="also"><summary>${also.length ? also.join(', ') : '— none —'}</summary>
+        <div class="also-list">${S.sku.industries.filter(x => x.code !== r.ind && x.code !== 'GEN')
+          .map(x => `<label><input type="checkbox" data-also="${i}" value="${x.code}" ${also.includes(x.code) ? 'checked' : ''}> ${esc(x.label)}</label>`).join('')}</div>
+      </details></td>
+    </tr>`;
+  }).join('');
+
+  const mt = $('mergeTwins');
+  if (mt) mt.onclick = async () => {
+    for (const t of twins) {
+      const keep = t.ix[0];
+      const others = t.ix.slice(1);
+      const inds = t.ix.map(i => rows[i].ind);
+      rows[keep].ind = 'GEN';
+      rows[keep].also = [...new Set([...(rows[keep].also || []), ...inds])];
+      rows[keep].code = buildCode(rows[keep]);
+      others.sort((a, b) => b - a).forEach(i => rows.splice(i, 1));
+    }
+    await persist(); renderSkuRows();
+    toast(`${twins.length} merged to GEN`);
+  };
+}
+
+function generateSkus() {
+  const ind = $('skuIndustry').value;
+  const industry = S.sku.industries.find(i => i.code === ind);
+  if (!industry) return toast('Pick an industry first');
+  const lines = $('skuInput').value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (!lines.length) return toast('Paste some product names first');
+
+  if ($('skuSerialMode').value === 'restart') {
+    S.sku.rows = S.sku.rows.filter(r => r.ind !== ind);
+  }
+
+  const counters = {};
+  const defFit = $('skuFit').value;
+  for (const name of lines) {
+    const t = detect(name, S.sku.types, false);
+    const c = detect(name, S.sku.colours, true);
+    const type = t ? t.code : '';
+    const key = `${industry.group}-${ind}-${type}`;
+    if (counters[key] === undefined) counters[key] = nextSerial(industry.group, ind, type) - 1;
+    counters[key]++;
+    const r = { name, ind, type, colour: c ? c.code : '', fit: defFit, serial: counters[key], also: [] };
+    r.code = buildCode(r);
+    S.sku.rows.push(r);
+  }
+  $('skuInput').value = '';
+  persist(); renderSkuRows();
+  toast(`${lines.length} codes generated`);
+}
+
+function skuCsv() {
+  if (!S.sku.rows.length) return toast('Nothing to export');
+  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const head = ['SKU', 'Product Name', 'Group', 'Primary Industry', 'Also Sold To', 'Product Type', 'Serial', 'Fit', 'Base Colour', 'Colour Hex'];
+  const body = S.sku.rows.map(r => {
+    const ind = S.sku.industries.find(i => i.code === r.ind) || {};
+    const t = S.sku.types.find(x => x.code === r.type) || {};
+    const c = S.sku.colours.find(x => x.code === r.colour) || {};
+    const f = S.sku.fits.find(x => x.code === r.fit) || {};
+    return [r.code, r.name, ind.group || '', ind.label || '', (r.also || []).join(' '), t.label || '', PAD(r.serial), f.label || '', c.label || '', c.hex || ''].map(q).join(',');
+  });
+  download('supplymate_skus.csv', 'data:text/csv;charset=utf-8,' + encodeURIComponent(head.map(q).join(',') + '\n' + body.join('\n')));
+  toast('CSV downloaded');
+}
+
+/* The sheet the floor actually uses: one code per line, monospace, columns aligned,
+   colour chip beside each so matching doesn't depend on reading the letters. */
+function factorySheet() {
+  if (!S.sku.rows.length) return toast('Nothing to print');
+  const byInd = {};
+  S.sku.rows.forEach(r => { (byInd[r.ind] = byInd[r.ind] || []).push(r); });
+
+  const sections = Object.entries(byInd).map(([ind, rows]) => {
+    const industry = S.sku.industries.find(i => i.code === ind) || { label: ind, group: '' };
+    const body = rows.map(r => {
+      const c = S.sku.colours.find(x => x.code === r.colour) || { hex: '#fff', label: '' };
+      const parts = r.code.split('-');
+      return `<tr>
+        <td class="chip"><span style="background:${c.hex}"></span></td>
+        <td class="code">${parts.map(p => `<b>${p}</b>`).join('<i>-</i>')}</td>
+        <td class="nm">${esc(r.name)}</td>
+      </tr>`;
+    }).join('');
+    return `<h2>${esc(industry.label)} <span>${industry.group}-${ind}</span></h2>
+      <table><thead><tr><th></th><th>Code</th><th>Product</th></tr></thead><tbody>${body}</tbody></table>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>SupplyMate — SKU Reference</title><style>
+    @page { margin: 14mm; }
+    body { font-family: Arial, Helvetica, sans-serif; color: #000; font-size: 11pt; }
+    h1 { font-size: 15pt; margin: 0 0 2mm; }
+    .sub { font-size: 9pt; color: #555; margin-bottom: 7mm; }
+    h2 { font-size: 12pt; margin: 7mm 0 2mm; padding-bottom: 1.5mm; border-bottom: 1.5pt solid #000; page-break-after: avoid; }
+    h2 span { font-family: "Courier New", monospace; font-size: 10pt; color: #555; font-weight: normal; margin-left: 3mm; }
+    table { width: 100%; border-collapse: collapse; page-break-inside: auto; }
+    th { text-align: left; font-size: 8pt; text-transform: uppercase; letter-spacing: .5pt; color: #555; padding: 1.5mm 2mm; border-bottom: .5pt solid #999; }
+    td { padding: 1.6mm 2mm; border-bottom: .4pt solid #ddd; vertical-align: middle; }
+    tr { page-break-inside: avoid; }
+    .chip { width: 9mm; }
+    .chip span { display: block; width: 7mm; height: 7mm; border: .5pt solid #333; border-radius: 1mm; }
+    .code { font-family: "Courier New", monospace; font-size: 13pt; font-weight: bold; letter-spacing: 1pt; white-space: nowrap; width: 62mm; }
+    .code i { font-style: normal; color: #999; padding: 0 .3mm; }
+    .nm { font-size: 9pt; color: #333; }
+    @media print { .noprint { display: none; } }
+  </style></head><body>
+    <h1>SupplyMate — SKU Reference</h1>
+    <div class="sub">Match the colour chip first, then the code left to right. Every code is the same length: 2 - 3 - 3 - 4 - 3.</div>
+    <button class="noprint" onclick="window.print()" style="margin-bottom:6mm;padding:8px 16px;font-size:11pt;cursor:pointer">Print</button>
+    ${sections}
+  </body></html>`;
+
+  const w = window.open('', '_blank');
+  if (!w) return toast('Allow pop-ups to open the factory sheet');
+  w.document.write(html);
+  w.document.close();
+}
+
+
+/* ═══════════ PRODUCT MASTER ═══════════ */
+
+const MASTER_COLS = ['SKU', 'Product Name', 'Group', 'Primary Industry', 'Also Sold To',
+  'Product Type', 'Fit', 'Base Colour', 'Fabric Composition', 'GSM',
+  'Description', 'Price', 'MOQ', 'Image Drive Link', 'Status', 'Updated At'];
+
+function masterRowFromSku(r) {
+  const ind = S.sku.industries.find(i => i.code === r.ind) || {};
+  const t = S.sku.types.find(x => x.code === r.type) || {};
+  const c = S.sku.colours.find(x => x.code === r.colour) || {};
+  const f = S.sku.fits.find(x => x.code === r.fit) || {};
+  const prev = S.master.find(m => m.sku === r.code) || {};
+  return {
+    sku: r.code, name: r.name, group: ind.group || '', industry: ind.label || '',
+    also: (r.also || []).join(' '), type: t.label || '', fit: f.label || '',
+    colour: c.label || '', fabric: prev.fabric || '', gsm: prev.gsm || '',
+    description: prev.description || '', price: prev.price || '', moq: prev.moq || '',
+    image: prev.image || '', status: prev.status || 'draft',
+    updated: new Date().toISOString().slice(0, 10)
+  };
+}
+
+async function masterPull() {
+  const url = S.cfg.sheetUrl;
+  if (!url) return toast('Paste your Apps Script URL first');
+  $('mState').className = 'badge amber'; $('mState').textContent = 'Pulling…';
+  try {
+    const r = await fetch(url + (url.includes('?') ? '&' : '?') + 'action=read');
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'Sheet returned an error');
+    const incoming = j.rows || [];
+    // SKU is the key: update what matches, add what's new, never drop local rows.
+    const byKey = {};
+    S.master.forEach(m => { byKey[m.sku] = m; });
+    incoming.forEach(m => { byKey[m.sku] = { ...byKey[m.sku], ...m }; });
+    S.master = Object.values(byKey);
+    await persist(); renderMaster();
+    $('mState').className = 'badge green';
+    $('mState').textContent = `${incoming.length} pulled`;
+    toast(`${incoming.length} products pulled`);
+  } catch (e) {
+    $('mState').className = 'badge red';
+    $('mState').textContent = e.message.slice(0, 40);
+  }
+}
+
+async function masterPush() {
+  const url = S.cfg.sheetUrl;
+  if (!url) return toast('Paste your Apps Script URL first');
+  // Anything coded in the SKU tab but not yet in the master gets seeded first.
+  S.sku.rows.forEach(r => {
+    if (!S.master.some(m => m.sku === r.code)) S.master.push(masterRowFromSku(r));
+  });
+  $('mState').className = 'badge amber'; $('mState').textContent = 'Pushing…';
+  try {
+    const r = await fetch(url, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'write', products: S.master, syncedAt: new Date().toString() })
+    });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'Sheet returned an error');
+    await persist(); renderMaster();
+    $('mState').className = 'badge green';
+    $('mState').textContent = `${S.master.length} pushed`;
+    toast(`${S.master.length} products pushed`);
+  } catch (e) {
+    $('mState').className = 'badge red';
+    $('mState').textContent = e.message.slice(0, 40);
+  }
+}
+
+function renderMaster() {
+  $('mListCard').style.display = S.master.length ? '' : 'none';
+  if (!S.master.length) return;
+  const q = ($('mSearch').value || '').toLowerCase();
+  const list = q ? S.master.filter(m =>
+    (m.sku || '').toLowerCase().includes(q) || (m.name || '').toLowerCase().includes(q)) : S.master;
+  $('mCount').textContent = q ? `${list.length} of ${S.master.length}` : `${S.master.length} products`;
+  $('mRows').innerHTML = list.map(m => `<tr>
+    <td class="sku">${esc(m.sku)}</td>
+    <td>${esc(m.name)}</td>
+    <td>${esc(m.fabric || '—')}</td>
+    <td class="mono">${esc(m.gsm || '—')}</td>
+    <td class="mono">${m.price ? '₹' + esc(m.price) : '—'}</td>
+    <td>${m.image ? `<a href="${esc(m.image)}" target="_blank" rel="noopener">open</a>` : '<span class="seg">—</span>'}</td>
+  </tr>`).join('');
+}
+
+async function driveUpload() {
+  const url = S.cfg.sheetUrl;
+  if (!url) return toast('Add your Apps Script URL in Setup \u2192 Product master first');
+  const ok = S.items.filter(i => i.approved === true);
+  if (!ok.length) return toast('Approve some images first');
+  const ext = S.cfg.format === 'image/png' ? 'png' : 'jpg';
+  let done = 0, failed = 0;
+  $('driveState').className = 'badge amber';
+
+  for (const it of ok) {
+    $('driveState').textContent = `Uploading ${done + 1} of ${ok.length}`;
+    try {
+      const r = await fetch(url, {
+        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'upload',
+          filename: `${it.sku}.${ext}`,
+          mimeType: S.cfg.format,
+          data: it.out.split(',')[1]
+        })
+      });
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || 'upload failed');
+      // Write the link onto the matching master row, creating it if the SKU is new.
+      let m = S.master.find(x => x.sku === it.sku);
+      if (!m) { m = { sku: it.sku, name: it.title, status: 'draft' }; S.master.push(m); }
+      m.image = j.url;
+      m.updated = new Date().toISOString().slice(0, 10);
+      done++;
+    } catch (e) { failed++; }
+    $('driveBar').style.width = Math.round((done + failed) / ok.length * 100) + '%';
+  }
+  await persist(); renderMaster();
+  $('driveState').className = failed ? 'badge amber' : 'badge green';
+  $('driveState').textContent = failed ? `${done} up, ${failed} failed` : `${done} uploaded`;
+  toast(failed ? `${done} uploaded, ${failed} failed` : `${done} images on Drive`);
+}
+
+function masterCsv() {
+  if (!S.master.length) return toast('Nothing to export');
+  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const keys = ['sku', 'name', 'group', 'industry', 'also', 'type', 'fit', 'colour',
+                'fabric', 'gsm', 'description', 'price', 'moq', 'image', 'status', 'updated'];
+  const csv = MASTER_COLS.map(q).join(',') + '\n'
+    + S.master.map(m => keys.map(k => q(m[k])).join(',')).join('\n');
+  download('supplymate_product_master.csv', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv));
+  toast('CSV downloaded');
+}
+
+const MASTER_SRC = `/**
+ * SUPPLYMATE CATALOGUE STUDIO — PRODUCT MASTER (two-way)
+ * -----------------------------------------------------
+ * GET  ?action=read   → returns every row of the "Product Master" tab
+ * POST {action:'write', products:[…]} → rewrites the tab
+ *
+ * SETUP
+ * 1. Extensions → Apps Script, paste this file
+ * 2. Deploy → New deployment → Web app
+ *      Execute as: Me · Who has access: Anyone
+ * 3. Copy the /exec URL into Catalogue Studio → Setup → Product master
+ */
+
+var TAB  = 'Product Master';
+var COLS = ['SKU','Product Name','Group','Primary Industry','Also Sold To',
+            'Product Type','Fit','Base Colour','Fabric Composition','GSM',
+            'Description','Price','MOQ','Image Drive Link','Status','Updated At'];
+var KEYS = ['sku','name','group','industry','also','type','fit','colour',
+            'fabric','gsm','description','price','moq','image','status','updated'];
+
+function doGet(e) {
+  var action = e && e.parameter ? e.parameter.action : '';
+  if (action !== 'read') return out({ ok: true, msg: 'Product Master endpoint is live.' });
+  try {
+    var sh = sheet();
+    var last = sh.getLastRow();
+    if (last < 3) return out({ ok: true, rows: [] });
+    var vals = sh.getRange(3, 1, last - 2, COLS.length).getValues();
+    var rows = [];
+    for (var i = 0; i < vals.length; i++) {
+      if (!vals[i][0]) continue;
+      var o = {};
+      for (var c = 0; c < KEYS.length; c++) o[KEYS[c]] = String(vals[i][c] == null ? '' : vals[i][c]);
+      rows.push(o);
+    }
+    return out({ ok: true, rows: rows });
+  } catch (err) { return out({ ok: false, error: String(err) }); }
+}
+
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    if (data.action === 'upload') return handleUpload(data);
+    if (data.action !== 'write') return out({ ok: false, error: 'Unknown action' });
+    var sh = sheet();
+    var rows = (data.products || []).map(function (p) {
+      return KEYS.map(function (k) { return p[k] == null ? '' : p[k]; });
+    });
+    var last = sh.getLastRow();
+    if (last > 2) sh.getRange(3, 1, last - 2, COLS.length).clearContent();
+    if (rows.length) sh.getRange(3, 1, rows.length, COLS.length).setValues(rows);
+    sh.getRange(1, 1).setValue('PRODUCT MASTER  ·  last sync: ' + (data.syncedAt || new Date()));
+    return out({ ok: true, written: rows.length });
+  } catch (err) { return out({ ok: false, error: String(err) }); }
+}
+
+/** Saves a base64 image into Drive, makes it link-viewable, returns the URL. */
+function handleUpload(data) {
+  var folderName = 'Catalogue Studio Images';
+  var it = DriveApp.getFoldersByName(folderName);
+  var folder = it.hasNext() ? it.next() : DriveApp.createFolder(folderName);
+  var name = data.filename || ('image_' + Date.now());
+  // Replace rather than duplicate when the same SKU is re-uploaded.
+  var existing = folder.getFilesByName(name);
+  while (existing.hasNext()) existing.next().setTrashed(true);
+  var blob = Utilities.newBlob(Utilities.base64Decode(data.data), data.mimeType || 'image/jpeg', name);
+  var file = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return out({ ok: true, url: file.getUrl(), fileId: file.getId() });
+}
+
+function sheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(TAB);
+  if (!sh) {
+    sh = ss.insertSheet(TAB);
+    sh.getRange(1, 1).setValue('PRODUCT MASTER');
+  }
+  sh.getRange(2, 1, 1, COLS.length).setValues([COLS])
+    .setFontWeight('bold').setFontColor('#FFFFFF').setBackground('#059669');
+  sh.setFrozenRows(2);
+  return sh;
+}
+
+function out(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+
+/* ═══════════ WORKER CODE ═══════════ */
+const WORKER_SRC = `// SupplyMate Catalogue Studio — image proxy
+// wrangler secret put REPLICATE_API_TOKEN
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
+
+export default {
+  async fetch(request, env) {
+    if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
+    if (request.method !== 'POST') return json({ error: 'POST only' }, 405);
+
+    try {
+      const { op, source, target, image, prompt } = await request.json();
+
+      // 'generate' uses an official model endpoint; the others use versioned community models.
+      if (op === 'generate') {
+        const r = await fetch(
+          'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions',
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + env.REPLICATE_API_TOKEN,
+              'Content-Type': 'application/json',
+              'Prefer': 'wait'
+            },
+            body: JSON.stringify({
+              input: {
+                prompt,
+                aspect_ratio: '1:1',
+                output_format: 'jpg',
+                num_outputs: 1
+              }
+            })
+          }
+        );
+        const p = await r.json();
+        if (p.error || p.status === 'failed') return json({ error: p.error || 'generation failed' }, 502);
+        const img = Array.isArray(p.output) ? p.output[0] : p.output;
+        return json({ image: img });
+      }
+
+      const MODELS = {
+        faceswap: 'cdingram/face-swap:d1d6ea8c8be89d664a07a457526f7128109dee7030fdac424788d762c71ed111',
+        cutout:   'lucataco/remove-bg:95fcc2a26d3899cd6c2691c900465aaeff466285a65c14638cc5f36f34befaf1'
+      };
+      const version = MODELS[op];
+      if (!version) return json({ error: 'Unknown op: ' + op }, 400);
+
+      const input = op === 'faceswap'
+        ? { swap_image: source, input_image: target }
+        : { image };
+
+      const start = await fetch('https://api.replicate.com/v1/predictions', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + env.REPLICATE_API_TOKEN,
+          'Content-Type': 'application/json',
+          'Prefer': 'wait'
+        },
+        body: JSON.stringify({ version, input })
+      });
+
+      let pred = await start.json();
+      if (pred.error) return json({ error: pred.error }, 502);
+
+      // 'Prefer: wait' usually returns a finished prediction; poll if not.
+      let tries = 0;
+      while (pred.status !== 'succeeded' && pred.status !== 'failed' && tries < 60) {
+        await new Promise(r => setTimeout(r, 1500));
+        const p = await fetch(pred.urls.get, {
+          headers: { 'Authorization': 'Bearer ' + env.REPLICATE_API_TOKEN }
+        });
+        pred = await p.json();
+        tries++;
+      }
+
+      if (pred.status !== 'succeeded') {
+        return json({ error: pred.error || 'Prediction ' + pred.status }, 502);
+      }
+
+      const out = Array.isArray(pred.output) ? pred.output[0] : pred.output;
+      return json({ image: out });
+
+    } catch (err) {
+      return json({ error: err.message }, 500);
+    }
+  }
+};
+
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { 'Content-Type': 'application/json', ...CORS }
+  });
+}`;
+
+/* ═══════════ WIRING ═══════════ */
+document.addEventListener('DOMContentLoaded', async () => {
+  $('workerCode').textContent = WORKER_SRC;
+
+  await Store.init();
+  await restore();
+  renderAll();
+
+  // Nav
+  document.querySelectorAll('.sb-item').forEach(el => el.onclick = () => {
+    document.querySelectorAll('.sb-item').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+    const p = el.dataset.page;
+    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+    $('page-' + p).classList.add('active');
+    $('crumb').textContent = el.textContent.replace(/\d+$/, '').trim();
+    renderAll();
+  });
+
+  $('themeBtn').onclick = () => {
+    const h = document.documentElement;
+    h.dataset.theme = h.dataset.theme === 'dark' ? 'light' : 'dark';
+  };
+
+  // Config bindings
+  const bind = (id, key, fn) => { const e = $(id); e.oninput = e.onchange = async () => { S.cfg[key] = fn ? fn(e.value) : e.value; await persist(); }; };
+  bind('cfgEndpoint', 'endpoint'); bind('cfgProvider', 'provider');
+  bind('cfgAspect', 'aspect'); bind('cfgSize', 'size', Number); bind('cfgFormat', 'format');
+  bind('cfgWmPos', 'wmPos');
+  $('cfgWmOp').oninput = async e => { S.cfg.wmOp = +e.target.value; $('wmOpVal').textContent = S.cfg.wmOp + '%'; await persist(); };
+  $('cfgWmSz').oninput = async e => { S.cfg.wmSz = +e.target.value; $('wmSzVal').textContent = S.cfg.wmSz + '%'; await persist(); };
+  $('cfgTol').oninput = async e => { S.cfg.tol = +e.target.value; $('tolVal').textContent = S.cfg.tol; await persist(); };
+  $('cfgCutout').onchange = async e => { S.cfg.cutout = e.target.value; $('tolField').style.display = e.target.value === 'quick' ? '' : 'none'; await persist(); };
+
+  $('copyWorker').onclick = async () => {
+    try { await navigator.clipboard.writeText(WORKER_SRC); toast('Worker code copied'); }
+    catch { toast('Copy failed — select the code manually'); }
+  };
+
+  $('testEndpoint').onclick = async () => {
+    const st = $('endpointState');
+    if (!S.cfg.endpoint) { st.className = 'badge red'; st.textContent = 'No URL set'; return; }
+    st.className = 'badge amber'; st.textContent = 'Testing…';
+    try {
+      const r = await fetch(S.cfg.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ op: 'ping' }) });
+      st.className = r.status < 500 ? 'badge green' : 'badge red';
+      st.textContent = r.status < 500 ? 'Reachable' : 'Server error ' + r.status;
+    } catch (e) { st.className = 'badge red'; st.textContent = 'Unreachable'; }
+  };
+
+  // Cast
+  $('genFace').onclick = async () => {
+    const gender = $('genGender').value, age = +$('genAge').value, vertical = $('genVertical').value;
+    const btn = $('genFace');
+    btn.disabled = true; btn.textContent = 'Generating…';
+    const prompt = `studio portrait headshot of an Indian ${gender}, ${age} years old, `
+      + `neutral friendly expression, facing camera straight on, even soft front lighting, `
+      + `plain light grey seamless background, sharp focus, photorealistic, no text`;
+    try {
+      const src = await callApi('generate', { prompt });
+      const n = S.faces.filter(f => f.gender === gender).length + 1;
+      S.faces.push({
+        id: uid(),
+        name: `${gender === 'man' ? 'Model M' : 'Model F'}${n}`,
+        src, vertical, gender, age
+      });
+      await persist(); renderFaces(); renderIntake();
+      toast('Identity added — rename it to something you\'ll remember');
+    } catch (e) {
+      toast(e.message);
+    }
+    btn.disabled = false; btn.textContent = 'Generate';
+  };
+
+  wireDrop('dzFaces', 'image/*', async files => {
+    for (const f of files) {
+      S.faces.push({
+        id: uid(), name: f.name.replace(/\.[^.]+$/, ''), src: await fileToDataURL(f),
+        vertical: $('genVertical').value, gender: $('genGender').value, age: +$('genAge').value
+      });
+    }
+    await persist(); renderFaces(); renderIntake(); toast(`${files.length} identity added`);
+  });
+
+  $('bulkFace').onchange = async e => {
+    if (!e.target.value) return;
+    S.items.forEach(i => { if (i.stage === 'intake') i.faceId = e.target.value; });
+    const f = S.faces.find(x => x.id === e.target.value);
+    e.target.value = '';
+    await persist(); renderIntake(); renderFaces();
+    toast(`Whole batch set to ${f.name}`);
+  };
+  wireDrop('dzBackdrops', 'image/*', async files => {
+    for (const f of files) S.backdrops.push({ id: uid(), name: f.name.replace(/\.[^.]+$/, ''), src: await fileToDataURL(f), vertical: 'Any' });
+    await persist(); renderBackdrops(); toast(`${files.length} backdrop added`);
+  });
+  wireDrop('dzLogo', 'image/*', async files => {
+    S.logo = await fileToDataURL(files[0]); await persist(); renderLogo(); toast('Logo loaded');
+  });
+  wireDrop('dzProducts', 'image/*', async files => {
+    const ind = $('inIndustry').value;
+    const chosenFace = $('inFace').value;
+    const face = chosenFace ? S.faces.find(f => f.id === chosenFace) : castFor(ind);
+    const pool = batch.pool.length ? batch.pool
+               : S.backdrops.filter(b => b.vertical === ind).map(b => b.id);
+    const mode = $('inBdMode').value;
+    let n = +$('inSerial').value || 1;
+
+    for (let k = 0; k < files.length; k++) {
+      let bdId = '';
+      if (pool.length) {
+        bdId = mode === 'random' ? pool[Math.floor(Math.random() * pool.length)]
+             : mode === 'first'  ? pool[0]
+             : pool[k % pool.length];
+      }
+      S.items.push({
+        id: uid(), stage: 'intake', status: 'pending',
+        title: files[k].name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' '),
+        sku: currentSku(n++),
+        vertical: ind, faceId: face?.id || null, bdId,
+        src: await fileToDataURL(files[k]), out: null, approved: undefined, error: ''
+      });
+    }
+    $('inSerial').value = n;
+    syncSkuField();
+    await persist(); renderAll(); toast(`${files.length} photographs added`);
+  });
+
+  // Delegated events
+  document.body.addEventListener('click', async e => {
+    const t = e.target;
+    if (t.dataset.del === 'face') { S.faces = S.faces.filter(f => f.id !== t.dataset.id); await persist(); renderFaces(); }
+    if (t.dataset.del === 'bd') { S.backdrops = S.backdrops.filter(b => b.id !== t.dataset.id); await persist(); renderBackdrops(); }
+    if (t.dataset.rm) { S.items = S.items.filter(i => i.id !== t.dataset.rm); await persist(); renderAll(); }
+    if (t.dataset.ok) { const i = S.items.find(x => x.id === t.dataset.ok); i.approved = true; await persist(); renderReview(); renderCounts(); renderExport(); }
+    if (t.dataset.no) { const i = S.items.find(x => x.id === t.dataset.no); i.approved = false; await persist(); renderReview(); renderCounts(); renderExport(); }
+    if (t.dataset.retry) { const i = S.items.find(x => x.id === t.dataset.retry); i.status = 'pending'; i.error = ''; renderProcess(); toast('Requeued — run the batch again'); }
+  });
+  document.body.addEventListener('change', async e => {
+    const t = e.target;
+    if (t.dataset.bdvert) { S.backdrops.find(b => b.id === t.dataset.bdvert).vertical = t.value; await persist(); }
+    if (t.dataset.fvert) { S.faces.find(f => f.id === t.dataset.fvert).vertical = t.value; await persist(); renderIntake(); }
+    if (t.dataset.face) { S.items.find(i => i.id === t.dataset.face).faceId = t.value; await persist(); }
+    if (t.dataset.bd) { S.items.find(i => i.id === t.dataset.bd).bdId = t.value; await persist(); }
+  });
+  document.body.addEventListener('input', async e => {
+    const t = e.target;
+    if (t.dataset.title) { S.items.find(i => i.id === t.dataset.title).title = t.value; }
+    if (t.dataset.sku) { S.items.find(i => i.id === t.dataset.sku).sku = t.value; }
+    if (t.dataset.fname) { S.faces.find(f => f.id === t.dataset.fname).name = t.value; await persist(); }
+  });
+
+  $('clearBatch').onclick = async () => {
+    S.items = S.items.filter(i => i.stage !== 'intake');
+    await persist(); renderAll(); toast('Batch cleared');
+  };
+  $('sendToProcess').onclick = async () => {
+    const n = S.items.filter(i => i.stage === 'intake').length;
+    if (!n) return toast('Nothing in the batch');
+    S.items.forEach(i => { if (i.stage === 'intake') i.stage = 'process'; });
+    await persist(); renderAll(); toast(`${n} sent to processing`);
+  };
+
+  $('startRun').onclick = runBatch;
+  $('stopRun').onclick = () => { running = false; toast('Stopping after current image'); };
+
+  $('approveAll').onclick = async () => {
+    S.items.filter(i => i.status === 'done' && i.approved === undefined).forEach(i => i.approved = true);
+    await persist(); renderReview(); renderCounts(); renderExport(); toast('All approved');
+  };
+  $('filterToggle').onclick = () => {
+    S.reviewFilter = S.reviewFilter === 'pending' ? 'all' : 'pending';
+    $('filterToggle').textContent = S.reviewFilter === 'pending' ? 'Show all' : 'Show pending only';
+    renderReview();
+  };
+
+  $('dlImages').onclick = downloadImages;
+  $('dlCsv').onclick = buildCsv;
+
+  // ── SKU section ──
+  document.querySelectorAll('.subtab').forEach(el => el.onclick = () => {
+    document.querySelectorAll('.subtab').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.subview').forEach(x => x.classList.remove('active'));
+    $('sv-' + el.dataset.sv).classList.add('active');
+  });
+
+  renderDicts(); renderSkuRows();
+
+  document.body.addEventListener('click', async e => {
+    const t = e.target;
+    if (t.dataset.addrow) {
+      const d = t.dataset.addrow;
+      const blank = { industries: { code: '', label: '', group: 'WW' },
+                      types: { code: '', label: '', match: '' },
+                      colours: { code: '', label: '', hex: '#888888', match: '' } }[d];
+      S.sku[d].push({ ...blank });
+      await persist(); renderDicts();
+    }
+    if (t.dataset.drop) {
+      S.sku[t.dataset.drop].splice(+t.dataset.i, 1);
+      await persist(); renderDicts();
+    }
+  });
+
+  document.body.addEventListener('input', async e => {
+    const t = e.target;
+    if (t.dataset.d) {
+      let v = t.value;
+      if (t.dataset.f === 'code') v = v.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+      S.sku[t.dataset.d][+t.dataset.i][t.dataset.f] = v;
+      if (t.dataset.f === 'code') { t.value = v; clearTimeout(window._ct); window._ct = setTimeout(renderDicts, 700); }
+      await persist();
+    }
+  });
+
+  document.body.addEventListener('change', async e => {
+    const t = e.target;
+    if (t.dataset.also !== undefined) {
+      const r = S.sku.rows[+t.dataset.also];
+      r.also = r.also || [];
+      r.also = t.checked ? [...new Set([...r.also, t.value])] : r.also.filter(x => x !== t.value);
+      await persist();
+      const sum = t.closest('details').querySelector('summary');
+      sum.textContent = r.also.length ? r.also.join(', ') : '— none —';
+    }
+    if (t.dataset.srow !== undefined && t.dataset.sf) {
+      const r = S.sku.rows[+t.dataset.srow];
+      r[t.dataset.sf] = t.value;
+      r.code = buildCode(r);
+      await persist(); renderSkuRows();
+    }
+    if (t.dataset.d && t.dataset.f === 'group') {
+      S.sku[t.dataset.d][+t.dataset.i].group = t.value;
+      await persist(); renderDicts();
+    }
+  });
+
+  // ── Intake batch controls ──
+  ['inType', 'inFit', 'inColour', 'inSerial'].forEach(id => {
+    $(id).oninput = $(id).onchange = syncSkuField;
+  });
+  $('inIndustry').onchange = () => { renderBdPool(); syncSkuField(); };
+  $('inSku').oninput = skuFieldTyped;
+  $('inBdMode').onchange = () => {};
+  document.body.addEventListener('change', e => {
+    if (e.target.dataset.bdpool) {
+      const id = e.target.dataset.bdpool;
+      batch.pool = e.target.checked ? [...batch.pool, id] : batch.pool.filter(x => x !== id);
+      renderBdPool();
+    }
+  });
+  $('castFilter').onchange = renderFaces;
+  $('bdFilter').onchange = renderBackdrops;
+  renderBatchControls();
+
+  $('masterCode').textContent = MASTER_SRC;
+  $('copyMaster').onclick = async () => {
+    try { await navigator.clipboard.writeText(MASTER_SRC); toast('Apps Script copied'); }
+    catch { toast('Copy failed — select the code manually'); }
+  };
+  $('mSheetUrl').oninput = async e => { S.cfg.sheetUrl = e.target.value.trim(); await persist(); };
+  $('mPull').onclick = masterPull;
+  $('mPush').onclick = masterPush;
+  $('mSearch').oninput = renderMaster;
+  $('mCsv').onclick = masterCsv;
+  $('dlDrive').onclick = driveUpload;
+  renderMaster();
+
+  $('skuGenerate').onclick = generateSkus;
+  $('skuCsv').onclick = skuCsv;
+  $('skuFactory').onclick = factorySheet;
+  $('skuClear').onclick = async () => {
+    if (!S.sku.rows.length) return;
+    S.sku.rows = []; await persist(); renderSkuRows(); toast('Codes cleared');
+  };
+});
+</script>
+</body>
+</html>
